@@ -44,11 +44,12 @@ import com.anotherbigidea.flash.structs.Rect;
 
 /**
  * An Edit Field Symbol.
- *
+ * <p>
  * In order to limit the chars in the field use a separate font and only
  * load those glyphs that are required.
  */
 public class EditField extends Symbol {
+
     protected AlphaColor textColor;
     protected int alignment;
     protected int charLimit;
@@ -239,8 +240,8 @@ public class EditField extends Symbol {
     /**
      * Create an Edit Field with black text and default settings
      *
-     * @param fieldName may be null
-     * @param intialText may be null
+     * @param fieldName  may be null
+     * @param initialText may be null
      */
     public EditField(String fieldName, String initialText, Font font, double fontSize, double minX, double minY, double maxX, double maxY) {
         this.fieldName = fieldName;
@@ -291,7 +292,7 @@ public class EditField extends Symbol {
             flags |= SWFConstants.TEXTFIELD_DISABLE_EDIT;
         }
 
-        if ((initialText != null) && (initialText.length() > 0)) {
+        if ((initialText != null) && (!initialText.isEmpty())) {
             flags |= SWFConstants.TEXTFIELD_HAS_TEXT;
         }
 

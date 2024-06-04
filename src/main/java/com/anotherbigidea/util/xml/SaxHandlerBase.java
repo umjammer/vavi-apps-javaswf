@@ -34,6 +34,8 @@
 
 package com.anotherbigidea.util.xml;
 
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,9 +54,12 @@ import vavi.util.Debug;
  * Base class for SAX2 Content Handlers
  */
 public abstract class SaxHandlerBase extends DefaultHandler {
-    protected Map<String, Object> elementTypes = new HashMap<String, Object>();
+
+    private static final Logger logger = System.getLogger(SaxHandlerBase.class.getName());
+
+    protected final Map<String, Object> elementTypes = new HashMap<>();
     protected SaxHandlerBase.ElementType elemType;
-    protected List<SaxHandlerBase.ElementType> elems = new ArrayList<SaxHandlerBase.ElementType>();
+    protected final List<SaxHandlerBase.ElementType> elems = new ArrayList<>();
     protected boolean gatherMode = false;
     protected List<Object[]> gatherBuffer;
     protected SaxHandlerBase.GatheringElementType gatheringElement;
@@ -62,7 +67,7 @@ public abstract class SaxHandlerBase extends DefaultHandler {
     // Start gathering elements/chars for later dispatch
     public void startGatherMode(SaxHandlerBase.GatheringElementType elem) {
         gatheringElement = elem;
-        gatherBuffer = new ArrayList<Object[]>();
+        gatherBuffer = new ArrayList<>();
         gatherMode = true;
     }
 
@@ -72,19 +77,16 @@ public abstract class SaxHandlerBase extends DefaultHandler {
         gatheringElement = null;
 
         // replay the elements
-        for (Iterator<Object[]> it = gatherBuffer.iterator(); it.hasNext();) {
-            Object[] elem = it.next();
-
-            SaxHandlerBase.ElementType type = (SaxHandlerBase.ElementType) elem[0];
+        for (Object[] elem : gatherBuffer) {
+            ElementType type = (ElementType) elem[0];
             if (type == null) {
                 continue;
             }
 
-            if (elem[1] == null) //element end
-             {
+            if (elem[1] == null) // element end
+            {
                 type.endElement();
-            } else if (elem[1] instanceof String) {
-                String charstring = (String) elem[1];
+            } else if (elem[1] instanceof String charstring) {
                 char[] chars = charstring.toCharArray();
                 type.characters(chars, 0, chars.length);
             } else {
@@ -105,7 +107,7 @@ public abstract class SaxHandlerBase extends DefaultHandler {
         }
         boolean found = false;
 
-        for (Iterator<Object[]> it = gatherBuffer.iterator(); it.hasNext();) {
+        for (Iterator<Object[]> it = gatherBuffer.iterator(); it.hasNext(); ) {
             Object[] elem = it.next();
 
             SaxHandlerBase.ElementType type = (SaxHandlerBase.ElementType) elem[0];
@@ -120,14 +122,13 @@ public abstract class SaxHandlerBase extends DefaultHandler {
             if (found) {
                 it.remove();
 
-                if (elem[1] == null) //element end
-                 {
+                if (elem[1] == null) // element end
+                {
                     type.endElement();
                     if (type == dispelem) {
-                        found = false; //done dispatching this element
+                        found = false; // done dispatching this element
                     }
-                } else if (elem[1] instanceof String) {
-                    String charstring = (String) elem[1];
+                } else if (elem[1] instanceof String charstring) {
                     char[] chars = charstring.toCharArray();
                     type.characters(chars, 0, chars.length);
                 } else {
@@ -147,7 +148,7 @@ public abstract class SaxHandlerBase extends DefaultHandler {
         }
         boolean found = false;
 
-        for (Iterator<Object[]> it = gatherBuffer.iterator(); it.hasNext();) {
+        for (Iterator<Object[]> it = gatherBuffer.iterator(); it.hasNext(); ) {
             Object[] elem = it.next();
 
             SaxHandlerBase.ElementType type = (SaxHandlerBase.ElementType) elem[0];
@@ -162,14 +163,13 @@ public abstract class SaxHandlerBase extends DefaultHandler {
             if (found) {
                 it.remove();
 
-                if (elem[1] == null) //element end
-                 {
+                if (elem[1] == null) // element end
+                {
                     type.endElement();
                     if (type == dispelem) {
-                        return; //done dispatching
+                        return; // done dispatching
                     }
-                } else if (elem[1] instanceof String) {
-                    String charstring = (String) elem[1];
+                } else if (elem[1] instanceof String charstring) {
                     char[] chars = charstring.toCharArray();
                     type.characters(chars, 0, chars.length);
                 } else {
@@ -181,6 +181,7 @@ public abstract class SaxHandlerBase extends DefaultHandler {
     }
 
     public static class ElementType {
+
         public void startElement(Attributes atts) throws Exception {
         }
 
@@ -192,6 +193,7 @@ public abstract class SaxHandlerBase extends DefaultHandler {
     }
 
     public static class ContentElementType extends SaxHandlerBase.ElementType {
+
         protected Attributes attrs;
         protected StringBuffer buff;
 
@@ -201,16 +203,17 @@ public abstract class SaxHandlerBase extends DefaultHandler {
         }
 
         public void characters(char[] ch, int start, int length) throws Exception {
-//System.err.println("buff: " + buff);
-if (buff == null) {
- Debug.println("ContentElementType::characters: buff: " + new String(ch, start, length));
- return; // TODO vavi null
-}
+// System.err.println("buff: " + buff);
+            if (buff == null) {
+                Debug.println("ContentElementType::characters: buff: " + new String(ch, start, length));
+                return; // TODO vavi null
+            }
             buff.append(ch, start, length);
         }
     }
 
     public static class GatheringElementType extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
         }
@@ -224,11 +227,11 @@ if (buff == null) {
         try {
             elemType = (SaxHandlerBase.ElementType) elementTypes.get(localName);
 
-            if (gatherMode) { //gather the element for later processing
+            if (gatherMode) { // gather the element for later processing
                 if (gatheringElement.gatherElement(localName, atts)) {
                     gatherBuffer.add(new Object[] {
-                                         elemType, new AttributesImpl(atts)
-                                     });
+                            elemType, new AttributesImpl(atts)
+                    });
                 }
             } else {
                 if (elemType == null) {
@@ -241,13 +244,13 @@ if (buff == null) {
         } catch (SAXException saxex) {
             throw saxex;
         } catch (Exception ex) {
-            //ex.printStackTrace();
+            // logger.log(Level.ERROR, ex.getMessage(), ex);
             throw new SAXException(ex);
         }
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-Debug.println(localName);
+        Debug.println(localName);
         try {
             elemType = (SaxHandlerBase.ElementType) elementTypes.get(localName);
             if (elemType == null) {
@@ -258,8 +261,8 @@ Debug.println(localName);
                 gatherMode = false;
             }
 
-            if (gatherMode) { //gather the element for later processing
-                gatherBuffer.add(new Object[] { elemType, null });
+            if (gatherMode) { // gather the element for later processing
+                gatherBuffer.add(new Object[] {elemType, null});
             } else {
                 elemType.endElement();
             }
@@ -272,7 +275,7 @@ Debug.println(localName);
         } catch (SAXException saxex) {
             throw saxex;
         } catch (Exception ex) {
-ex.printStackTrace();
+            logger.log(Level.ERROR, ex.getMessage(), ex);
             throw new SAXException(ex);
         }
     }
@@ -283,17 +286,17 @@ ex.printStackTrace();
                 return;
             }
 
-            if (gatherMode) { //gather the element for later processing
+            if (gatherMode) { // gather the element for later processing
                 gatherBuffer.add(new Object[] {
-                                     elemType, new String(ch, start, length)
-                                 });
+                        elemType, new String(ch, start, length)
+                });
             } else {
                 elemType.characters(ch, start, length);
             }
         } catch (SAXException saxex) {
             throw saxex;
         } catch (Exception ex) {
-ex.printStackTrace();
+            logger.log(Level.ERROR, ex.getMessage(), ex);
             throw new SAXException(ex);
         }
     }

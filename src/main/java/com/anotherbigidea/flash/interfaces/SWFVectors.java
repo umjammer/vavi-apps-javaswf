@@ -41,11 +41,12 @@ import java.io.IOException;
  * Interface for passing basic shape information without styles.
  */
 public interface SWFVectors {
-    public void done() throws IOException;
 
-    public void line(int dx, int dy) throws IOException;
+    void done() throws IOException;
 
-    public void curve(int cx, int cy, int dx, int dy) throws IOException;
+    void line(int dx, int dy) throws IOException;
 
-    public void move(int x, int y) throws IOException;
+    void curve(int cx, int cy, int dx, int dy) throws IOException;
+
+    void move(int x, int y) throws IOException;
 }

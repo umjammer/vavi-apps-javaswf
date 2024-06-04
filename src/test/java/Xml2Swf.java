@@ -11,27 +11,28 @@ import com.anotherbigidea.util.xml.Xerces;
  * Key point is the use of the SWFSaxWriter class - this implements
  * the standard SAX2 ContentHandler interface (via its parents) and
  * can be driven directly from any compliant SAX2 XML parser.
- *
+ * <p>
  * SWFSaxWriter drives an implementation of the SWFTagTypes interface.
- *
+ * <p>
  * To convert SWF to XML use the main method of the
  * com.anotherbigidea.flash.readers.SWFSaxParser class.
- *
+ * <p>
  * The DTD for the XML is given in javaswf-dtd.txt
- *
+ * <p>
  * Uses the Apache Xerces XML parser - download from apache.org.
- *
+ * <p>
  * Arg[0] = input xml filename
  * Arg[1] = output swf filename
  */
 public class Xml2Swf {
+
     public static void main(String[] args) throws Exception {
         FileInputStream in = new FileInputStream(args[0]);
 
-        SWFWriter swftags = new SWFWriter(args[1]);
-        TagWriter tagwriter = new TagWriter(swftags);
-        SWFSaxWriter saxout = new SWFSaxWriter(tagwriter);
+        SWFWriter swfTags = new SWFWriter(args[1]);
+        TagWriter tagwriter = new TagWriter(swfTags);
+        SWFSaxWriter saxOut = new SWFSaxWriter(tagwriter);
 
-        Xerces.parse(saxout, in);
+        Xerces.parse(saxOut, in);
     }
 }

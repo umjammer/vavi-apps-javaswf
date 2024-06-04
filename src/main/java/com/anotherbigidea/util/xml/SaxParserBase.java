@@ -54,11 +54,12 @@ import org.xml.sax.helpers.AttributesImpl;
  * Base class for SAX2 Parsers
  */
 public abstract class SaxParserBase implements XMLReader {
+
     protected EntityResolver resolver;
     protected DTDHandler dtdhandler;
     protected ContentHandler contenthandler;
     protected ErrorHandler errorhandler;
-    protected List<String> elementStack = new ArrayList<String>();
+    protected final List<String> elementStack = new ArrayList<>();
     protected String namespace;
 
     public String getNamespace() {
@@ -180,13 +181,13 @@ public abstract class SaxParserBase implements XMLReader {
         }
     }
 
-    //============ XMLReader interface follows: ================
+    // ============ XMLReader interface follows: ================
     public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if (name.equals("http://xml.org/sax/features/namespaces")) {
+        if (name.equals("http:// xml.org/sax/features/namespaces")) {
             return true;
         }
 
-        if (name.equals("http://xml.org/sax/features/namespace-prefixes")) {
+        if (name.equals("http:// xml.org/sax/features/namespace-prefixes")) {
             return false;
         }
 
@@ -194,7 +195,7 @@ public abstract class SaxParserBase implements XMLReader {
     }
 
     public void setFeature(String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if (name.equals("http://xml.org/sax/features/namespaces") || name.equals("http://xml.org/sax/features/namespace-prefixes")) {
+        if (name.equals("http:// xml.org/sax/features/namespaces") || name.equals("http:// xml.org/sax/features/namespace-prefixes")) {
             return;
         }
 

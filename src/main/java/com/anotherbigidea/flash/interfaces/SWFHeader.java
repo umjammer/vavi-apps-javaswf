@@ -31,20 +31,22 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.anotherbigidea.flash.interfaces;
 
-import java.io.*;
+import java.io.IOException;
 
 
 /**
  * Interface for passing a SWF file header
  */
 public interface SWFHeader {
+
     /**
      * SWF File header.
      *
-     * @param length -1 if the length is unknown and must be inferred
+     * @param length     -1 if the length is unknown and must be inferred
      * @param frameCount -1 if the framecount is unknown and must be inferred
      */
-    public void header(int version, long length, int twipsWidth, int twipsHeight, int frameRate, int frameCount) throws IOException;
+    void header(int version, long length, int twipsWidth, int twipsHeight, int frameRate, int frameCount) throws IOException;
 }

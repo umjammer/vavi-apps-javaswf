@@ -41,11 +41,12 @@ import com.anotherbigidea.io.OutStream;
 
 
 public class FillStyle implements Style {
-    protected int fillType;
+
+    protected final int fillType;
     protected Color color;
     protected Matrix matrix;
-    protected int[] ratios; //for gradient fill
-    protected Color[] colors; //for gradient fill
+    protected int[] ratios; // for gradient fill
+    protected Color[] colors; // for gradient fill
     protected int bitmapId;
 
     public int getType() {

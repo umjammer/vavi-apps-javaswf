@@ -31,6 +31,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.anotherbigidea.flash.movie;
 
 import java.io.IOException;
@@ -43,10 +44,11 @@ import com.anotherbigidea.flash.structs.AlphaTransform;
 /**
  * A Placement holds the transformation and other values relating to the
  * "placement" of a Symbol Instance within a particular frame.
- *
+ * <p>
  * They can also denote an "UndefineSymbol" operation.
  */
 public class Placement {
+
     protected boolean isAlteration;
     protected boolean isReplacement;
     protected int frameNumber;
@@ -133,7 +135,7 @@ public class Placement {
      * symbol.  All symbols placed at depths from depth+1 to clipDepth (inclusive)
      * will be clipped.  If this symbol is not a clipping symbol then the clip
      * depth will be -1.
-     *
+     * <p>
      * The clip depth is only present on the first Placement of an Instance.
      */
     public int getClipDepth() {
@@ -229,17 +231,17 @@ public class Placement {
             int flags = 0;
 
             if ((clipActions != null) && (clipActions.length > 0)) {
-                for (int i = 0; i < clipActions.length; i++) {
-                    flags |= clipActions[i].getConditions();
+                for (Actions clipAction : clipActions) {
+                    flags |= clipAction.getConditions();
                 }
             }
 
             SWFActions acts = timelineTagWriter.tagPlaceObject2(isReplacement, clipDepth, depth, id, matrix, cxform, ratio, name, flags);
 
             if ((clipActions != null) && (clipActions.length > 0)) {
-                for (int i = 0; i < clipActions.length; i++) {
-                    acts.start(clipActions[i].getConditions());
-                    acts.blob(clipActions[i].bytes);
+                for (Actions clipAction : clipActions) {
+                    acts.start(clipAction.getConditions());
+                    acts.blob(clipAction.bytes);
                 }
 
                 acts.done();

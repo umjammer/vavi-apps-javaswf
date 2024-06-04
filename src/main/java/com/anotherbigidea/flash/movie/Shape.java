@@ -52,16 +52,21 @@ import com.anotherbigidea.flash.structs.Rect;
  * A Shape Symbol
  */
 public class Shape extends Symbol {
+
     public abstract static class Element {
+
     }
 
     public abstract static class Style extends Shape.Element {
+
     }
 
     public abstract static class FillStyle extends Shape.Style {
+
     }
 
     public static class ColorFill extends Shape.FillStyle {
+
         protected Color color;
 
         /**
@@ -81,6 +86,7 @@ public class Shape extends Symbol {
     }
 
     public static class ImageFill extends Shape.FillStyle {
+
         protected Symbol image;
         protected Transform matrix;
         protected boolean clipped;
@@ -117,6 +123,7 @@ public class Shape extends Symbol {
     }
 
     public static class GradientFill extends Shape.FillStyle {
+
         protected Color[] colors;
         protected int[] ratios;
         protected Transform matrix;
@@ -163,6 +170,7 @@ public class Shape extends Symbol {
     }
 
     public static class LineStyle extends Shape.Style {
+
         protected double width;
         protected Color color;
 
@@ -189,6 +197,7 @@ public class Shape extends Symbol {
     }
 
     public abstract static class SetStyle extends Shape.Element {
+
         protected int index;
 
         public int getStyleIndex() {
@@ -205,30 +214,35 @@ public class Shape extends Symbol {
     }
 
     public abstract static class SetFillStyle extends Shape.SetStyle {
+
         protected SetFillStyle(int index) {
             super(index);
         }
     }
 
     public static class SetLeftFillStyle extends Shape.SetFillStyle {
+
         public SetLeftFillStyle(int index) {
             super(index);
         }
     }
 
     public static class SetRightFillStyle extends Shape.SetFillStyle {
+
         public SetRightFillStyle(int index) {
             super(index);
         }
     }
 
     public static class SetLineStyle extends Shape.SetStyle {
+
         public SetLineStyle(int index) {
             super(index);
         }
     }
 
     public abstract static class Vector extends Shape.Element {
+
         protected double x;
         protected double y;
 
@@ -255,18 +269,21 @@ public class Shape extends Symbol {
     }
 
     public static class Move extends Shape.Vector {
+
         public Move(double x, double y) {
             super(x, y);
         }
     }
 
     public static class Line extends Shape.Vector {
+
         public Line(double x, double y) {
             super(x, y);
         }
     }
 
     public static class Curve extends Shape.Vector {
+
         protected double cx;
         protected double cy;
 
@@ -293,11 +310,11 @@ public class Shape extends Symbol {
         }
     }
 
-    protected List<Object> elements = new ArrayList<Object>();
-    protected double minX; //bounding rectangle
-    protected double maxX; //bounding rectangle
-    protected double minY; //bounding rectangle
-    protected double maxY; //bounding rectangle
+    protected final List<Object> elements = new ArrayList<>();
+    protected double minX; // bounding rectangle
+    protected double maxX; // bounding rectangle
+    protected double minY; // bounding rectangle
+    protected double maxY; // bounding rectangle
     protected boolean hasAlpha = false;
     protected double maxLineWidth;
     protected double currx;
@@ -310,7 +327,7 @@ public class Shape extends Symbol {
      * Get the bounding rectangle as a double[4] - (min-X,min-Y,max-X,max-Y)
      */
     public double[] getBoundingRectangle() {
-        return new double[] { minX, minY, maxX, maxY };
+        return new double[] {minX, minY, maxX, maxY};
     }
 
     /**
@@ -335,6 +352,7 @@ public class Shape extends Symbol {
 
     /**
      * Define a line style
+     *
      * @param color if null then black is assumed
      */
     public void defineLineStyle(double width, Color color) {
@@ -357,6 +375,7 @@ public class Shape extends Symbol {
 
     /**
      * Define a color fill
+     *
      * @param color if null then white is assumed
      */
     public void defineFillStyle(Color color) {
@@ -389,11 +408,11 @@ public class Shape extends Symbol {
 
         elements.add(fill);
 
-        for (int i = 0; i < colors.length; i++) {
-            if (colors[i] == null) {
+        for (Color color : colors) {
+            if (color == null) {
                 continue;
             }
-            if (colors[i] instanceof AlphaColor) {
+            if (color instanceof AlphaColor) {
                 hasAlpha = true;
             }
         }
@@ -532,11 +551,9 @@ public class Shape extends Symbol {
 
     protected void predefineImageFills(Movie movie, SWFTagTypes timelineWriter, SWFTagTypes definitionWriter) throws IOException {
         // Make sure any image fills are defined prior to the shape
-        for (Iterator<?> it = elements.iterator(); it.hasNext();) {
-            Object el = it.next();
-
-            if (el instanceof Shape.ImageFill) {
-                Symbol image = ((Shape.ImageFill) el).getImage();
+        for (Object el : elements) {
+            if (el instanceof ImageFill) {
+                Symbol image = ((ImageFill) el).getImage();
 
                 if (image != null) {
                     image.define(movie, timelineWriter, definitionWriter);
@@ -546,35 +563,26 @@ public class Shape extends Symbol {
     }
 
     protected void writeShape(SWFShape shape) throws IOException {
-        for (Iterator<?> it = elements.iterator(); it.hasNext();) {
-            Object el = it.next();
-
-            if (el instanceof Shape.ColorFill) {
-                Shape.ColorFill fill = (Shape.ColorFill) el;
+        for (Object el : elements) {
+            if (el instanceof ColorFill fill) {
                 shape.defineFillStyle(fill.getColor());
-            } else if (el instanceof Shape.ImageFill) {
-                Shape.ImageFill fill = (Shape.ImageFill) el;
+            } else if (el instanceof ImageFill fill) {
 
                 Symbol image = fill.getImage();
                 int imgId = (image != null) ? image.getId() : 65535;
 
                 shape.defineFillStyle(imgId, fill.getTransform(), fill.isClipped());
-            } else if (el instanceof Shape.GradientFill) {
-                Shape.GradientFill fill = (Shape.GradientFill) el;
+            } else if (el instanceof GradientFill fill) {
 
                 shape.defineFillStyle(fill.getTransform(), fill.getRatios(), fill.getColors(), fill.isRadial());
-            } else if (el instanceof Shape.LineStyle) {
-                Shape.LineStyle style = (Shape.LineStyle) el;
+            } else if (el instanceof LineStyle style) {
 
                 shape.defineLineStyle((int) (style.getWidth() * SWFConstants.TWIPS), style.getColor());
-            } else if (el instanceof Shape.SetLeftFillStyle) {
-                Shape.SetLeftFillStyle style = (Shape.SetLeftFillStyle) el;
+            } else if (el instanceof SetLeftFillStyle style) {
                 shape.setFillStyle0(style.getStyleIndex());
-            } else if (el instanceof Shape.SetRightFillStyle) {
-                Shape.SetRightFillStyle style = (Shape.SetRightFillStyle) el;
+            } else if (el instanceof SetRightFillStyle style) {
                 shape.setFillStyle1(style.getStyleIndex());
-            } else if (el instanceof Shape.SetLineStyle) {
-                Shape.SetLineStyle style = (Shape.SetLineStyle) el;
+            } else if (el instanceof SetLineStyle style) {
                 shape.setLineStyle(style.getStyleIndex());
             } else {
                 writeVector(shape, el);
@@ -585,8 +593,7 @@ public class Shape extends Symbol {
     }
 
     protected void writeVector(SWFVectors vecs, Object el) throws IOException {
-        if (el instanceof Shape.Move) {
-            Shape.Move move = (Shape.Move) el;
+        if (el instanceof Move move) {
 
             currx = move.getX() * SWFConstants.TWIPS;
             curry = move.getY() * SWFConstants.TWIPS;
@@ -596,9 +603,8 @@ public class Shape extends Symbol {
 
             vecs.move(x, y);
 
-            //System.err.println( "M: " + x + " " + y );
-        } else if (el instanceof Shape.Line) {
-            Shape.Line line = (Shape.Line) el;
+            // System.err.println( "M: " + x + " " + y );
+        } else if (el instanceof Line line) {
 
             double xx = line.getX() * SWFConstants.TWIPS;
             double yy = line.getY() * SWFConstants.TWIPS;
@@ -608,12 +614,11 @@ public class Shape extends Symbol {
 
             vecs.line(dx, dy);
 
-            //System.err.println( "currx=" + currx + " curry=" + curry + " xx=" + xx + " yy=" + yy + " (xx - currx)=" + (xx - currx) + "  (yy - curry)=" + (yy - curry) );
-            //System.err.println( "L: " + dx + " " + dy );
+            // System.err.println( "currx=" + currx + " curry=" + curry + " xx=" + xx + " yy=" + yy + " (xx - currx)=" + (xx - currx) + "  (yy - curry)=" + (yy - curry) );
+            // System.err.println( "L: " + dx + " " + dy );
             currx = xx;
             curry = yy;
-        } else if (el instanceof Shape.Curve) {
-            Shape.Curve curve = (Shape.Curve) el;
+        } else if (el instanceof Curve curve) {
 
             double xx = curve.getX() * SWFConstants.TWIPS;
             double yy = curve.getY() * SWFConstants.TWIPS;
@@ -630,7 +635,7 @@ public class Shape extends Symbol {
             currx = xx;
             curry = yy;
 
-            //System.err.println( "C: " + cx + " " + cy + " " + dx + " " + dy );
+            // System.err.println( "C: " + cx + " " + cy + " " + dx + " " + dy );
         }
     }
 
@@ -638,8 +643,8 @@ public class Shape extends Symbol {
         currx = 0.0;
         curry = 0.0;
 
-        for (Iterator<?> it = elements.iterator(); it.hasNext();) {
-            writeVector(vecs, it.next());
+        for (Object element : elements) {
+            writeVector(vecs, element);
         }
 
         vecs.done();

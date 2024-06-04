@@ -35,6 +35,7 @@
 package com.anotherbigidea.flash.sound;
 
 import java.io.IOException;
+
 import com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes;
 
 
@@ -42,14 +43,15 @@ import com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes;
  * Sound Stream Header Information
  */
 public class SoundStreamHead {
-    public int playbackFrequency;
-    public boolean playback16bit;
-    public boolean playbackStereo;
-    public int streamFormat;
-    public int streamFrequency;
-    public boolean stream16bit;
-    public boolean streamStereo;
-    public int averageSampleCount;
+
+    public final int playbackFrequency;
+    public final boolean playback16bit;
+    public final boolean playbackStereo;
+    public final int streamFormat;
+    public final int streamFrequency;
+    public final boolean stream16bit;
+    public final boolean streamStereo;
+    public final int averageSampleCount;
 
     public SoundStreamHead(int playbackFrequency, boolean playback16bit, boolean playbackStereo, int streamFormat, int streamFrequency, boolean stream16bit, boolean streamStereo, int averageSampleCount) {
         this.playbackFrequency = playbackFrequency;

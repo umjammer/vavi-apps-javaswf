@@ -14,10 +14,11 @@ import com.anotherbigidea.flash.writers.TagWriter;
  * An example of writing directly to the SWF file format interfaces.
  * Create a movie consisting of 4 instances of a Movie Clip containing
  * a rotating red square.
- *
+ * <p>
  * Compare this to RedSquare.java
  */
 public class RedSquare2 {
+
     /**
      * First arg is output filename
      */
@@ -25,38 +26,38 @@ public class RedSquare2 {
         SWFWriter writer = new SWFWriter(args[0]);
         SWFTagTypes swf = new TagWriter(writer);
 
-        swf.header(5, //Flash version
-                   -1, //unknown length
-                   550 * SWFConstants.TWIPS, //width in twips
-                   400 * SWFConstants.TWIPS, //height in twips
-                   12, //frames per sec
-                   -1); //unknown frame count
+        swf.header(5, // Flash version
+                -1, // unknown length
+                550 * SWFConstants.TWIPS, // width in twips
+                400 * SWFConstants.TWIPS, // height in twips
+                12, // frames per sec
+                -1); // unknown frame count
 
         swf.tagSetBackgroundColor(new Color(255, 255, 255));
 
         // define a shape
         Rect outline = new Rect(-1020, -1020, 1020, 1020);
-        SWFShape shape = swf.tagDefineShape(1, outline); //id = 1
+        SWFShape shape = swf.tagDefineShape(1, outline); // id = 1
 
         // define the shape geometry - coords are in twips (= 1/20 pixel)
         shape.defineFillStyle(new Color(255, 0, 0));
         shape.defineLineStyle(40, new Color(0, 0, 0));
         shape.setFillStyle1(1);
         shape.setLineStyle(1);
-        shape.move(-1000, -1000); //move coords are absolute
-        shape.line(2000, 0); //line coords are deltas
+        shape.move(-1000, -1000); // move coords are absolute
+        shape.line(2000, 0); // line coords are deltas
         shape.line(0, 2000);
         shape.line(-2000, 0);
         shape.line(0, -2000);
-        shape.done(); //don't forget this
+        shape.done(); // don't forget this
 
         // define a sprite (movie clip)
-        SWFTagTypes sprite = swf.tagDefineSprite(2); //id =2
+        SWFTagTypes sprite = swf.tagDefineSprite(2); // id =2
 
         // place the shape in the first frame of the sprite
         sprite.tagPlaceObject2(false, -1, 1, 1, new Matrix(), null, -1, null, 0);
 
-        sprite.tagShowFrame(); //end the first frame
+        sprite.tagShowFrame(); // end the first frame
 
         // Rotate the square (using degrees for clarity)
         for (int angle = 10; angle < 90; angle += 10) {

@@ -44,6 +44,7 @@ import com.anotherbigidea.io.OutStream;
  * A Color with an Alpha component
  */
 public class AlphaColor extends Color {
+
     protected int alpha;
 
     public int getAlpha() {

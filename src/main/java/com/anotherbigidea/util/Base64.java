@@ -53,25 +53,26 @@ import java.util.Map;
  * Base64 encoding/decoding utilities
  */
 public class Base64 {
+
     public static final char[] charset = {
-        'A', 'B', 'C', 'D', 'E', 'F', 'G',
-        'H', 'I', 'J', 'K', 'L', 'M', 'N',
-        'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-        'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
-        'c', 'd', 'e', 'f', 'g', 'h', 'i',
-        'j', 'k', 'l', 'm', 'n', 'o', 'p',
-        'q', 'r', 's', 't', 'u', 'v', 'w',
-        'x', 'y', 'z', '0', '1', '2', '3',
-        '4', '5', '6', '7', '8', '9', '+',
-        '/'
+            'A', 'B', 'C', 'D', 'E', 'F', 'G',
+            'H', 'I', 'J', 'K', 'L', 'M', 'N',
+            'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+            'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
+            'c', 'd', 'e', 'f', 'g', 'h', 'i',
+            'j', 'k', 'l', 'm', 'n', 'o', 'p',
+            'q', 'r', 's', 't', 'u', 'v', 'w',
+            'x', 'y', 'z', '0', '1', '2', '3',
+            '4', '5', '6', '7', '8', '9', '+',
+            '/'
     };
 
     public static final char paddingChar = '=';
-    protected static Map<Character, Integer> charLookup = new HashMap<Character, Integer>();
+    protected static final Map<Character, Integer> charLookup = new HashMap<>();
 
     static {
         for (int i = 0; i < charset.length; i++) {
-            charLookup.put(new Character(charset[i]), new Integer(i));
+            charLookup.put(charset[i], i);
         }
     }
 
@@ -86,20 +87,20 @@ public class Base64 {
             while (numread < 4) {
                 int read = in.read();
                 if (read < 0) {
-                    break; //end of input
+                    break; // end of input
                 }
 
                 char aChar = (char) read;
 
                 if (Character.isWhitespace(aChar)) {
-                    continue; //skip w/s
+                    continue; // skip w/s
                 }
 
                 chars[numread++] = aChar;
             }
 
             if (numread == 0) {
-                return; //end of input 
+                return; // end of input 
             }
 
             if (numread != 4) {
@@ -108,7 +109,7 @@ public class Base64 {
 
             // Convert chars to six-bit values
             for (int i = 0; i < 4; i++) {
-                Integer value = charLookup.get(new Character(chars[i]));
+                Integer value = charLookup.get(chars[i]);
 
                 if (value == null) {
                     if ((chars[i] != '=') || (i < 2)) {
@@ -117,39 +118,39 @@ public class Base64 {
 
                     sixbit[i] = -1;
                 } else {
-                    sixbit[i] = value.intValue();
+                    sixbit[i] = value;
                 }
             }
 
             // Write first 6 bits and top 2 bits from second value
             out.write((sixbit[0] << 2) + (sixbit[1] >> 4));
-            //System.err.println( (sixbit[0] << 2) + (sixbit[1] >> 4) );
+            // System.err.println( (sixbit[0] << 2) + (sixbit[1] >> 4) );
             // Get bottom four bits of second value
             int val = (sixbit[1] & 0xf) << 4;
 
-            if (sixbit[2] >= 0) //third value is valid
-             {
+            if (sixbit[2] >= 0) // third value is valid
+            {
                 // Add top four bits of third value
                 val += (sixbit[2] >> 2);
 
                 out.write(val);
-                //System.err.println( val );
+                // System.err.println( val );
                 // Get bottom two bits of third value
                 val = (sixbit[2] & 0x3) << 6;
 
-                if (sixbit[3] >= 0) //fourth value is valid
-                 {
+                if (sixbit[3] >= 0) // fourth value is valid
+                {
                     val += sixbit[3];
 
                     out.write(val);
-                    //System.err.println( val );
+                    // System.err.println( val );
                 }
             }
         }
     }
 
-    public static byte[] decode(String base64) throws Exception //if base64 is invalid
-     {
+    public static byte[] decode(String base64) throws Exception // if base64 is invalid
+    {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         StringReader in = new StringReader(base64);
 
@@ -172,7 +173,7 @@ public class Base64 {
             int byte3 = in.read();
 
             if (byte1 < 0) {
-                return; //end-of-data
+                return; // end-of-data
             }
 
             // Wrap output at column 72
@@ -181,34 +182,34 @@ public class Base64 {
                 out.write('\n');
             }
 
-            out.write(charset[byte1 >> 2]); //write top 6 bits of byte 1
+            out.write(charset[byte1 >> 2]); // write top 6 bits of byte 1
 
-            int index = (byte1 & 0x3) << 4; //get bottom two bits of byte 1
+            int index = (byte1 & 0x3) << 4; // get bottom two bits of byte 1
 
-            if (byte2 < 0) //no more data
-             {
+            if (byte2 < 0) // no more data
+            {
                 out.write(charset[index]);
                 out.write(paddingChar);
                 out.write(paddingChar);
                 return;
             }
 
-            index += (byte2 >> 4); //add the top 4 bits of byte 2            
+            index += (byte2 >> 4); // add the top 4 bits of byte 2            
             out.write(charset[index]);
 
-            index = (byte2 & 0xf) << 2; //get bottom 4 bits of byte 2
+            index = (byte2 & 0xf) << 2; // get bottom 4 bits of byte 2
 
-            if (byte3 < 0) //more more data
-             {
+            if (byte3 < 0) // more more data
+            {
                 out.write(charset[index]);
                 out.write(paddingChar);
                 return;
             }
 
-            index += (byte3 >> 6); //add top 2 bits of byte 3
+            index += (byte3 >> 6); // add top 2 bits of byte 3
             out.write(charset[index]);
 
-            out.write(charset[byte3 & 0x3f]); //write bottom 6 bits of byte 3
+            out.write(charset[byte3 & 0x3f]); // write bottom 6 bits of byte 3
 
             // Advance column counter
             column += 4;

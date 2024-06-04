@@ -45,6 +45,7 @@ import java.util.zip.DeflaterOutputStream;
  * Output Stream Wrapper
  */
 public class OutStream extends OutputStreamWrapper {
+
     // Bit buffer..
     private int mBitBuf;
     private int mBitPos;
@@ -67,8 +68,8 @@ public class OutStream extends OutputStreamWrapper {
         // Mask out any sign bit
         long lval = value & 0x7FFFFFFF;
 
-        if (value < 0) //add the sign bit
-         {
+        if (value < 0) // add the sign bit
+        {
             lval |= (1L << (numBits - 1));
         }
 
@@ -93,7 +94,7 @@ public class OutStream extends OutputStreamWrapper {
      */
     public void flushBits() throws IOException {
         if (mBitPos == 0) {
-            return; //nothing to flush
+            return; // nothing to flush
         }
 
         super.write(mBitBuf);
@@ -110,15 +111,15 @@ public class OutStream extends OutputStreamWrapper {
         }
 
         if (mBitPos == 0) {
-            mBitPos = 8; //bitBuf was empty
+            mBitPos = 8; // bitBuf was empty
         }
 
         int bitNum = numBits;
 
-        while (bitNum > 0) //write all bits
-         {
-            while ((mBitPos > 0) && (bitNum > 0)) //write into all position of the bit buffer
-             {
+        while (bitNum > 0) // write all bits
+        {
+            while ((mBitPos > 0) && (bitNum > 0)) // write into all position of the bit buffer
+            {
                 if (getBit(bitNum, value)) {
                     mBitBuf = setBit(mBitPos, mBitBuf);
                 }
@@ -127,12 +128,12 @@ public class OutStream extends OutputStreamWrapper {
                 mBitPos--;
             }
 
-            if (mBitPos == 0) //bit buffer is full - write it
-             {
+            if (mBitPos == 0) // bit buffer is full - write it
+            {
                 writeUI8(mBitBuf);
                 mBitBuf = 0;
                 if (bitNum > 0) {
-                    mBitPos = 8; //prepare for more bits
+                    mBitPos = 8; // prepare for more bits
                 }
             }
         }
@@ -234,7 +235,7 @@ public class OutStream extends OutputStreamWrapper {
         if (string != null) {
             super.write(string);
         }
-        super.write(0); //terminate string
+        super.write(0); // terminate string
     }
 
     /**
@@ -245,7 +246,7 @@ public class OutStream extends OutputStreamWrapper {
         if (string == null) {
             return 1;
         }
-        return string.length + 1; //to include the terminating null
+        return string.length + 1; // to include the terminating null
     }
 
     /**
@@ -258,7 +259,7 @@ public class OutStream extends OutputStreamWrapper {
         }
         byte[] bytes = string.getBytes();
 
-        return bytes.length + 1; //to include the terminating null
+        return bytes.length + 1; // to include the terminating null
     }
 
     /**
@@ -292,10 +293,10 @@ public class OutStream extends OutputStreamWrapper {
         }
 
         if (topBit == 0) {
-            return 2; //must have been -1
+            return 2; // must have been -1
         }
 
-        //HACK: Flash represents -16 as 110000 rather than 10000 etc..
+        // HACK: Flash represents -16 as 110000 rather than 10000 etc..
         int val2 = value & ((1 << topBit) - 1);
         if (val2 == 0) {
             topBit++;
@@ -374,14 +375,14 @@ public class OutStream extends OutputStreamWrapper {
      * Util to convert a signed int to 2 bytes
      */
     public static byte[] sintTo2Bytes(int value) {
-        return new byte[] { uintToByte(value & 0xff), uintToByte(value >> 8) };
+        return new byte[] {uintToByte(value & 0xff), uintToByte(value >> 8)};
     }
 
     /**
      * Util to convert an unsigned int to 2 bytes
      */
     public static byte[] uintTo2Bytes(int value) {
-        return new byte[] { uintToByte(value & 0xff), uintToByte(value >> 8) };
+        return new byte[] {uintToByte(value & 0xff), uintToByte(value >> 8)};
     }
 
     /**
@@ -389,9 +390,9 @@ public class OutStream extends OutputStreamWrapper {
      */
     public static byte[] uintTo4Bytes(int value) {
         return new byte[] {
-                   uintToByte(value & 0xff), uintToByte(value >> 8),
-                   uintToByte(value >> 16), uintToByte(value >> 24)
-               };
+                uintToByte(value & 0xff), uintToByte(value >> 8),
+                uintToByte(value >> 16), uintToByte(value >> 24)
+        };
     }
 
     /**
@@ -402,8 +403,8 @@ public class OutStream extends OutputStreamWrapper {
         value >>= 1;
 
         byte b = (byte) value;
-        b <<= 1;
-        b |= (byte) lowbit;
+        b = (byte) (b << 1);
+        b = (byte) (b | (byte) lowbit);
 
         return b;
     }

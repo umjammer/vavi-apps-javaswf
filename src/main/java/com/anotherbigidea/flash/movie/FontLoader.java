@@ -38,6 +38,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
 import com.anotherbigidea.flash.SWFConstants;
 import com.anotherbigidea.flash.interfaces.SWFTags;
 import com.anotherbigidea.flash.interfaces.SWFVectors;
@@ -51,6 +52,7 @@ import com.anotherbigidea.flash.writers.SWFTagTypesImpl;
  * Font loading utilities
  */
 public class FontLoader extends SWFTagTypesImpl {
+
     protected FontDefinition fontDef;
 
     public FontLoader() {
@@ -59,7 +61,7 @@ public class FontLoader extends SWFTagTypesImpl {
 
     /**
      * Load the first font from the given Flash movie
-     * 
+     *
      * @return null if no font was found
      */
     public static FontDefinition loadFont(String filename) throws IOException {
@@ -74,7 +76,7 @@ public class FontLoader extends SWFTagTypesImpl {
 
     /**
      * Load the first font from the given Flash movie
-     * 
+     *
      * @return null if no font was found
      */
     public static FontDefinition loadFont(InputStream flashMovie) throws IOException {
@@ -104,29 +106,29 @@ public class FontLoader extends SWFTagTypesImpl {
                                      int[] kernCodes2,
                                      int[] kernAdjustments) throws IOException {
         if (fontDef != null) {
-            return null; //only load first font
+            return null; // only load first font
         }
 
         double twips = SWFConstants.TWIPS;
 
         fontDef = new FontDefinition(name,
-                                     ascent / twips,
-                                     descent / twips,
-                                     leading / twips,
-                                     (flags & SWFConstants.FONT2_UNICODE) != 0,
-                                     (flags & SWFConstants.FONT2_SHIFTJIS) != 0,
-                                     (flags & SWFConstants.FONT2_ANSI) != 0,
-                                     (flags & SWFConstants.FONT2_ITALIC) != 0,
-                                     (flags & SWFConstants.FONT2_BOLD) != 0,
-                                     (flags & SWFConstants.FONT2_HAS_LAYOUT) != 0);
+                ascent / twips,
+                descent / twips,
+                leading / twips,
+                (flags & SWFConstants.FONT2_UNICODE) != 0,
+                (flags & SWFConstants.FONT2_SHIFTJIS) != 0,
+                (flags & SWFConstants.FONT2_ANSI) != 0,
+                (flags & SWFConstants.FONT2_ITALIC) != 0,
+                (flags & SWFConstants.FONT2_BOLD) != 0,
+                (flags & SWFConstants.FONT2_HAS_LAYOUT) != 0);
 
         if ((kernCodes1 != null) && (kernCodes1.length > 0)) {
-//System.err.println("Number of Kernings --> " + kernCodes1.length);
+// System.err.println("Number of Kernings --> " + kernCodes1.length);
             List<FontDefinition.KerningPair> kerns = fontDef.getKerningPairList();
 
             for (int i = 0; i < kernCodes1.length; i++) {
                 FontDefinition.KerningPair pair = new FontDefinition.KerningPair(kernCodes1[i], kernCodes2[i], kernAdjustments[i] /
-                                                                                                               twips);
+                        twips);
 
                 kerns.add(pair);
             }
@@ -136,11 +138,12 @@ public class FontLoader extends SWFTagTypesImpl {
     }
 
     protected class VectorImpl implements SWFVectors {
-        protected int[] codes;
 
-        protected int[] advances;
+        protected final int[] codes;
 
-        protected Rect[] bounds;
+        protected final int[] advances;
+
+        protected final Rect[] bounds;
 
         protected int i;
 
@@ -150,7 +153,7 @@ public class FontLoader extends SWFTagTypesImpl {
 
         protected int curry;
 
-        protected double twips = SWFConstants.TWIPS;
+        protected final double twips = SWFConstants.TWIPS;
 
         protected VectorImpl(int[] codes, int[] advances, Rect[] bounds) {
             this.codes = codes;
@@ -162,7 +165,7 @@ public class FontLoader extends SWFTagTypesImpl {
         }
 
         public void done() {
-            //System.err.println( "------------" );
+            // System.err.println( "------------" );
             double advance = (advances == null) ? 0.0 : (advances[i] / twips);
             int code = codes[i];
 
@@ -191,7 +194,7 @@ public class FontLoader extends SWFTagTypesImpl {
 
             shape.line(currx / twips, curry / twips);
 
-//System.err.println( "L: " + dx + " " + dy + "     " + currx + " " + curry );            
+// System.err.println( "L: " + dx + " " + dy + "     " + currx + " " + curry );            
         }
 
         public void curve(int cx, int cy, int dx, int dy) {
@@ -205,7 +208,7 @@ public class FontLoader extends SWFTagTypesImpl {
 
             shape.curve(dx / twips, dy / twips, cx / twips, cy / twips);
 
-//System.err.println( "C: " + cx + " " + cy + " " + dx + " " + dy +
+// System.err.println( "C: " + cx + " " + cy + " " + dx + " " + dy +
 //                    "     " + (cx/twips) + " " + (cy/twips) + 
 //                    " " + (dx/twips) + " " + (dy/twips) );
         }
@@ -216,7 +219,7 @@ public class FontLoader extends SWFTagTypesImpl {
 
             shape.move(x / twips, y / twips);
 
-//System.err.println( "M: " + x + " " + y + "     " + (x/twips) + " " + (y/twips) );
+// System.err.println( "M: " + x + " " + y + "     " + (x/twips) + " " + (y/twips) );
         }
     }
 }

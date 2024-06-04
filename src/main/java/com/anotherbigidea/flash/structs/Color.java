@@ -44,6 +44,7 @@ import com.anotherbigidea.io.OutStream;
  * An RGB Color without alpha
  */
 public class Color {
+
     protected int red;
     protected int green;
     protected int blue;
@@ -100,7 +101,7 @@ public class Color {
 
     public void writeWithAlpha(OutStream out) throws IOException {
         writeRGB(out);
-        out.writeUI8(0xff); //fully opaque alpha
+        out.writeUI8(0xff); // fully opaque alpha
     }
 
     public String toString() {

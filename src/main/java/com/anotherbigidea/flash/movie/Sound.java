@@ -43,12 +43,13 @@ import com.anotherbigidea.flash.interfaces.SWFTagTypes;
  * A Sound Symbol
  */
 public class Sound extends Symbol {
-    public int format;
-    public int frequency;
-    public boolean is16bit;
-    public boolean isStereo;
-    public int sampleCount;
-    public byte[] soundData;
+
+    public final int format;
+    public final int frequency;
+    public final boolean is16bit;
+    public final boolean isStereo;
+    public final int sampleCount;
+    public final byte[] soundData;
 
     public Sound(int format, int frequency, boolean is16bit, boolean isStereo, int sampleCount, byte[] soundData) {
         this.format = format;

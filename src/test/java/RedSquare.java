@@ -15,6 +15,7 @@ import com.anotherbigidea.flash.structs.Color;
  * square.
  */
 public class RedSquare {
+
     /**
      * First arg is output filename
      */

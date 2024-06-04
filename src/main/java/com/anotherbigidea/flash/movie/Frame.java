@@ -50,9 +50,10 @@ import com.anotherbigidea.flash.structs.SoundInfo;
  * A Movie or Movie Clip frame
  */
 public class Frame {
+
     protected int frameNumber;
     protected String label;
-    protected List<Placement> placements = new ArrayList<Placement>();
+    protected final List<Placement> placements = new ArrayList<>();
     protected boolean stop;
     protected TimeLine timeline;
     protected Actions actions;
@@ -61,7 +62,7 @@ public class Frame {
     protected Sound soundToStart;
     protected int customTag = -1;
     protected byte[] customTagData;
-    protected boolean mAnchor; //true for an anchor frame (Flash MX+)
+    protected boolean mAnchor; // true for an anchor frame (Flash MX+)
 
     protected Frame(int number, TimeLine timeline) {
         frameNumber = number;
@@ -107,23 +108,13 @@ public class Frame {
         this.soundToStart = soundToStart;
 
         int freq = soundToStart.getFrequency();
-        switch (freq) {
-        case SWFConstants.SOUND_FREQ_5_5KHZ:
-            freq = 5500;
-            break;
-        case SWFConstants.SOUND_FREQ_11KHZ:
-            freq = 11000;
-            break;
-        case SWFConstants.SOUND_FREQ_22KHZ:
-            freq = 22000;
-            break;
-        case SWFConstants.SOUND_FREQ_44KHZ:
-            freq = 44000;
-            break;
-        default:
-            freq = 22000;
-            break;
-        }
+        freq = switch (freq) {
+            case SWFConstants.SOUND_FREQ_5_5KHZ -> 5500;
+            case SWFConstants.SOUND_FREQ_11KHZ -> 11000;
+            case SWFConstants.SOUND_FREQ_22KHZ -> 22000;
+            case SWFConstants.SOUND_FREQ_44KHZ -> 44000;
+            default -> 22000;
+        };
 
         int samples = soundToStart.getSampleCount();
         int length = samples / freq;
@@ -170,6 +161,7 @@ public class Frame {
 
     /**
      * Get the frame label
+     *
      * @return null if the frame has no label
      */
     public String getLabel() {
@@ -213,12 +205,12 @@ public class Frame {
     /**
      * Place a symbol at the next available depth with the given properties.
      *
-     * @param matrix may be null to place the symbol at (0,0)
-     * @param cxform may be null if no color transform is required
-     * @param ratio  only for a MorphShape - the morph ratio from 0 to 65535,
-     *               should be -1 for a non-MorphShape
+     * @param matrix    may be null to place the symbol at (0,0)
+     * @param cxform    may be null if no color transform is required
+     * @param ratio     only for a MorphShape - the morph ratio from 0 to 65535,
+     *                  should be -1 for a non-MorphShape
      * @param clipDepth the top depth that will be clipped by the symbol, should
-     *               be -1 if this is not a clipping symbol
+     *                  be -1 if this is not a clipping symbol
      */
     public Instance placeSymbol(Symbol symbol, Transform matrix, AlphaTransform cxform, int ratio, int clipDepth) {
         int depth = timeline.getAvailableDepth();
@@ -238,12 +230,12 @@ public class Frame {
     /**
      * Replace the symbol at the given depth with the new symbol
      *
-     * @param matrix may be null to place the symbol at (0,0)
-     * @param cxform may be null if no color transform is required
-     * @param ratio  only for a MorphShape - the morph ratio from 0 to 65535,
-     *               should be -1 for a non-MorphShape
+     * @param matrix    may be null to place the symbol at (0,0)
+     * @param cxform    may be null if no color transform is required
+     * @param ratio     only for a MorphShape - the morph ratio from 0 to 65535,
+     *                  should be -1 for a non-MorphShape
      * @param clipDepth the top depth that will be clipped by the symbol, should
-     *               be -1 if this is not a clipping symbol
+     *                  be -1 if this is not a clipping symbol
      */
     public Instance replaceSymbol(Symbol symbol, int depth, Transform matrix, AlphaTransform cxform, int ratio, int clipDepth) {
         Instance inst = new Instance(symbol, depth);
@@ -270,11 +262,11 @@ public class Frame {
     /**
      * Place a Movie Clip at the next available depth with the given properties.
      *
-     * @param matrix may be null to place the symbol at (0,0)
-     * @param cxform may be null if no color transform is required
-     * @param name   the instance name of a MovieClip - should be null if this is
-     *               not a MovieClip
-     * @param clipAction an array of Actions (with clipAction conditions)
+     * @param matrix      may be null to place the symbol at (0,0)
+     * @param cxform      may be null if no color transform is required
+     * @param name        the instance name of a MovieClip - should be null if this is
+     *                    not a MovieClip
+     * @param clipActions an array of Actions (with clipAction conditions)
      */
     public Instance placeMovieClip(Symbol symbol, Transform matrix, AlphaTransform cxform, String name, Actions[] clipActions) {
         int depth = timeline.getAvailableDepth();
@@ -294,11 +286,11 @@ public class Frame {
     /**
      * Replace the Symbol at the given depth with the new MovieClip
      *
-     * @param matrix may be null to place the symbol at (0,0)
-     * @param cxform may be null if no color transform is required
-     * @param name   the instance name of a MovieClip - should be null if this is
-     *               not a MovieClip
-     * @param clipAction an array of Actions (with clipAction conditions)
+     * @param matrix      may be null to place the symbol at (0,0)
+     * @param cxform      may be null if no color transform is required
+     * @param name        the instance name of a MovieClip - should be null if this is
+     *                    not a MovieClip
+     * @param clipActions an array of Actions (with clipAction conditions)
      */
     public Instance replaceMovieClip(Symbol symbol, int depth, Transform matrix, AlphaTransform cxform, String name, Actions[] clipActions) {
         Instance inst = new Instance(symbol, depth);

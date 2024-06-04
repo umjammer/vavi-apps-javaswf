@@ -70,7 +70,8 @@ import com.anotherbigidea.io.OutStream;
  * to a SWFTags interface
  */
 public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature {
-    protected SWFTags mTags;
+
+    protected final SWFTags mTags;
     protected OutStream out;
     protected ByteArrayOutputStream bytes;
     protected int tagType;
@@ -151,7 +152,7 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature {
         this.version = version;
         mTags.header(version, -1, twipsWidth, twipsHeight, frameRate, frameCount);
 
-        //set encoding to Ascii if pre-MX
+        // set encoding to Ascii if pre-MX
         if (version < SWFConstants.FLASH_MX_VERSION) {
             mStringEncoding = SWFConstants.STRING_ENCODING_PRE_MX;
         }
@@ -251,7 +252,7 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature {
         out.writeUI16(averageSampleCount);
 
         if (streamFormat == SWFConstants.SOUND_FORMAT_MP3) {
-            out.writeUI16(0); //unknown
+            out.writeUI16(0); // unknown
         }
 
         completeTag();
@@ -457,21 +458,21 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature {
             out.writeUI16(clipActionFlags);
 
             return new ActionWriter(this, version) {
-                    public void start(int conditions) throws IOException {
-                        super.start(conditions);
-                        tagWriter.out.writeUI16(conditions);
-                    }
+                public void start(int conditions) throws IOException {
+                    super.start(conditions);
+                    tagWriter.out.writeUI16(conditions);
+                }
 
-                    protected void writeBytes(byte[] bytes) throws IOException {
-                        tagWriter.out.writeUI32(bytes.length);
-                        super.writeBytes(bytes);
-                    }
+                protected void writeBytes(byte[] bytes) throws IOException {
+                    tagWriter.out.writeUI32(bytes.length);
+                    super.writeBytes(bytes);
+                }
 
-                    public void done() throws IOException {
-                        tagWriter.out.writeUI16(0);
-                        super.done();
-                    }
-                };
+                public void done() throws IOException {
+                    tagWriter.out.writeUI16(0);
+                    super.done();
+                }
+            };
         }
 
         completeTag();
@@ -531,7 +532,7 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature {
     public SWFTagTypes tagDefineSprite(int id) throws IOException {
         startTag(TAG_DEFINESPRITE, id, true);
 
-        out.writeUI16(0); //framecount - to be filled in later
+        out.writeUI16(0); // framecount - to be filled in later
 
         TagWriter writer = new TagWriter(new SpriteTags());
         writer.version = version;
@@ -586,11 +587,11 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature {
 
         boolean wide = (flags & FONT_WIDECHARS) != 0;
 
-        for (int i = 0; i < codes.length; i++) {
+        for (int code : codes) {
             if (wide) {
-                out.writeUI16(codes[i]);
+                out.writeUI16(code);
             } else {
-                out.writeUI8(codes[i]);
+                out.writeUI8(code);
             }
         }
 
@@ -608,12 +609,12 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature {
         out.writeUI8(chars.length);
         out.write(chars);
 
-        flags |= SWFConstants.FONT_WIDECHARS; //always wide
+        flags |= SWFConstants.FONT_WIDECHARS; // always wide
         out.writeUI8(flags);
         out.writeUI8(languageCode);
 
-        for (int i = 0; i < codes.length; i++) {
-            out.writeUI16(codes[i]);
+        for (int code : codes) {
+            out.writeUI16(code);
         }
 
         completeTag();
@@ -626,7 +627,7 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature {
         startTag(TAG_DEFINEFONT2, id, true);
 
         out.writeUI8(flags);
-        out.writeUI8(0); //reserved flags
+        out.writeUI8(0); // reserved flags
 
         byte[] nameBytes = name.getBytes();
         out.writeUI8(nameBytes.length);
@@ -693,7 +694,7 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature {
         startTag(TAG_DEFINEBUTTON, id, true);
 
         ButtonRecord.write(out, buttonRecords);
-System.err.println("BUTTON");
+        System.err.println("BUTTON");
         return new ActionWriter(this, version);
     }
 
@@ -727,7 +728,7 @@ System.err.println("BUTTON");
         out.writeUI16(count);
 
         for (int i = 0; i < count; i++) {
-            //System.err.println( "Exporting " + ids[i] + " as " + names[i] );
+            // System.err.println( "Exporting " + ids[i] + " as " + names[i] );
             out.writeUI16(ids[i]);
             out.writeString(names[i], mStringEncoding);
         }
@@ -747,7 +748,7 @@ System.err.println("BUTTON");
         out.writeUI16(count);
 
         for (int i = 0; i < count; i++) {
-            //System.err.println( "Importing " + names[i] + " as " + ids[i] + " from " + movieName );
+            // System.err.println( "Importing " + names[i] + " as " + ids[i] + " from " + movieName );
             out.writeUI16(ids[i]);
             out.writeString(names[i], mStringEncoding);
         }
@@ -795,16 +796,16 @@ System.err.println("BUTTON");
         out.writeUI16(height);
 
         switch (format) {
-        case BITMAP_FORMAT_8_BIT:
-            out.writeUI8(colors.length - 1);
-            break;
-        case BITMAP_FORMAT_16_BIT:
-            out.writeUI16(colors.length - 1);
-            break;
-        case BITMAP_FORMAT_32_BIT:
-            break;
-        default:
-            throw new IOException("unknown bitmap format: " + format);
+            case BITMAP_FORMAT_8_BIT:
+                out.writeUI8(colors.length - 1);
+                break;
+            case BITMAP_FORMAT_16_BIT:
+                out.writeUI16(colors.length - 1);
+                break;
+            case BITMAP_FORMAT_32_BIT:
+                break;
+            default:
+                throw new IOException("unknown bitmap format: " + format);
         }
 
         // zip up the colors and the bitmap data
@@ -812,11 +813,11 @@ System.err.println("BUTTON");
         OutStream zipOut = new OutStream(deflater);
 
         if ((format == BITMAP_FORMAT_8_BIT) || (format == BITMAP_FORMAT_16_BIT)) {
-            for (int i = 0; i < colors.length; i++) {
+            for (Color color : colors) {
                 if (hasAlpha) {
-                    colors[i].writeWithAlpha(zipOut);
+                    color.writeWithAlpha(zipOut);
                 } else {
-                    colors[i].writeRGB(zipOut);
+                    color.writeRGB(zipOut);
                 }
             }
         }
@@ -862,10 +863,11 @@ System.err.println("BUTTON");
 
     // ---------------------------------------------------------------------
     protected static class ButtonActionWriter extends ActionWriter {
-        //offsets is a list of int[] { offsetPtr, offsetValue }
-        protected List<int[]> offsets = new ArrayList<int[]>();
+
+        // offsets is a list of int[] { offsetPtr, offsetValue }
+        protected final List<int[]> offsets = new ArrayList<>();
         protected int lastPtr;
-        protected OutStream tagout;
+        protected final OutStream tagout;
 
         public ButtonActionWriter(TagWriter tagWriter, int flashVersion, List<? extends ButtonRecord> buttonRecs) throws IOException {
             super(tagWriter, flashVersion);
@@ -875,7 +877,7 @@ System.err.println("BUTTON");
             // save ptr to first offset location
             lastPtr = tagout.getCount();
 
-            tagout.writeUI16(0); //will be calculated later
+            tagout.writeUI16(0); // will be calculated later
 
             // write the button records
             ButtonRecord2.write(tagout, buttonRecs);
@@ -888,17 +890,17 @@ System.err.println("BUTTON");
             int ptr = tagout.getCount();
             int offset = ptr - lastPtr;
 
-            offsets.add(new int[] { lastPtr, offset });
+            offsets.add(new int[] {lastPtr, offset});
 
             lastPtr = ptr;
 
-            tagout.writeUI16(0); //will be calculated later
+            tagout.writeUI16(0); // will be calculated later
             tagout.writeUI16(conditions);
         }
 
         public void done() throws IOException {
             // save last offset
-            offsets.add(new int[] { lastPtr, 0 });
+            offsets.add(new int[] {lastPtr, 0});
 
             tagout.flush();
             byte[] contents = tagWriter.bytes.toByteArray();
@@ -928,14 +930,15 @@ System.err.println("BUTTON");
     }
 
     protected class SWFTextImpl implements SWFText {
-        protected boolean hasAlpha;
+
+        protected final boolean hasAlpha;
         protected int maxGlyphIndex = 0;
         protected int maxAdvance = 0;
 
         // Text records are stored as
         // Object[] { int[]{ font, height }, int[]{ x }, int[]{ y }, Color }, or
         // Object[] { int[] glyphs, int[] advances }
-        protected List<Object[]> recs = new ArrayList<Object[]>();
+        protected final List<Object[]> recs = new ArrayList<>();
         protected Object[] currentStyleRecord = null;
 
         public SWFTextImpl(boolean hasAlpha) {
@@ -955,7 +958,7 @@ System.err.println("BUTTON");
          * SWFText interface
          */
         public void font(int fontId, int textHeight) throws IOException {
-            getCurrentStyle()[0] = new int[] { fontId, textHeight };
+            getCurrentStyle()[0] = new int[] {fontId, textHeight};
         }
 
         /**
@@ -969,14 +972,14 @@ System.err.println("BUTTON");
          * SWFText interface
          */
         public void setX(int x) throws IOException {
-            getCurrentStyle()[1] = new int[] { x };
+            getCurrentStyle()[1] = new int[] {x};
         }
 
         /**
          * SWFText interface
          */
         public void setY(int y) throws IOException {
-            getCurrentStyle()[2] = new int[] { y };
+            getCurrentStyle()[2] = new int[] {y};
         }
 
         /**
@@ -984,7 +987,7 @@ System.err.println("BUTTON");
          */
         public void text(int[] glyphIndices, int[] glyphAdvances) throws IOException {
             currentStyleRecord = null;
-            recs.add(new Object[] { glyphIndices, glyphAdvances });
+            recs.add(new Object[] {glyphIndices, glyphAdvances});
 
             for (int i = 0; i < glyphIndices.length; i++) {
                 if (glyphIndices[i] > maxGlyphIndex) {
@@ -1008,7 +1011,7 @@ System.err.println("BUTTON");
 
             for (Object[] rec : recs) {
 
-                if (rec.length == 4) { //style record
+                if (rec.length == 4) { // style record
 
                     boolean hasFont = rec[0] != null;
                     boolean hasX = rec[1] != null;
@@ -1032,7 +1035,7 @@ System.err.println("BUTTON");
                     out.writeUI8(flags);
 
                     if (hasFont) {
-                        out.writeUI16(((int[]) rec[0])[0]); //fontId
+                        out.writeUI16(((int[]) rec[0])[0]); // fontId
                     }
 
                     if (hasColor) {
@@ -1050,17 +1053,17 @@ System.err.println("BUTTON");
                         out.writeSI16((short) xOffset);
                     }
 
-                    if (hasY) //x & y are in reverse order from flag bits
-                     {
+                    if (hasY) // x & y are in reverse order from flag bits
+                    {
                         int yOffset = ((int[]) rec[2])[0];
                         out.writeSI16((short) yOffset);
                     }
 
                     if (hasFont) {
-                        out.writeUI16(((int[]) rec[0])[1]); //textHeight
+                        out.writeUI16(((int[]) rec[0])[1]); // textHeight
                     }
-                } else //glyph record
-                 {
+                } else // glyph record
+                {
                     int[] glyphs = (int[]) rec[0];
                     int[] advances = (int[]) rec[1];
 
@@ -1073,13 +1076,14 @@ System.err.println("BUTTON");
                 }
             }
 
-            out.writeUI8(0); //record terminator
+            out.writeUI8(0); // record terminator
 
             completeTag();
         }
     }
 
     protected class SpriteTags implements SWFTags {
+
         protected int frameCount = 0;
 
         public void tag(int tagType2, boolean longTag2, byte[] contents) throws IOException {
@@ -1130,22 +1134,23 @@ System.err.println("BUTTON");
      * Implementation of the SWFShape interface
      */
     protected static class SWFShapeImpl implements SWFShape {
-        protected boolean hasAlpha;
-        protected boolean hasStyle;
+
+        protected final boolean hasAlpha;
+        protected final boolean hasStyle;
         protected boolean outstandingChanges = true;
         protected boolean initialStyles = false;
         protected int fill0Index = -1;
         protected int fill1Index = -1;
         protected int lineIndex = -1;
         protected int[] moveXY;
-        protected List<LineStyle> lineStyles = new ArrayList<LineStyle>();
-        protected List<FillStyle> fillStyles = new ArrayList<FillStyle>();
+        protected final List<LineStyle> lineStyles = new ArrayList<>();
+        protected final List<FillStyle> fillStyles = new ArrayList<>();
         protected int fillBits;
         protected int lineBits;
         protected int glyphCount = 0;
         protected List<byte[]> glyphByteArrays;
         protected OutStream out;
-        protected TagWriter writer;
+        protected final TagWriter writer;
         protected ByteArrayOutputStream bout;
 
         /**
@@ -1166,7 +1171,7 @@ System.err.println("BUTTON");
             this.glyphCount = glyphCount;
             bout = new ByteArrayOutputStream();
             out = new OutStream(bout);
-            glyphByteArrays = new ArrayList<byte[]>();
+            glyphByteArrays = new ArrayList<>();
 
             fill1Index = 1;
             lineIndex = 0;
@@ -1178,10 +1183,10 @@ System.err.println("BUTTON");
                 initialStyles = true;
             }
 
-            out.writeUBits(6, 0); //end record            
+            out.writeUBits(6, 0); // end record
             out.flushBits();
 
-            if ((bout != null) && (glyphCount > 0)) { //capturing bytes internally
+            if ((bout != null) && (glyphCount > 0)) { // capturing bytes internally
                 byte[] glyphBytes = bout.toByteArray();
                 glyphByteArrays.add(glyphBytes);
             }
@@ -1274,25 +1279,21 @@ System.err.println("BUTTON");
                 numBits = 2;
             }
 
-            out.writeUBits(2, 3); //11b = line record
+            out.writeUBits(2, 3); // 11b = line record
 
             out.writeUBits(4, numBits - 2);
 
-            if ((deltaX != 0) && (deltaY != 0)) //general line
-             {
+            if ((deltaX != 0) && (deltaY != 0)) { // general line
                 out.writeUBits(1, 1);
                 out.writeSBits(numBits, deltaX);
                 out.writeSBits(numBits, deltaY);
-            } else //horz or vert line
-             {
+            } else { // horz or vert line
                 out.writeUBits(1, 0);
 
-                if (deltaY != 0) //vert line
-                 {
+                if (deltaY != 0) { // vert line
                     out.writeUBits(1, 1);
                     out.writeSBits(numBits, deltaY);
-                } else ///horz line
-                 {
+                } else { // horz line
                     out.writeUBits(1, 0);
                     out.writeSBits(numBits, deltaX);
                 }
@@ -1323,7 +1324,7 @@ System.err.println("BUTTON");
                 numBits = 2;
             }
 
-            out.writeUBits(2, 2); //10b = curve record
+            out.writeUBits(2, 2); // 10b = curve record
 
             out.writeUBits(4, numBits - 2);
 
@@ -1334,7 +1335,7 @@ System.err.println("BUTTON");
         }
 
         public void move(int x, int y) throws IOException {
-            moveXY = new int[] { x, y };
+            moveXY = new int[] {x, y};
             outstandingChanges = true;
         }
 
@@ -1369,7 +1370,7 @@ System.err.println("BUTTON");
         }
 
         protected void writeChangeRecord() throws IOException {
-            boolean hasNewStyles = hasStyle && ((fillStyles.size() > 0) || (lineStyles.size() > 0));
+            boolean hasNewStyles = hasStyle && (!fillStyles.isEmpty() || !lineStyles.isEmpty());
 
             boolean hasMoveTo = (moveXY != null);
             boolean hasFillStyle0 = fill0Index >= 0;
@@ -1381,8 +1382,8 @@ System.err.println("BUTTON");
             }
 
             if (hasNewStyles) {
-                out.writeUBits(1, 0); //non-edge record
-                out.writeUBits(1, 1); //defines new styles
+                out.writeUBits(1, 0); // non-edge record
+                out.writeUBits(1, 1); // defines new styles
                 out.writeUBits(1, 1);
                 out.writeUBits(1, 1);
                 out.writeUBits(1, 1);
@@ -1418,7 +1419,7 @@ System.err.println("BUTTON");
             }
 
             if (hasFillStyle0 || hasFillStyle1 || hasLineStyle || hasMoveTo) {
-                out.writeUBits(1, 0); //non-edge record
+                out.writeUBits(1, 0); // non-edge record
                 out.writeUBits(1, 0);
                 out.writeUBits(1, hasLineStyle ? 1 : 0);
                 out.writeUBits(1, hasFillStyle1 ? 1 : 0);
@@ -1483,7 +1484,8 @@ System.err.println("BUTTON");
     }
 
     protected static class MorphShapeImpl extends TagWriter.SWFShapeImpl {
-        protected int edgeOffsetBase;
+
+        protected final int edgeOffsetBase;
         protected int edgeOffsetTarget;
         protected int shapeCount;
         protected int fillBitSize;
@@ -1502,7 +1504,7 @@ System.err.println("BUTTON");
 
             edgeOffsetBase = this.out.getCount();
 
-            this.out.writeUI32(0); //edge offset - to be filled in later
+            this.out.writeUI32(0); // edge offset - to be filled in later
         }
 
         public void done() throws IOException {
@@ -1511,7 +1513,7 @@ System.err.println("BUTTON");
                 initialStyles = true;
             }
 
-            this.out.writeUBits(6, 0); //end record            
+            this.out.writeUBits(6, 0); // end record
             this.out.flushBits();
 
             if (shapeCount == 2) {
@@ -1565,7 +1567,7 @@ System.err.println("BUTTON");
                 }
 
                 for (Iterator<FillStyle> iterator = fillStyles.iterator();
-                     iterator.hasNext();) {
+                     iterator.hasNext(); ) {
                     FillStyle startStyle = iterator.next();
                     FillStyle endStyle = iterator.next();
 
@@ -1580,7 +1582,7 @@ System.err.println("BUTTON");
                 }
 
                 for (Iterator<LineStyle> iterator = lineStyles.iterator();
-                     iterator.hasNext();) {
+                     iterator.hasNext(); ) {
                     LineStyle startStyle = iterator.next();
                     LineStyle endStyle = iterator.next();
 
@@ -1603,7 +1605,7 @@ System.err.println("BUTTON");
             boolean hasLineStyle = lineIndex >= 0;
 
             if (hasFillStyle0 || hasFillStyle1 || hasLineStyle || hasMoveTo) {
-                this.out.writeUBits(1, 0); //non-edge record
+                this.out.writeUBits(1, 0); // non-edge record
                 this.out.writeUBits(1, 0);
                 this.out.writeUBits(1, hasLineStyle ? 1 : 0);
                 this.out.writeUBits(1, hasFillStyle1 ? 1 : 0);
@@ -1645,16 +1647,17 @@ System.err.println("BUTTON");
     }
 
     protected static class Font2ShapeImpl extends TagWriter.SWFShapeImpl {
-        protected int flags;
-        protected int ascent;
-        protected int descent;
-        protected int leading;
-        protected int[] codes;
-        protected int[] advances;
-        protected Rect[] bounds;
-        protected int[] kernCodes1;
-        protected int[] kernCodes2;
-        protected int[] kernAdjustments;
+
+        protected final int flags;
+        protected final int ascent;
+        protected final int descent;
+        protected final int leading;
+        protected final int[] codes;
+        protected final int[] advances;
+        protected final Rect[] bounds;
+        protected final int[] kernCodes1;
+        protected final int[] kernCodes2;
+        protected final int[] kernAdjustments;
 
         public Font2ShapeImpl(TagWriter writer, int flags, int glyphCount, int ascent, int descent, int leading, int[] codes, int[] advances, Rect[] bounds, int[] kernCodes1, int[] kernCodes2, int[] kernAdjustments) {
             super(writer, glyphCount);

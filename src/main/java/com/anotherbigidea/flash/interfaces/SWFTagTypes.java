@@ -51,175 +51,178 @@ import com.anotherbigidea.flash.structs.SoundInfo;
  * Interface for passing SWF tag types.
  */
 public interface SWFTagTypes extends SWFSpriteTagTypes {
+
     /**
-     * @param format one of the SWFConstants.SOUND_FORMAT_* constants
+     * @param format    one of the SWFConstants.SOUND_FORMAT_* constants
      * @param frequency one of the SWFConstants.SOUND_FREQ_* constants
      * @param soundData format-dependent sound data
      */
-    public void tagDefineSound(int id, int format, int frequency, boolean bits16, boolean stereo, int sampleCount, byte[] soundData) throws IOException;
+    void tagDefineSound(int id, int format, int frequency, boolean bits16, boolean stereo, int sampleCount, byte[] soundData) throws IOException;
 
     /**
      * Define the sound for a button
      */
-    public void tagDefineButtonSound(int buttonId, int rollOverSoundId, SoundInfo rollOverSoundInfo, int rollOutSoundId, SoundInfo rollOutSoundInfo, int pressSoundId, SoundInfo pressSoundInfo, int releaseSoundId, SoundInfo releaseSoundInfo) throws IOException;
+    void tagDefineButtonSound(int buttonId, int rollOverSoundId, SoundInfo rollOverSoundInfo, int rollOutSoundId, SoundInfo rollOutSoundInfo, int pressSoundId, SoundInfo pressSoundInfo, int releaseSoundId, SoundInfo releaseSoundInfo) throws IOException;
 
     /**
      * @return SWFShape to receive shape info - or null to skip the data
      */
-    public SWFShape tagDefineShape(int id, Rect outline) throws IOException;
+    SWFShape tagDefineShape(int id, Rect outline) throws IOException;
 
     /**
      * @return SWFShape to receive shape info - or null to skip the data
      */
-    public SWFShape tagDefineShape2(int id, Rect outline) throws IOException;
+    SWFShape tagDefineShape2(int id, Rect outline) throws IOException;
 
     /**
      * @return SWFShape to receive shape info - or null to skip the data
      */
-    public SWFShape tagDefineShape3(int id, Rect outline) throws IOException;
+    SWFShape tagDefineShape3(int id, Rect outline) throws IOException;
 
     /**
      * @param buttonRecords contains ButtonRecord objects
      * @return SWFActions object (may be null) to receive button actions - there is
-     *         only one action array (with no conditions).
+     * only one action array (with no conditions).
      * @see com.anotherbigidea.flash.structs.ButtonRecord
      */
-    public SWFActions tagDefineButton(int id, List<? extends ButtonRecord> buttonRecords) throws IOException;
+    SWFActions tagDefineButton(int id, List<? extends ButtonRecord> buttonRecords) throws IOException;
 
-    public void tagButtonCXForm(int buttonId, ColorTransform transform) throws IOException;
+    void tagButtonCXForm(int buttonId, ColorTransform transform) throws IOException;
 
     /**
      * @param buttonRecords contains ButtonRecord2 objects
      * @return SWFActions object (may be null) to receive button actions - there may
-     *         be multiple action arrays - each one is conditional, using the
-     *         BUTTON2_* condition flags defined in SWFConstants.java
+     * be multiple action arrays - each one is conditional, using the
+     * BUTTON2_* condition flags defined in SWFConstants.java
      * @see com.anotherbigidea.flash.structs.ButtonRecord2
      */
-    public SWFActions tagDefineButton2(int id, boolean trackAsMenu, List<? extends ButtonRecord> buttonRecords) throws IOException;
+    SWFActions tagDefineButton2(int id, boolean trackAsMenu, List<? extends ButtonRecord> buttonRecords) throws IOException;
 
-    public void tagSetBackgroundColor(Color color) throws IOException;
+    void tagSetBackgroundColor(Color color) throws IOException;
 
     /**
      * The SWFVectors object returned will be called numGlyphs times to
      * pass the vector information for each glyph (each glyph is terminated
      * by calling SWFVectors.done() )
      */
-    public SWFVectors tagDefineFont(int id, int numGlyphs) throws IOException;
+    SWFVectors tagDefineFont(int id, int numGlyphs) throws IOException;
 
     /**
      * @return SWFText object to receive the text style and glyph information -
-     *                 this may be null if the info is not required
+     * this may be null if the info is not required
      */
-    public SWFText tagDefineText(int id, Rect bounds, Matrix matrix) throws IOException;
+    SWFText tagDefineText(int id, Rect bounds, Matrix matrix) throws IOException;
 
     /**
      * Allows alpha colors
+     *
      * @return SWFText object to receive the text style and glyph information -
-     *                 this may be null if the info is not required
+     * this may be null if the info is not required
      */
-    public SWFText tagDefineText2(int id, Rect bounds, Matrix matrix) throws IOException;
+    SWFText tagDefineText2(int id, Rect bounds, Matrix matrix) throws IOException;
 
     /**
      * @param flags see FONT_* constants in SWFConstants.java
      */
-    public void tagDefineFontInfo(int fontId, String fontName, int flags, int[] codes) throws IOException;
+    void tagDefineFontInfo(int fontId, String fontName, int flags, int[] codes) throws IOException;
 
     /**
-     * @param flags see FONT_* constants in SWFConstants.java
+     * @param flags        see FONT_* constants in SWFConstants.java
      * @param languageCode @see com.anotherbigidea.flash.SWFConstants#LANGUAGE_CODE_NONE etc.
      */
-    public void tagDefineFontInfo2(int fontId, String fontName, int flags, int[] codes, int languageCode) throws IOException;
+    void tagDefineFontInfo2(int fontId, String fontName, int flags, int[] codes, int languageCode) throws IOException;
 
     /**
      * @param data must contain the header data - use the InputStream version
      *             when using an external JPEG
      */
-    public void tagDefineBitsJPEG2(int id, byte[] data) throws IOException;
+    void tagDefineBitsJPEG2(int id, byte[] data) throws IOException;
 
     /**
      * @param jpegImage must be a baseline JPEG (not a progressive JPEG)
      */
-    public void tagDefineBitsJPEG2(int id, InputStream jpegImage) throws IOException;
+    void tagDefineBitsJPEG2(int id, InputStream jpegImage) throws IOException;
 
     /**
      * JPEG image data only - header/encoding data is in tagJPEGTables tag
      */
-    public void tagDefineBits(int id, byte[] imageData) throws IOException;
+    void tagDefineBits(int id, byte[] imageData) throws IOException;
 
     /**
      * Only one tag per SWF - holds common JPEG encoding data
      */
-    public void tagJPEGTables(byte[] jpegEncodingData) throws IOException;
+    void tagJPEGTables(byte[] jpegEncodingData) throws IOException;
 
     /**
      * JPEG image and encoding data with alpha channel bitmap
+     *
      * @param alphaData is zlib compressed
      */
-    public void tagDefineBitsJPEG3(int id, byte[] imageData, byte[] alphaData) throws IOException;
+    void tagDefineBitsJPEG3(int id, byte[] imageData, byte[] alphaData) throws IOException;
 
     /**
      * @param format one of the SWFConstants.BITMAP_FORMAT_n_BIT constants
      */
-    public void tagDefineBitsLossless(int id, int format, int width, int height, Color[] colors, byte[] imageData) throws IOException;
+    void tagDefineBitsLossless(int id, int format, int width, int height, Color[] colors, byte[] imageData) throws IOException;
 
     /**
      * @param format one of the SWFConstants.BITMAP_FORMAT_n_BIT constants
      */
-    public void tagDefineBitsLossless2(int id, int format, int width, int height, Color[] colors, byte[] imageData) throws IOException;
+    void tagDefineBitsLossless2(int id, int format, int width, int height, Color[] colors, byte[] imageData) throws IOException;
 
     /**
      * @param password may be null
      */
-    public void tagProtect(byte[] password) throws IOException;
+    void tagProtect(byte[] password) throws IOException;
 
     /**
      * @param flags see TEXTFIELD_* constants in SWFConstants.java
      */
-    public void tagDefineTextField(int fieldId, String fieldName, String initialText, Rect boundary, int flags, AlphaColor textColor, int alignment, int fontId, int fontSize, int charLimit, int leftMargin, int rightMargin, int indentation, int lineSpacing) throws IOException;
+    void tagDefineTextField(int fieldId, String fieldName, String initialText, Rect boundary, int flags, AlphaColor textColor, int alignment, int fontId, int fontSize, int charLimit, int leftMargin, int rightMargin, int indentation, int lineSpacing) throws IOException;
 
-    public void tagDefineQuickTimeMovie(int id, String filename) throws IOException;
+    void tagDefineQuickTimeMovie(int id, String filename) throws IOException;
 
-    public SWFTagTypes tagDefineSprite(int id) throws IOException;
+    SWFTagTypes tagDefineSprite(int id) throws IOException;
 
-    public SWFShape tagDefineMorphShape(int id, Rect startBounds, Rect endBounds) throws IOException;
+    SWFShape tagDefineMorphShape(int id, Rect startBounds, Rect endBounds) throws IOException;
 
-    public SWFVectors tagDefineFont2(int id, int flags, String name, int numGlyphs, int ascent, int descent, int leading, int[] codes, int[] advances, Rect[] bounds, int[] kernCodes1, int[] kernCodes2, int[] kernAdjustments) throws IOException;
+    SWFVectors tagDefineFont2(int id, int flags, String name, int numGlyphs, int ascent, int descent, int leading, int[] codes, int[] advances, Rect[] bounds, int[] kernCodes1, int[] kernCodes2, int[] kernAdjustments) throws IOException;
 
-    public void tagExport(String[] names, int[] ids) throws IOException;
+    void tagExport(String[] names, int[] ids) throws IOException;
 
-    public void tagImport(String movieName, String[] names, int[] ids) throws IOException;
+    void tagImport(String movieName, String[] names, int[] ids) throws IOException;
 
-    public void tagEnableDebug(byte[] password) throws IOException;
+    void tagEnableDebug(byte[] password) throws IOException;
 
-    public void tagEnableDebug2(byte[] password) throws IOException;
+    void tagEnableDebug2(byte[] password) throws IOException;
 
     /**
      * In files produced by Generator...
      */
-    public void tagSerialNumber(String serialNumber) throws IOException;
+    void tagSerialNumber(String serialNumber) throws IOException;
 
     /**
      * In Generator templates.  Data is not parsed.
      */
-    public void tagGenerator(byte[] data) throws IOException;
+    void tagGenerator(byte[] data) throws IOException;
 
     /**
      * In Generator templates.  Data is not parsed.
      */
-    public void tagGeneratorText(byte[] data) throws IOException;
+    void tagGeneratorText(byte[] data) throws IOException;
 
     /**
      * In Generator templates.  Data is not parsed.
      */
-    public void tagGeneratorCommand(byte[] data) throws IOException;
+    void tagGeneratorCommand(byte[] data) throws IOException;
 
     /**
      * In Generator templates.  Data is not parsed.
      */
-    public void tagNameCharacter(byte[] data) throws IOException;
+    void tagNameCharacter(byte[] data) throws IOException;
 
     /**
      * In Generator templates.  Data is not parsed.
      */
-    public void tagGeneratorFont(byte[] data) throws IOException;
+    void tagGeneratorFont(byte[] data) throws IOException;
 }

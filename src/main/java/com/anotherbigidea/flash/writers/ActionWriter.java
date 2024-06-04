@@ -53,12 +53,13 @@ import com.anotherbigidea.io.OutStream;
  * action bytes to an OutStream
  */
 public class ActionWriter implements SWFActions, SWFActionCodes {
-    protected TagWriter tagWriter;
+
+    protected final TagWriter tagWriter;
     protected OutStream out;
     protected ByteArrayOutputStream bout;
     protected int count;
-    protected int flashVersion;
-    protected String mStringEncoding;
+    protected final int flashVersion;
+    protected final String mStringEncoding;
     protected List<Object> pushValues;
     protected Map<String, int[]> labels;
     protected List<Object[]> jumps;
@@ -79,10 +80,10 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * @return the code count
      */
     protected int writeCode(int code) throws IOException {
-        if (pushValues.size() > 0) {
+        if (!pushValues.isEmpty()) {
             flushPushValues();
         }
-//System.err.println("code: " + code);
+// System.err.println("code: " + code);
         out.writeUI8(code);
         count++;
         return count;
@@ -92,11 +93,11 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * SWFActions interface
      */
     public void start(int conditions) throws IOException {
-        //ignore conditions
+        // ignore conditions
         count = 0;
         bout = new ByteArrayOutputStream();
         out = new OutStream(bout);
-        pushValues = new ArrayList<Object>();
+        pushValues = new ArrayList<>();
         labels = null;
         jumps = null;
         skips = null;
@@ -162,7 +163,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
     protected void fixupJumps(byte[] bytes) {
         for (Object[] obja : jumps) {
             String label = (String) obja[0];
-            int target = ((Integer) obja[1]).intValue();
+            int target = (Integer) obja[1];
 
             int[] labelInfo = labels.get(label);
 
@@ -171,8 +172,8 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
                 continue;
             }
 
-            int absolute = labelInfo[0]; //offset of the label            
-            int relative = absolute - (target + 2); //relative jump
+            int absolute = labelInfo[0]; // offset of the label            
+            int relative = absolute - (target + 2); // relative jump
 
             byte[] val = OutStream.sintTo2Bytes(relative);
             bytes[target] = val[0];
@@ -195,7 +196,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
                 continue;
             }
 
-            int labelIndex = labelInfo[1]; //index of the labelled action
+            int labelIndex = labelInfo[1]; // index of the labelled action
             int skip = labelIndex - skipIndex - 1;
 
             byte val = OutStream.uintToByte(skip);
@@ -207,7 +208,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * SWFActions interface
      */
     public void comment(String comment) throws IOException {
-        //ignore comments
+        // ignore comments
     }
 
     /**
@@ -238,16 +239,16 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * SWFActions interface
      */
     public void jumpLabel(String label) throws IOException {
-        if (pushValues.size() > 0) {
+        if (!pushValues.isEmpty()) {
             flushPushValues();
         }
 
         int offset = out.getCount();
 
         if (labels == null) {
-            labels = new HashMap<String, int[]>();
+            labels = new HashMap<>();
         }
-        labels.put(label, new int[] { offset, count + 1 });
+        labels.put(label, new int[] {offset, count + 1});
     }
 
     /**
@@ -334,13 +335,13 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
         out.writeUI16(2);
 
         int here = out.getCount();
-        out.writeUI16(0); //will be fixed up later
+        out.writeUI16(0); // will be fixed up later
 
         // save jump info for later fix-up logic
         if (jumps == null) {
-            jumps = new ArrayList<Object[]>();
+            jumps = new ArrayList<>();
         }
-        jumps.add(new Object[] { label, new Integer(here) });
+        jumps.add(new Object[] {label, here});
     }
 
     /**
@@ -366,13 +367,13 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
         out.writeUI16(frameNumber);
 
         int here = out.getCount();
-        out.writeUI8(0); //will be fixed up later
+        out.writeUI8(0); // will be fixed up later
 
         // save skip info for later fix-up logic
         if (skips == null) {
-            skips = new ArrayList<Object[]>();
+            skips = new ArrayList<>();
         }
-        skips.add(new Object[] { jumpLabel, new int[] { count, here } });
+        skips.add(new Object[] {jumpLabel, new int[] {count, here}});
     }
 
     /**
@@ -383,13 +384,13 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
         out.writeUI16(1);
 
         int here = out.getCount();
-        out.writeUI8(0); //will be fixed up later
+        out.writeUI8(0); // will be fixed up later
 
         // save skip info for later fix-up logic
         if (skips == null) {
-            skips = new ArrayList<Object[]>();
+            skips = new ArrayList<>();
         }
-        skips.add(new Object[] { jumpLabel, new int[] { count, here } });
+        skips.add(new Object[] {jumpLabel, new int[] {count, here}});
     }
 
     /**
@@ -551,7 +552,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      */
     public void call() throws IOException {
         writeCode(CALL);
-        out.writeUI16(0); //SWF File Format anomaly
+        out.writeUI16(0); // SWF File Format anomaly
     }
 
     /**
@@ -579,31 +580,32 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
 
 //        String sendVars_ = null;
         switch (sendVars) {
-        case GET_URL_SEND_VARS_GET:
-            flags = 1;
-            break;
-        case GET_URL_SEND_VARS_POST:
-            flags = 2;
-            break;
-        case GET_URL_SEND_VARS_NONE:default:
-            break;
+            case GET_URL_SEND_VARS_GET:
+                flags = 1;
+                break;
+            case GET_URL_SEND_VARS_POST:
+                flags = 2;
+                break;
+            case GET_URL_SEND_VARS_NONE:
+            default:
+                break;
         }
 
 //        String mode = null;
         switch (loadMode) {
-        case GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL:
-            break;
-        case GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE:
-            flags |= 0x40;
-            break;
-        case GET_URL_MODE_LOAD_VARS_INTO_LEVEL:
-            flags |= 0x80;
-            break;
-        case GET_URL_MODE_LOAD_VARS_INTO_SPRITE:
-            flags |= 0xC0;
-            break;
-        default:
-            break;
+            case GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL:
+                break;
+            case GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE:
+                flags |= 0x40;
+                break;
+            case GET_URL_MODE_LOAD_VARS_INTO_LEVEL:
+                flags |= 0x80;
+                break;
+            case GET_URL_MODE_LOAD_VARS_INTO_SPRITE:
+                flags |= 0xC0;
+                break;
+            default:
+                break;
         }
 
         out.writeUI8(flags);
@@ -699,8 +701,8 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
 
         bout.writeUI16(values.length);
 
-        for (int i = 0; i < values.length; i++) {
-            bout.writeString(values[i], mStringEncoding);
+        for (String value : values) {
+            bout.writeString(value, mStringEncoding);
         }
 
         bout.flush();
@@ -728,7 +730,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      */
     public void startFunction(String name, String[] paramNames) throws IOException {
         if (blockStack == null) {
-            blockStack = new Stack<int[]>();
+            blockStack = new Stack<>();
         }
 
         writeCode(DEFINE_FUNCTION);
@@ -739,18 +741,18 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
         bout.writeString(name, mStringEncoding);
         bout.writeUI16(paramNames.length);
 
-        for (int i = 0; i < paramNames.length; i++) {
-            bout.writeString(paramNames[i], mStringEncoding);
+        for (String paramName : paramNames) {
+            bout.writeString(paramName, mStringEncoding);
         }
 
-        bout.writeUI16(0); //code size - will be fixed up later
+        bout.writeUI16(0); // code size - will be fixed up later
 
         bout.flush();
         byte[] data = baout.toByteArray();
         out.writeUI16(data.length);
         out.write(data);
 
-        blockStack.push(new int[] { out.getCount(), 0 });
+        blockStack.push(new int[] {out.getCount(), 0});
     }
 
     /**
@@ -758,12 +760,12 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      */
     public void endBlock() throws IOException {
         if ((blockStack == null) || blockStack.isEmpty()) {
-            return; //nothing to do
+            return; // nothing to do
         }
         int[] blockInfo = blockStack.pop();
 
         if (blocks == null) {
-            blocks = new ArrayList<int[]>();
+            blocks = new ArrayList<>();
         }
 
         int offset = blockInfo[0];
@@ -865,13 +867,13 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
     public void startWith() throws IOException {
         writeCode(WITH);
         out.writeUI16(2);
-        out.writeUI16(0); //codeSize - will be fixed up later
+        out.writeUI16(0); // codeSize - will be fixed up later
 
         // push the block start info
         if (blockStack == null) {
-            blockStack = new Stack<int[]>();
+            blockStack = new Stack<>();
         }
-        blockStack.push(new int[] { out.getCount(), 0 });
+        blockStack.push(new int[] {out.getCount(), 0});
     }
 
     /**
@@ -1016,10 +1018,10 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
                 bout.writeString(value.toString(), mStringEncoding);
             } else if (value instanceof Boolean) {
                 bout.writeUI8(PUSHTYPE_BOOLEAN);
-                bout.writeUI8(((Boolean) value).booleanValue() ? 1 : 0);
+                bout.writeUI8((Boolean) value ? 1 : 0);
             } else if (value instanceof Integer) {
                 bout.writeUI8(PUSHTYPE_INTEGER);
-                bout.writeSI32(((Integer) value).intValue());
+                bout.writeSI32((Integer) value);
             } else if (value instanceof Short) {
                 bout.writeUI8(PUSHTYPE_LOOKUP);
                 bout.writeUI8(((Short) value).intValue());
@@ -1028,10 +1030,10 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
                 bout.writeUI8(((Byte) value).intValue());
             } else if (value instanceof Float) {
                 bout.writeUI8(PUSHTYPE_FLOAT);
-                bout.writeFloat(((Float) value).floatValue());
+                bout.writeFloat((Float) value);
             } else if (value instanceof Double) {
                 bout.writeUI8(PUSHTYPE_DOUBLE);
-                bout.writeDouble(((Double) value).doubleValue());
+                bout.writeDouble((Double) value);
             } else {
                 bout.writeUI8(PUSHTYPE_NULL);
             }
@@ -1059,7 +1061,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * SWFActions interface
      */
     public void push(float value) throws IOException {
-        pushValues.add(new Float(value));
+        pushValues.add(value);
         if (flashVersion < 5) {
             flushPushValues();
         }
@@ -1069,7 +1071,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * SWFActions interface
      */
     public void push(double value) throws IOException {
-        pushValues.add(new Double(value));
+        pushValues.add(value);
         if (flashVersion < 5) {
             flushPushValues();
         }
@@ -1089,7 +1091,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * SWFActions interface
      */
     public void pushRegister(int registerNumber) throws IOException {
-        pushValues.add(new Byte((byte) registerNumber));
+        pushValues.add((byte) registerNumber);
         if (flashVersion < 5) {
             flushPushValues();
         }
@@ -1099,7 +1101,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * SWFActions interface
      */
     public void push(boolean value) throws IOException {
-        pushValues.add(new Boolean(value));
+        pushValues.add(value);
         if (flashVersion < 5) {
             flushPushValues();
         }
@@ -1109,7 +1111,7 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * SWFActions interface
      */
     public void push(int value) throws IOException {
-        pushValues.add(new Integer(value));
+        pushValues.add(value);
         if (flashVersion < 5) {
             flushPushValues();
         }
@@ -1119,14 +1121,14 @@ public class ActionWriter implements SWFActions, SWFActionCodes {
      * SWFActions interface
      */
     public void lookup(int dictionaryIndex) throws IOException {
-        pushValues.add(new Short((short) dictionaryIndex));
+        pushValues.add((short) dictionaryIndex);
         if (flashVersion < 5) {
             flushPushValues();
         }
     }
 
     /**
-     * @see com.anotherbigidea.flash.interfaces.SWFActions#enumerationerateObject()
+     * @see com.anotherbigidea.flash.interfaces.SWFActions#enumerateObject()
      */
     public void enumerateObject() throws IOException {
         writeCode(ENUMERATE_OBJECT);

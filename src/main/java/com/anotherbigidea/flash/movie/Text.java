@@ -36,7 +36,6 @@ package com.anotherbigidea.flash.movie;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.anotherbigidea.flash.SWFConstants;
@@ -51,16 +50,18 @@ import com.anotherbigidea.flash.structs.Rect;
  * A Text Symbol.
  */
 public class Text extends Symbol {
+
     /**
      * A set of contiguous characters in one font, size and color.
      */
     public static class Row {
-        protected Font.Chars chars;
-        protected double x;
-        protected double y;
-        protected boolean hasX;
-        protected boolean hasY;
-        protected Color color;
+
+        protected final Font.Chars chars;
+        protected final double x;
+        protected final double y;
+        protected final boolean hasX;
+        protected final boolean hasY;
+        protected final Color color;
 
         public Font.Chars getChars() {
             return chars;
@@ -89,8 +90,8 @@ public class Text extends Symbol {
         /**
          * @param chars the characters to display
          * @param color may be AlphaColor.
-         * @param events new X position for text - only valid if hasX is true
-         * @param y new Y position for text - only valid if hasY is true
+         * @param hasX  new X position for text - only valid if hasX is true
+         * @param hasY  new Y position for text - only valid if hasY is true
          */
         public Row(Font.Chars chars, Color color, double x, double y, boolean hasX, boolean hasY) {
             this.chars = chars;
@@ -125,10 +126,11 @@ public class Text extends Symbol {
 
     protected boolean hasAlpha;
     protected Transform matrix;
-    protected List<Row> rows = new ArrayList<Row>();
+    protected final List<Row> rows = new ArrayList<>();
 
     /**
      * Create a Text Symbol which is transformed by the given matrix
+     *
      * @param matrix if null then an identity transform is assumed
      */
     public Text(Transform matrix) {
@@ -161,10 +163,9 @@ public class Text extends Symbol {
      * and vertical position.
      *
      * @param chars the characters to display)
-     * @param may be AlphaColor.
-     * @param events new X position for text - only valid if hasX is true
-     * @param y new Y position for text - only valid if hasY is true
-     *
+     * @param color be AlphaColor.
+     * @param x     new X position for text - only valid if hasX is true
+     * @param y     new Y position for text - only valid if hasY is true
      * @return the new X position after writing the chars
      */
     public Row row(Font.Chars chars, Color color, double x, double y, boolean hasX, boolean hasY) {
@@ -188,11 +189,8 @@ public class Text extends Symbol {
         double maxY = 0.0;
 
         // make sure that all fonts are defined and figure out the alpha
-        for (Iterator<?> it = rows.iterator(); it.hasNext();) {
-            Object obj = it.next();
-
-            if (obj instanceof Text.Row) {
-                Text.Row row = (Text.Row) obj;
+        for (Object obj : rows) {
+            if (obj instanceof Row row) {
 
                 if ((row.color != null) && (row.color instanceof AlphaColor)) {
                     hasAlpha = true;
@@ -245,11 +243,8 @@ public class Text extends Symbol {
         currentSize = 0.0;
         currentColor = null;
 
-        for (Iterator<?> it = rows.iterator(); it.hasNext();) {
-            Object obj = it.next();
-
-            if (obj instanceof Text.Row) {
-                Text.Row row = (Text.Row) obj;
+        for (Object obj : rows) {
+            if (obj instanceof Row row) {
 
                 Font font = row.chars.getFont();
                 double size = row.chars.getSize();

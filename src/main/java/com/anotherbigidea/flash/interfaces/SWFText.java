@@ -31,31 +31,34 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.anotherbigidea.flash.interfaces;
 
-import java.io.*;
-import com.anotherbigidea.flash.structs.*;
+import java.io.IOException;
+
+import com.anotherbigidea.flash.structs.Color;
 
 
 /**
  * Interface for passing static text
  */
 public interface SWFText {
-    public void font(int fontId, int textHeight) throws IOException;
+
+    void font(int fontId, int textHeight) throws IOException;
 
     /**
      * Color is AlphaColor for DefineText2
      */
-    public void color(Color color) throws IOException;
+    void color(Color color) throws IOException;
 
-    public void setX(int x) throws IOException;
+    void setX(int x) throws IOException;
 
-    public void setY(int y) throws IOException;
+    void setY(int y) throws IOException;
 
-    public void text(int[] glyphIndices, int[] glyphAdvances) throws IOException;
+    void text(int[] glyphIndices, int[] glyphAdvances) throws IOException;
 
     /**
      * Called at end of all text
      */
-    public void done() throws IOException;
+    void done() throws IOException;
 }

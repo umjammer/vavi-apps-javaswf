@@ -43,6 +43,7 @@ import com.anotherbigidea.flash.interfaces.SWFActions;
  * A pass-through implementation of the SWFActions interface
  */
 public class SWFActionsImpl implements SWFActions {
+
     protected SWFActions acts;
 
     /**
@@ -58,6 +59,7 @@ public class SWFActionsImpl implements SWFActions {
 
     /**
      * Set the pass-through target
+     *
      * @param acts may be null
      */
     public void setSWFActions(SWFActions acts) {

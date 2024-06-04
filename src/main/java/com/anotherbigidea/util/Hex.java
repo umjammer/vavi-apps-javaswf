@@ -44,6 +44,7 @@ import java.io.StringWriter;
  * Hex dump conversion utilities
  */
 public class Hex {
+
     public static String dump(byte[] data, long startAddress, String indent) {
         StringWriter writer = new StringWriter();
         PrintWriter printer = new PrintWriter(writer, true);
@@ -68,7 +69,7 @@ public class Hex {
 
     public static void dump(PrintWriter out, byte[] data, int startIndex, int length, long startAddress, String indent, boolean includeBinary) {
         if (data == null) {
-            return; //nothing to dump
+            return; // nothing to dump
         }
 
         int i = startIndex;
@@ -78,29 +79,29 @@ public class Hex {
         }
 
         while (i <= endIndex) {
-            String hex = "";
-            String chars = " ";
-            String binary = "";
+            StringBuilder hex = new StringBuilder();
+            StringBuilder chars = new StringBuilder(" ");
+            StringBuilder binary = new StringBuilder();
 
             for (int j = 0; j < 16; j++) {
                 if ((i + j) <= endIndex) {
-                    hex += (" " + leadingZeros(Integer.toHexString(getByte(data[i + j])), 2));
+                    hex.append(" ").append(leadingZeros(Integer.toHexString(getByte(data[i + j])), 2));
 
                     if (includeBinary) {
-                        binary += (" " + leadingZeros(Integer.toBinaryString(getByte(data[i + j])), 8));
+                        binary.append(" ").append(leadingZeros(Integer.toBinaryString(getByte(data[i + j])), 8));
                     }
 
                     if (data[i + j] < 32) {
-                        chars += ".";
+                        chars.append(".");
                     } else {
-                        chars += new String(new byte[] { data[i + j] });
+                        chars.append(new String(new byte[] {data[i + j]}));
                     }
                 } else {
-                    hex += " --";
-                    chars += " ";
+                    hex.append(" --");
+                    chars.append(" ");
 
                     if (includeBinary) {
-                        binary += " --------";
+                        binary.append(" --------");
                     }
                 }
             }
@@ -133,7 +134,7 @@ public class Hex {
             return b;
         }
 
-        //else byte is negative and needs conversion to an unsigned int
+        // else byte is negative and needs conversion to an unsigned int
         return b + 256;
     }
 

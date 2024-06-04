@@ -31,21 +31,23 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.anotherbigidea.flash.interfaces;
 
-import java.io.*;
+import java.io.IOException;
 
 
 /**
  * Interface for passing SWF Header and Generic Tags.
  */
 public interface SWFTags extends SWFHeader {
+
     /**
      * A SWF tag.
      *
-     * @param tagType a type of zero (TAG_END) denotes the end of the tags
-     * @param longTag true if the tag header is forced into the long form
+     * @param tagType  a type of zero (TAG_END) denotes the end of the tags
+     * @param longTag  true if the tag header is forced into the long form
      * @param contents may be null
      */
-    public void tag(int tagType, boolean longTag, byte[] contents) throws IOException;
+    void tag(int tagType, boolean longTag, byte[] contents) throws IOException;
 }

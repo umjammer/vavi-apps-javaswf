@@ -18,24 +18,25 @@ import com.anotherbigidea.flash.writers.SWFTagTypesImpl;
 /**
  * Shows how to parse a Flash movie and extract all the text in Text symbols
  * and the initial text in Edit Fields.  Output is to System.out.
- *
+ * <p>
  * A "pipeline" is set up in the main method:
- *
+ * <p>
  * SWFReader-->TagParser-->ExtractText
- *
+ * <p>
  * SWFReader reads the input SWF file and separates out the header
  * and the tags.  The separated contents are passed to TagParser which
  * parses out the individual tag types and passes them to ExtractText.
- *
+ * <p>
  * ExtractText extends SWFTagTypesImpl and overrides some methods.
  */
 public class ExtractText extends SWFTagTypesImpl {
+
     /**
      * Store font info keyed by the font symbol id
      * Each entry is an int[] of character codes for the correspnding font glyphs
      * (An empty array denotes a System Font)
      */
-    protected Map<Integer, int[]> fontCodes = new HashMap<Integer, int[]>();
+    protected final Map<Integer, int[]> fontCodes = new HashMap<>();
 
     public ExtractText() {
         super(null);
@@ -46,7 +47,7 @@ public class ExtractText extends SWFTagTypesImpl {
      * Save the Text Font character code info
      */
     public void tagDefineFontInfo(int fontId, String fontName, int flags, int[] codes) throws IOException {
-        fontCodes.put(new Integer(fontId), codes);
+        fontCodes.put(fontId, codes);
     }
 
     /**
@@ -54,7 +55,7 @@ public class ExtractText extends SWFTagTypesImpl {
      * Save the character code info
      */
     public SWFVectors tagDefineFont2(int id, int flags, String name, int numGlyphs, int ascent, int descent, int leading, int[] codes, int[] advances, Rect[] bounds, int[] kernCodes1, int[] kernCodes2, int[] kernAdjustments) throws IOException {
-        fontCodes.put(new Integer(id), (codes != null) ? codes : new int[0]);
+        fontCodes.put(id, (codes != null) ? codes : new int[0]);
 
         return null;
     }
@@ -84,18 +85,19 @@ public class ExtractText extends SWFTagTypesImpl {
     }
 
     public class TextDumper implements SWFText {
+
         protected Integer fontId;
         protected boolean firstY = true;
 
         public void font(int fontId, int textHeight) {
-            this.fontId = new Integer(fontId);
+            this.fontId = fontId;
         }
 
         public void setY(int y) {
             if (firstY) {
                 firstY = false;
             } else {
-                System.out.println(); //Change in Y - dump a new line
+                System.out.println(); // Change in Y - dump a new line
             }
         }
 
@@ -112,8 +114,8 @@ public class ExtractText extends SWFTagTypesImpl {
             for (int i = 0; i < chars.length; i++) {
                 int index = glyphIndices[i];
 
-                if (index >= codes.length) //System Font ?
-                 {
+                if (index >= codes.length) // System Font ?
+                {
                     chars[i] = (char) index;
                 } else {
                     chars[i] = (char) (codes[index]);

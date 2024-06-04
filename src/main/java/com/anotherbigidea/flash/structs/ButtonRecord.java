@@ -43,12 +43,13 @@ import com.anotherbigidea.io.OutStream;
 
 
 /**
- * ButtonRecord. 
+ * ButtonRecord.
  *
- * @author  <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
+ * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
  * @version 0.00    2005/02/11  nsano   initial version <br>
  */
 public class ButtonRecord {
+
     public static final int BUTTON_HITTEST = 0x08;
     public static final int BUTTON_DOWN = 0x04;
     public static final int BUTTON_OVER = 0x02;
@@ -110,7 +111,7 @@ public class ButtonRecord {
      * Read a button record array
      */
     public static List<? extends ButtonRecord> read(InStream in) throws IOException {
-        List<ButtonRecord> records = new ArrayList<ButtonRecord>();
+        List<ButtonRecord> records = new ArrayList<>();
 
         int firstByte = 0;
         while ((firstByte = in.readUI8()) != 0) {

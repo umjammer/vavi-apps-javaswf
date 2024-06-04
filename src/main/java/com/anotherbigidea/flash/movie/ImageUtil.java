@@ -50,6 +50,7 @@ import com.anotherbigidea.flash.SWFConstants;
  * Utilities for dealing with images
  */
 public class ImageUtil {
+
     /**
      * Normalize a JPEG to ensure that it is "Baseline" rather than
      * "Progressive".  The Flash player doesn't like "Progressive".
@@ -83,7 +84,7 @@ public class ImageUtil {
      * Create a Shape for the image.  The resulting shape uses the image as
      * a clipped image fill.  The shape is a rectangle just the right size
      * to show the entire image and its origin is at the top left.
-     *
+     * <p>
      * Additional geometry vectors may be added to the shape if required.
      *
      * @param size null or an int[2] to receive the (width,height) of the image
@@ -106,18 +107,18 @@ public class ImageUtil {
      * Create a Shape for the image.  The resulting shape uses the image as
      * a clipped image fill.  The shape is a rectangle just the right size
      * to show the entire image and its origin is at the top left.
-     *
+     * <p>
      * Additional geometry vectors may be added to the shape if required.
      */
-    public static Shape shapeForImage(Image image, double width, double height)//throws IOException 
-     {
+    public static Shape shapeForImage(Image image, double width, double height)// throws IOException 
+    {
         Shape s = new Shape();
 
         Transform matrix = new Transform(SWFConstants.TWIPS, SWFConstants.TWIPS, 0.0, 0.0);
 
         s.defineFillStyle(image, matrix, true);
-        s.setRightFillStyle(1); //use image fill
-        s.setLineStyle(0); //no line
+        s.setRightFillStyle(1); // use image fill
+        s.setLineStyle(0); // no line
         s.line(width, 0);
         s.line(width, height);
         s.line(0, height);
@@ -131,8 +132,8 @@ public class ImageUtil {
      * must be fully loaded and ready.
      *
      * @param format one of: SWFConstants.BITMAP_FORMAT_8_BIT,
-     *                       SWFConstants.BITMAP_FORMAT_16_BIT,
-     *                       SWFConstants.BITMAP_FORMAT_32_BIT
+     *               SWFConstants.BITMAP_FORMAT_16_BIT,
+     *               SWFConstants.BITMAP_FORMAT_32_BIT
      */
     public static Image.Lossless createLosslessImage(java.awt.Image image, int format, boolean hasAlpha) {
         int width = image.getWidth(null);
@@ -148,30 +149,23 @@ public class ImageUtil {
 
         int[] pixelData = (int[]) grabber.getPixels();
 
-        int size = 0;
-        switch (format) {
-        case SWFConstants.BITMAP_FORMAT_8_BIT:
-            size = 1;
-            break;
-        case SWFConstants.BITMAP_FORMAT_16_BIT:
-            size = 2;
-            break;
-        case SWFConstants.BITMAP_FORMAT_32_BIT:default:
-            size = 4;
-            break;
-        }
+        int size = switch (format) {
+            case SWFConstants.BITMAP_FORMAT_8_BIT -> 1;
+            case SWFConstants.BITMAP_FORMAT_16_BIT -> 2;
+            default -> 4;
+        };
 
         int rowBytes = width * size;
         int modulo = rowBytes % 4;
         if (modulo > 0) {
-            rowBytes += (4 - modulo); //pad up to next 32 bits
+            rowBytes += (4 - modulo); // pad up to next 32 bits
         }
 
-        //>>>Padding bug spotted by Joachim Sauer        
+        // >>>Padding bug spotted by Joachim Sauer        
         byte[] imageData = new byte[height * rowBytes];
 
         // color lookup table
-        Map<Integer, Integer> table = (format == SWFConstants.BITMAP_FORMAT_32_BIT) ? null : new HashMap<Integer, Integer>();
+        Map<Integer, Integer> table = (format == SWFConstants.BITMAP_FORMAT_32_BIT) ? null : new HashMap<>();
 
         for (int y = 0; y < height; y++) {
             int rowStart = y * width;

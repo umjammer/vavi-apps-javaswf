@@ -31,10 +31,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.anotherbigidea.flash.interfaces;
 
-import java.io.*;
-import com.anotherbigidea.flash.structs.*;
+import java.io.IOException;
+
+import com.anotherbigidea.flash.structs.Color;
+import com.anotherbigidea.flash.structs.Matrix;
 
 
 /**
@@ -42,28 +45,30 @@ import com.anotherbigidea.flash.structs.*;
  * vectors.
  */
 public interface SWFShape extends SWFVectors {
-    public void setFillStyle0(int styleIndex) throws IOException;
 
-    public void setFillStyle1(int styleIndex) throws IOException;
+    void setFillStyle0(int styleIndex) throws IOException;
 
-    public void setLineStyle(int styleIndex) throws IOException;
+    void setFillStyle1(int styleIndex) throws IOException;
+
+    void setLineStyle(int styleIndex) throws IOException;
 
     /**
      * Solid color fill
      */
-    public void defineFillStyle(Color color) throws IOException;
+    void defineFillStyle(Color color) throws IOException;
 
     /**
      * Gradient fill - linear or radial.
+     *
      * @param colors may have null elements - these (and the corresponding ratio)
      *               should be ignored
      */
-    public void defineFillStyle(Matrix matrix, int[] ratios, Color[] colors, boolean radial) throws IOException;
+    void defineFillStyle(Matrix matrix, int[] ratios, Color[] colors, boolean radial) throws IOException;
 
     /**
      * Bitmap fill - tiled or clipped
      */
-    public void defineFillStyle(int bitmapId, Matrix matrix, boolean clipped) throws IOException;
+    void defineFillStyle(int bitmapId, Matrix matrix, boolean clipped) throws IOException;
 
-    public void defineLineStyle(int width, Color color) throws IOException;
+    void defineLineStyle(int width, Color color) throws IOException;
 }

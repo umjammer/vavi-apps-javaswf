@@ -48,10 +48,11 @@ import org.xml.sax.SAXException;
  * Write XML text to an output stream
  */
 public class XMLWriter extends SaxHandlerBase {
+
     protected Writer out;
     protected boolean started = false;
     protected int indentDepth;
-    protected static String encoding = "UTF-8";
+    protected static final String encoding = "UTF-8";
 
     public XMLWriter(OutputStream outstream) throws IOException {
         out = new OutputStreamWriter(outstream, encoding);
@@ -87,30 +88,30 @@ public class XMLWriter extends SaxHandlerBase {
     }
 
     public static String normalize(char[] chars, int start, int length) {
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
 
         for (int i = start; i < (start + length); i++) {
             char c = chars[i];
 
             switch (c) {
-            case '\'':
-                buff.append("&apos;");
-                break;
-            case '"':
-                buff.append("&quot;");
-                break;
-            case '&':
-                buff.append("&amp;");
-                break;
-            case '<':
-                buff.append("&lt;");
-                break;
-            case '>':
-                buff.append("&gt;");
-                break;
-            default:
-                buff.append(c);
-                break;
+                case '\'':
+                    buff.append("&apos;");
+                    break;
+                case '"':
+                    buff.append("&quot;");
+                    break;
+                case '&':
+                    buff.append("&amp;");
+                    break;
+                case '<':
+                    buff.append("&lt;");
+                    break;
+                case '>':
+                    buff.append("&gt;");
+                    break;
+                default:
+                    buff.append(c);
+                    break;
             }
         }
 

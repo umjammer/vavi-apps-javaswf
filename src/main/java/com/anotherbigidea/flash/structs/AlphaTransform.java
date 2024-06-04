@@ -41,6 +41,7 @@ import com.anotherbigidea.io.OutStream;
 
 
 public class AlphaTransform extends ColorTransform {
+
     public double getMultAlpha() {
         return multAlpha;
     }
@@ -123,10 +124,6 @@ public class AlphaTransform extends ColorTransform {
 
     public void write(OutStream out) throws IOException {
         writeWithAlpha(out);
-    }
-
-    public void writeWithoutAlpha(OutStream out) throws IOException {
-        super.write(out);
     }
 
     public String toString() {

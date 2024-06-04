@@ -16,7 +16,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class Xerces {
 
-    static SAXParser parser;
+    static final SAXParser parser;
 
     static {
         try {

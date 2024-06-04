@@ -52,6 +52,7 @@ import com.anotherbigidea.flash.movie.Sound;
  * MP3 Utilities
  */
 public class MP3Helper {
+
     public static Sound getSoundDefinition(InputStream mp3) throws IOException {
         MP3Frame frame = MP3Frame.readFrame(mp3);
 
@@ -174,7 +175,7 @@ public class MP3Helper {
     public static void main(String[] args) throws IOException {
         InputStream mp3 = new FileInputStream(args[0]);
 
-        List<byte[]> blocks = new ArrayList<byte[]>();
+        List<byte[]> blocks = new ArrayList<>();
         SoundStreamHead head = MP3Helper.streamingBlocks(mp3, 30, blocks);
 
         Movie movie = new Movie();
@@ -183,8 +184,7 @@ public class MP3Helper {
         Frame f = movie.appendFrame();
         f.setSoundHeader(head);
 
-        for (Iterator<byte[]> i = blocks.iterator(); i.hasNext();) {
-            byte[] data = i.next();
+        for (byte[] data : blocks) {
             f.setSoundData(data);
             f = movie.appendFrame();
         }

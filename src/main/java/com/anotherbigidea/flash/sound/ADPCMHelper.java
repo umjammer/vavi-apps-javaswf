@@ -61,7 +61,9 @@ import com.anotherbigidea.io.OutStream;
  * ADPCM Utilities
  */
 public class ADPCMHelper {
-    public class ADPCMPacket {
+
+    public static class ADPCMPacket {
+
         public int initialLeftSample = 0;
         public int initialLeftIndex = 0;
         public int initialRightSample = 0;
@@ -94,7 +96,7 @@ public class ADPCMHelper {
 
         isSigned = format.getEncoding() == AudioFormat.Encoding.PCM_SIGNED;
 
-        //System.err.println( format + " FrameSize=" + frameSize );
+        // System.err.println( format + " FrameSize=" + frameSize );
         if (sampleRate >= 44000) {
             sampleRate = 44000;
         } else if (sampleRate >= 22000) {
@@ -137,7 +139,7 @@ public class ADPCMHelper {
             writePacket(packet, out, first);
             first = false;
 
-            //System.err.println( "Packet size = " + packet.leftData.length );
+            // System.err.println( "Packet size = " + packet.leftData.length );
         }
 
         out.flush();
@@ -168,11 +170,9 @@ public class ADPCMHelper {
         }
 
         packet.leftData = new int[packetSize - 1];
-        ;
         if (isStereo) {
             packet.rightData = new int[packetSize - 1];
         }
-        ;
 
         for (int i = 0; i < (packetSize - 1); i++) {
             packet.leftData[i] = leftEncoder.getDelta();
@@ -192,6 +192,7 @@ public class ADPCMHelper {
 
     /**
      * Streaming block
+     *
      * @return null if no more blocks
      */
     public byte[] getBlockData(boolean firstBlock) throws IOException {
@@ -245,10 +246,11 @@ public class ADPCMHelper {
      * InputStream wrapper that ensures AudioInputStream is read on a frame-by-frame basis
      */
     public static class FramedInputStream extends InputStream {
-        protected InputStream in;
-        protected byte[] frameData;
+
+        protected final InputStream in;
+        protected final byte[] frameData;
         protected int dataPtr;
-        protected int frameSize;
+        protected final int frameSize;
         protected boolean done = false;
 
         public FramedInputStream(InputStream in, int frameSize) {

@@ -44,6 +44,7 @@ import com.anotherbigidea.flash.interfaces.SWFTagTypes;
  * A Morph Shape Symbol
  */
 public class MorphShape extends Symbol {
+
     protected Shape shape1;
     protected Shape shape2;
 

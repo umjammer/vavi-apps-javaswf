@@ -59,7 +59,8 @@ import com.anotherbigidea.flash.structs.SoundInfo;
  * interfaces - useful as a base class
  */
 public class SWFTagTypesImpl implements SWFTagTypes, SWFFileSignature {
-    protected SWFTagTypes mTagtypes;
+
+    protected final SWFTagTypes mTagtypes;
 
     /**
      * @param tags may be null

@@ -50,6 +50,7 @@ import java.util.zip.InflaterInputStream;
  * Input Stream Wrapper
  */
 public class InStream {
+
     protected InputStream in;
     protected long bytesRead = 0L;
     private static final int MAX_TRANSFER_BUFFER_SIZE = 10000;
@@ -82,7 +83,7 @@ public class InStream {
      * @param length the number of bytes to transfer
      */
     public void transfer(OutputStream out, int length) throws IOException {
-        int buffSize = (length < MAX_TRANSFER_BUFFER_SIZE) ? length : MAX_TRANSFER_BUFFER_SIZE;
+        int buffSize = Math.min(length, MAX_TRANSFER_BUFFER_SIZE);
 
         byte[] buffer = new byte[buffSize];
 
@@ -99,26 +100,26 @@ public class InStream {
     public byte[] readStringBytes() throws IOException {
         synchBits();
 
-        List<Byte> chars = new ArrayList<Byte>();
+        List<Byte> chars = new ArrayList<>();
         byte[] aChar = new byte[1];
         int num = 0;
 
         while ((num = in.read(aChar)) == 1) {
             bytesRead++;
 
-            if (aChar[0] == 0) { //end of string
-            
+            if (aChar[0] == 0) { // end of string
+
                 byte[] string = new byte[chars.size()];
 
                 int i = 0;
                 for (Byte b : chars) {
-                    string[i++] = b.byteValue();
+                    string[i++] = b;
                 }
-//System.err.println("push string\n" + StringUtil.getDump(string));
+// System.err.println("push string\n" + StringUtil.getDump(string));
                 return string;
             }
 
-            chars.add(new Byte(aChar[0]));
+            chars.add(aChar[0]);
         }
 
         throw new IOException("Unterminated string - reached end of input before null char");
@@ -129,9 +130,9 @@ public class InStream {
      */
     public String readString(String encoding) throws IOException {
         byte[] bytes = readStringBytes();
-//System.err.println("Windows-31J: " + new String(bytes, "Windows-31J"));
-//System.err.println("UTF-8: " + new String(bytes, "UTF-8"));
-//System.err.println(encoding + ": " + new String(bytes, encoding));
+// System.err.println("Windows-31J: " + new String(bytes, "Windows-31J"));
+// System.err.println("UTF-8: " + new String(bytes, "UTF-8"));
+// System.err.println(encoding + ": " + new String(bytes, encoding));
         return new String(bytes, encoding);
     }
 
@@ -176,6 +177,7 @@ public class InStream {
 
     /**
      * Read as many bytes as possible (up to the limit of the passed-in array)
+     *
      * @return the number of bytes read
      */
     public int read(byte[] bytes) throws IOException {
@@ -247,8 +249,8 @@ public class InStream {
         int bitsLeft = numBits;
         long result = 0;
 
-        if (bitPos == 0) //no value in the buffer - read a byte
-         {
+        if (bitPos == 0) // no value in the buffer - read a byte
+        {
             bitBuf = in.read();
             bitPos = 8;
 
@@ -259,7 +261,7 @@ public class InStream {
             int shift = bitsLeft - bitPos;
             if (shift > 0) {
                 // Consume the entire buffer
-                result |= (bitBuf << shift);
+                result |= ((long) bitBuf << shift);
                 bitsLeft -= bitPos;
 
                 // Get the next byte from the input stream
@@ -302,7 +304,7 @@ public class InStream {
 
         int ui16 = in.read();
         if (ui16 < 0) {
-System.err.println("available: " + in.available());
+            System.err.println("available: " + in.available());
             throw new EOFException("Unexpected end of input");
         }
 
@@ -460,7 +462,7 @@ System.err.println("available: " + in.available());
     public static int ubyteToInt(byte b) {
         boolean highbit = b < 0;
 
-        b &= 0x7f;
+        b = (byte) (b & 0x7f);
 
         int i = b;
 
@@ -487,7 +489,7 @@ System.err.println("available: " + in.available());
         return value;
     }
 
-    /** */
+    /**  */
     public int available() throws IOException {
         return in.available();
     }

@@ -40,8 +40,9 @@ import com.anotherbigidea.io.OutStream;
 
 
 public class LineStyle implements Style {
-    protected int width;
-    protected Color color;
+
+    protected final int width;
+    protected final Color color;
 
     public int getWidth() {
         return width;

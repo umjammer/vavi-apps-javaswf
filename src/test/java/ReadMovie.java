@@ -1,5 +1,4 @@
 import java.io.FileInputStream;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.anotherbigidea.flash.movie.Movie;
@@ -14,6 +13,7 @@ import com.anotherbigidea.flash.readers.TagParser;
  * Also shows that MovieBuilder creates a map of the defined symbols.
  */
 public class ReadMovie {
+
     public static void main(String[] args) throws Exception {
         FileInputStream in = new FileInputStream(args[0]);
 

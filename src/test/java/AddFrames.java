@@ -9,25 +9,26 @@ import com.anotherbigidea.flash.writers.SWFWriter;
 
 /**
  * Shows how to insert a number of frames at the end of a movie.
- *
+ * <p>
  * A "pipeline" is set up in the main method:
- *
- *    SWFReader-->AddFrames-->SWFWriter
- *
+ * <p>
+ * SWFReader-->AddFrames-->SWFWriter
+ * <p>
  * SWFReader reads the input SWF file and separates out the header
  * and the tags.  The separated contents are passed to AddFrames which
  * passes them on to SWFWriter, which writes to the output file.
- *
+ * <p>
  * AddFrames intercepts the End tag (which is the last tag in a SWF
  * file) and sends a number of ShowFrame tags before the End tag.
  */
 public class AddFrames implements SWFTags {
-    protected SWFTags _swftags;
-    protected int _count;
+
+    protected final SWFTags swfTags;
+    protected int count;
 
     public AddFrames(SWFTags swftags, int count) {
-        _swftags = swftags;
-        _count = count;
+        swfTags = swftags;
+        this.count = count;
     }
 
     /**
@@ -35,25 +36,25 @@ public class AddFrames implements SWFTags {
      */
     public void header(int version, long length, int twipsWidth, int twipsHeight, int frameRate, int frameCount) throws IOException {
         // Pass the header through
-        _swftags.header(version, -1, //length: -1 to force a recalculation
-                        twipsWidth, twipsHeight, frameRate, -1); //frame count: -1 to force a recalculation
+        swfTags.header(version, -1, // length: -1 to force a recalculation
+                twipsWidth, twipsHeight, frameRate, -1); // frame count: -1 to force a recalculation
     }
 
     /**
      * SWFTags interface
-     *
+     * <p>
      * Intercept the end tag and insert extra frames
      */
     public void tag(int tagType, boolean longTag, byte[] contents) throws IOException {
         if (tagType == SWFConstants.TAG_END) {
-            while (_count > 0) {
-                _swftags.tag(SWFConstants.TAG_SHOWFRAME, false, null);
-                _count--;
+            while (count > 0) {
+                swfTags.tag(SWFConstants.TAG_SHOWFRAME, false, null);
+                count--;
             }
         }
 
         // Pass the tag through
-        _swftags.tag(tagType, longTag, contents);
+        swfTags.tag(tagType, longTag, contents);
     }
 
     /**
@@ -61,7 +62,7 @@ public class AddFrames implements SWFTags {
      * 0. Name of input SWF
      * 1. Name of output SWF
      * 2. Number of frames to append
-     *
+     * <p>
      * e.g. java AddFrames movie1.swf out.swf 25
      */
     public static void main(String[] args) throws Exception {
