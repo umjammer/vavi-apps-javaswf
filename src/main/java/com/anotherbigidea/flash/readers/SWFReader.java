@@ -48,12 +48,13 @@ import com.anotherbigidea.io.InStream;
 
 /**
  * Reads a SWF input stream and drives the SWFTags interface.
- *
+ * <p>
  * Automatically decompresses the file if necessary.
  */
 public class SWFReader {
-    protected SWFTags mConsumer;
-    protected InStream mIn;
+
+    protected final SWFTags mConsumer;
+    protected final InStream mIn;
     protected InputStream mInputstream;
     protected boolean mCompressed;
     protected String mFilename;
@@ -103,25 +104,25 @@ public class SWFReader {
      */
     public void readTags() throws IOException {
         while (readOneTag() != SWFConstants.TAG_END) {
-            ;
         }
     }
 
     /**
      * Drive the consumer by reading one tag
+     *
      * @return the tag type
      */
     public int readOneTag() throws IOException {
         int header = mIn.readUI16();
 
-        int type = header >> 6; //only want the top 10 bits
-        int length = header & 0x3F; //only want the bottom 6 bits
+        int type = header >> 6; // only want the top 10 bits
+        int length = header & 0x3F; // only want the bottom 6 bits
         boolean longTag = (length == 0x3F);
 
         if (longTag) {
             length = (int) mIn.readUI32();
         }
-System.err.println("type: " + type + ", length: " + length + ", rest: " + mIn.available());
+        System.err.println("type: " + type + ", length: " + length + ", rest: " + mIn.available());
         byte[] contents = mIn.read(length);
 
         mConsumer.tag(type, longTag, contents);
@@ -133,13 +134,13 @@ System.err.println("type: " + type + ", length: " + length + ", rest: " + mIn.av
      * Read and verify just the file signature.
      */
     public void readSignature() throws IOException {
-        int[] sig = { mIn.readUI8(), mIn.readUI8(), mIn.readUI8() };
+        int[] sig = {mIn.readUI8(), mIn.readUI8(), mIn.readUI8()};
 
         // Verify File Signature
         if (((sig[0] != 0x46) && (sig[0] != 0x43)) || // "F" or "C"
-            (sig[1] != 0x57) || // "W"
-            (sig[2] != 0x53)) // "S"
-         {
+                (sig[1] != 0x57) || // "W"
+                (sig[2] != 0x53)) // "S"
+        {
             throw new IOException("Invalid SWF File Signature");
         }
 
@@ -166,7 +167,7 @@ System.err.println("type: " + type + ", length: " + length + ", rest: " + mIn.av
         int version = mIn.readUI8();
         long length = mIn.readUI32();
 
-        //may be compressed from this point onwards
+        // may be compressed from this point onwards
         if (mCompressed) {
             mIn.readCompressed();
         }
@@ -180,7 +181,7 @@ System.err.println("type: " + type + ", length: " + length + ", rest: " + mIn.av
 
     /**
      * Test: read from args[0] and write to args[1].
-     *
+     * <p>
      * If args[2] is '+' then output is forced to be compressed, if it is '-'
      * then output is forced to be uncompressed - otherwise the output is the
      * same as the input.

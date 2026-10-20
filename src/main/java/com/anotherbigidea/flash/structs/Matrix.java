@@ -41,6 +41,7 @@ import com.anotherbigidea.io.OutStream;
 
 
 public class Matrix {
+
     protected double scaleX = 1.0;
     protected double scaleY = 1.0;
     protected double skew0 = 0.0;
@@ -136,15 +137,15 @@ public class Matrix {
     public Matrix(InStream in) throws IOException {
         in.synchBits();
 
-        if (in.readUBits(1) == 1) //has scale values
-         {
+        if (in.readUBits(1) == 1) // has scale values
+        {
             int scaleBits = (int) in.readUBits(5);
             scaleX = in.readSBits(scaleBits) / 65536.0;
             scaleY = in.readSBits(scaleBits) / 65536.0;
         }
 
-        if (in.readUBits(1) == 1) //has rotate/skew values
-         {
+        if (in.readUBits(1) == 1) // has rotate/skew values
+        {
             int skewBits = (int) in.readUBits(5);
             skew0 = in.readSBits(skewBits) / 65536.0;
             skew1 = in.readSBits(skewBits) / 65536.0;
@@ -158,8 +159,8 @@ public class Matrix {
     public void write(OutStream out) throws IOException {
         out.flushBits();
 
-        if ((scaleX != 1.0) || (scaleY != 1.0)) //if non-default values
-         {
+        if ((scaleX != 1.0) || (scaleY != 1.0)) // if non-default values
+        {
             int intScaleX = (int) (scaleX * 65536.0);
             int intScaleY = (int) (scaleY * 65536.0);
 
@@ -177,8 +178,8 @@ public class Matrix {
             out.writeUBits(1, 0);
         }
 
-        if ((skew0 != 0.0) || (skew1 != 0.0)) //if non-default values
-         {
+        if ((skew0 != 0.0) || (skew1 != 0.0)) // if non-default values
+        {
             int intSkew0 = (int) (skew0 * 65536.0);
             int intSkew1 = (int) (skew1 * 65536.0);
 

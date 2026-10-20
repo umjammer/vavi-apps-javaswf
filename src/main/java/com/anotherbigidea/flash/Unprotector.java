@@ -49,7 +49,8 @@ import com.anotherbigidea.flash.writers.SWFWriter;
  * Second arg is output filename.
  */
 public class Unprotector implements SWFTags {
-    protected SWFTags writer;
+
+    protected final SWFTags writer;
 
     public Unprotector(SWFTags writer) {
         this.writer = writer;
@@ -67,7 +68,7 @@ public class Unprotector implements SWFTags {
      */
     public void tag(int tagType, boolean longTag, byte[] contents) throws IOException {
         if (tagType == SWFConstants.TAG_PROTECT) {
-            return; //skip protect tag
+            return; // skip protect tag
         }
 
         writer.tag(tagType, longTag, contents);

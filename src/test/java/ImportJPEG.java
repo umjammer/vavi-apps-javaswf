@@ -9,6 +9,7 @@ import com.anotherbigidea.flash.movie.Shape;
  * Example of importing a JPEG image.
  */
 public class ImportJPEG {
+
     /**
      * args[0] is filename of JPEG
      * args[1] is filename of output SWF
@@ -27,7 +28,7 @@ public class ImportJPEG {
         jpegIn.close();
 
         // Add a black border to the image shape (origin is in top left corner)
-        image.defineLineStyle(1, null); //default color is black
+        image.defineLineStyle(1, null); // default color is black
         image.setLineStyle(1);
         image.line(width, 0);
         image.line(width, height);

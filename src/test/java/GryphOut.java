@@ -17,11 +17,12 @@ import com.anotherbigidea.flash.movie.Shape;
 
 /**
  * GryphOut.
- * 
+ *
  * @author <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
  * @version 0.00 070618 nsano initial version <br>
  */
 public class GryphOut {
+
     private final FontRenderContext frc;
 
     private Font font = java.awt.Font.decode(null);
@@ -38,9 +39,8 @@ public class GryphOut {
         GlyphVector gv = font.createGlyphVector(frc, text.toCharArray());
         for (int i = 0; i < text.length(); i++) {
             java.awt.Shape s = gv.getGlyphOutline(i, x, y);
-            // FlatteningPathIterator で平坦化。
-            // SEG_QUADTO や SEG_CUBICTO を無くして
-            // SEG_MOVETO, SEG_LINETO, SEG_CLOSE だけにする。
+            // Flattening with FlatteningPathIterator.
+            // Remove SEG_QUADTO and SEG_CUBICTO, leaving only SEG_MOVETO, SEG_LINETO, and SEG_CLOSE.
             PathIterator pi = s.getPathIterator(null);
             pi = new FlatteningPathIterator(pi, 0.1);
             drawPath(pi, drawer);
@@ -48,56 +48,55 @@ public class GryphOut {
     }
 
     private static FontRenderContext createFontRenderContext() {
-        // FontRenderContext frc = new FontRenderContext( null, true, false );
+        //FontRenderContext frc = new FontRenderContext( null, true, false );
         BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = bi.createGraphics();
-        // g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        // RenderingHints.VALUE_ANTIALIAS_ON);
-        // g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-        // RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        //g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        //g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         FontRenderContext frc = g.getFontRenderContext();
         return frc;
     }
 
     /**
-     * PathIterator オブジェクトの構成点を出力する。
+     * Outputs the constituent points of a PathIterator object.
      */
     private static void drawPath(PathIterator pi, PathDrawer drawer) {
 
         while (!pi.isDone()) {
-            double coords[] = new double[6];
+            double[] coords = new double[6];
             int type = pi.currentSegment(coords);
             switch (type) {
             case PathIterator.SEG_CLOSE:
-                // System.err.println("CLOSE :");
+                //System.err.println("CLOSE :");
                 break;
             case PathIterator.SEG_CUBICTO:
-                // System.err.println("CUBICTO :");
+                //System.err.println("CUBICTO :");
                 break;
             case PathIterator.SEG_LINETO:
-                // System.err.println("LINETO :");
+                //System.err.println("LINETO :");
                 drawer.line(coords[0], coords[1]);
                 break;
             case PathIterator.SEG_MOVETO:
-                // System.err.println("MOVETO :");
+                //System.err.println("MOVETO :");
                 drawer.move(coords[0], coords[1]);
                 break;
             case PathIterator.SEG_QUADTO:
-                // System.err.println("QUADTO :");
+                //System.err.println("QUADTO :");
                 drawer.quad(coords[0], coords[1], coords[2], coords[3]);
                 break;
             }
-            // System.err.print(coords[0]); System.err.print(",");
-            // System.err.print(coords[1]); System.err.print(",");
-            // System.err.print(coords[2]); System.err.print(",");
-            // System.err.print(coords[3]); System.err.print(",");
-            // System.err.print(coords[4]); System.err.print(",");
-            // System.err.print(coords[5]); System.err.println();
+            //System.err.print(coords[0]); System.err.print(",");
+            //System.err.print(coords[1]); System.err.print(",");
+            //System.err.print(coords[2]); System.err.print(",");
+            //System.err.print(coords[3]); System.err.print(",");
+            //System.err.print(coords[4]); System.err.print(",");
+            //System.err.print(coords[5]); System.err.println();
             pi.next();
         }
     }
 
-    public static interface PathDrawer {
+    public interface PathDrawer {
+
         void move(double x, double y);
 
         void line(double x, double y);
@@ -122,11 +121,9 @@ public class GryphOut {
         }
 
         public void quad(double x, double y, double cx, double cy) {
-            // これはダメ:ギザギザになってしまう
-            // quad をどうやったら curve の引数に変換できるんだろうか？
+            // This won't work: it will become jagged.
+            // How can I convert a `quad` to a curve argument?
             shape.curve(x, y, cx, cy);
         }
     }
 }
-
-/* */

@@ -50,6 +50,7 @@ import com.anotherbigidea.flash.structs.ButtonRecord2;
  * A Button Symbol
  */
 public class Button extends Symbol {
+
     /**
      * A layer of a button.  The layer defines a symbol (Shape etc.) with
      * associated Transform and color transform.  There may be many layers
@@ -57,6 +58,7 @@ public class Button extends Symbol {
      * states (up,over,down,hit-test).
      */
     public static class Layer {
+
         protected Symbol symbol;
         protected Transform matrix;
         protected AlphaTransform cxform;
@@ -173,8 +175,8 @@ public class Button extends Symbol {
         }
     }
 
-    protected List<Actions> actions = new ArrayList<Actions>();
-    protected List<Layer> layers = new ArrayList<Layer>();
+    protected final List<Actions> actions = new ArrayList<>();
+    protected final List<Layer> layers = new ArrayList<>();
     protected boolean trackAsMenu;
 
     public Button(boolean trackAsMenu) {
@@ -205,6 +207,7 @@ public class Button extends Symbol {
 
     /**
      * Add a layer to the button.
+     *
      * @param depth should be >= 1 and there should only be one symbol on any layer
      */
     public Button.Layer addLayer(Symbol symbol, Transform matrix, AlphaTransform cxform, int depth, boolean usedForHitArea, boolean usedForUp, boolean usedForDown, boolean usedForOver) {
@@ -223,17 +226,14 @@ public class Button extends Symbol {
     protected int defineSymbol(Movie movie, SWFTagTypes timelineWriter, SWFTagTypes definitionWriter) throws IOException {
         int id = getNextId(movie);
 
-        List<ButtonRecord2> recs = new ArrayList<ButtonRecord2>();
-        for (Iterator<Layer> it = layers.iterator(); it.hasNext();) {
-            Layer layer = it.next();
+        List<ButtonRecord2> recs = new ArrayList<>();
+        for (Layer layer : layers) {
             recs.add(layer.getRecord(movie, timelineWriter, definitionWriter));
         }
 
         SWFActions acts = definitionWriter.tagDefineButton2(id, trackAsMenu, recs);
 
-        for (Iterator<Actions> it = actions.iterator(); it.hasNext();) {
-            Actions actions = it.next();
-
+        for (Actions actions : actions) {
             acts.start(actions.getConditions());
             acts.blob(actions.bytes);
         }

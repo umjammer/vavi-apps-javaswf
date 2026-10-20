@@ -43,6 +43,7 @@ import com.anotherbigidea.flash.interfaces.SWFTagTypes;
  * A QuickTime Movie Symbol
  */
 public class QTMovie extends Symbol {
+
     protected String name;
 
     public QTMovie(String name) {

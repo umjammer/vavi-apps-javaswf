@@ -55,6 +55,7 @@ import com.anotherbigidea.flash.writers.TagWriter;
  * A Flash Movie
  */
 public class Movie implements TimeLine {
+
     protected int width;
     protected int height;
     protected int frameRate;
@@ -63,13 +64,13 @@ public class Movie implements TimeLine {
     protected boolean isProtected;
     protected Map<String, List<ImportedSymbol>> importLibraries;
     protected List<ExportedSymbol> exportedSymbols;
-    protected SortedMap<Integer, Frame> frames = new TreeMap<Integer, Frame>();
+    protected final SortedMap<Integer, Frame> frames = new TreeMap<>();
     protected int frameCount = 0;
 
     // Table of characters defined so far in the movie - while writing out
-    protected Map<Object, Integer> definedSymbols = new HashMap<Object, Integer>();
-    protected int depth = 1; //the next available depth
-    protected int maxId = 1; //the next available symbol id    
+    protected final Map<Object, Integer> definedSymbols = new HashMap<>();
+    protected int depth = 1; // the next available depth
+    protected int maxId = 1; // the next available symbol id    
 
     /**
      * Create a movie with the default values -
@@ -165,7 +166,7 @@ public class Movie implements TimeLine {
             return null;
         }
 
-        Integer num = new Integer(frameNumber);
+        Integer num = frameNumber;
         Frame frame = frames.get(num);
 
         if (frame == null) {
@@ -185,7 +186,7 @@ public class Movie implements TimeLine {
     public Frame appendFrame() {
         frameCount++;
         Frame frame = new Frame(frameCount, this);
-        frames.put(new Integer(frameCount), frame);
+        frames.put(frameCount, frame);
         return frame;
     }
 
@@ -198,6 +199,7 @@ public class Movie implements TimeLine {
 
     /**
      * Set the next available depth in the timeline
+     *
      * @param depth must be >= 1
      */
     public void setAvailableDepth(int depth) {
@@ -209,18 +211,15 @@ public class Movie implements TimeLine {
 
     /**
      * Import symbols from another movie (Flash 5 only)
+     *
      * @return Symbols representing the imports
      */
     public ImportedSymbol[] importSymbols(String libraryName, String[] symbolNames) {
         if (importLibraries == null) {
-            importLibraries = new HashMap<String, List<ImportedSymbol>>();
+            importLibraries = new HashMap<>();
         }
 
-        List<ImportedSymbol> imports = importLibraries.get(libraryName);
-        if (imports == null) {
-            imports = new ArrayList<ImportedSymbol>();
-            importLibraries.put(libraryName, imports);
-        }
+        List<ImportedSymbol> imports = importLibraries.computeIfAbsent(libraryName, k -> new ArrayList<>());
 
         ImportedSymbol[] symbols = new ImportedSymbol[symbolNames.length];
 
@@ -244,6 +243,7 @@ public class Movie implements TimeLine {
 
     /**
      * Access the imported symbols.
+     *
      * @return an empty array if there are no imports
      */
     public ImportedSymbol[] getImportedSymbols() {
@@ -251,14 +251,11 @@ public class Movie implements TimeLine {
             return new ImportedSymbol[0];
         }
 
-        List<ImportedSymbol> imports = new ArrayList<ImportedSymbol>();
+        List<ImportedSymbol> imports = new ArrayList<>();
 
-        for (Iterator<List<ImportedSymbol>> iter = importLibraries.values().iterator();
-             iter.hasNext();) {
-            List<ImportedSymbol> list = iter.next();
-
-            for (Iterator<ImportedSymbol> i2 = list.iterator(); i2.hasNext();) {
-                imports.add(i2.next());
+        for (List<ImportedSymbol> list : importLibraries.values()) {
+            for (ImportedSymbol importedSymbol : list) {
+                imports.add(importedSymbol);
             }
         }
 
@@ -274,7 +271,7 @@ public class Movie implements TimeLine {
      */
     public void exportSymbols(String[] exportNames, Symbol[] symbols) {
         if (exportedSymbols == null) {
-            exportedSymbols = new ArrayList<ExportedSymbol>();
+            exportedSymbols = new ArrayList<>();
         }
 
         for (int i = 0; (i < exportNames.length) && (i < symbols.length);
@@ -285,6 +282,7 @@ public class Movie implements TimeLine {
 
     /**
      * Get the symbols exported from the movie
+     *
      * @return an empty array if there are no exports
      */
     public ExportedSymbol[] getExportedSymbols() {
@@ -316,10 +314,10 @@ public class Movie implements TimeLine {
         definedSymbols.clear();
         maxId = 1;
 
-        tagwriter.header(version, -1, //force length calculation
-                         width * SWFConstants.TWIPS, height * SWFConstants.TWIPS, frameRate, -1); //force frame calculation
+        tagwriter.header(version, -1, // force length calculation
+                width * SWFConstants.TWIPS, height * SWFConstants.TWIPS, frameRate, -1); // force frame calculation
 
-        //default backColor is white
+        // default backColor is white
         if (backColor == null) {
             backColor = new Color(255, 255, 255);
         }
@@ -332,18 +330,14 @@ public class Movie implements TimeLine {
 
         // Process Imports
         if ((importLibraries != null) && !importLibraries.isEmpty()) {
-            for (Iterator<String> keys = importLibraries.keySet().iterator();
-                 keys.hasNext();) {
-                String libName = keys.next();
+            for (String libName : importLibraries.keySet()) {
                 List<ImportedSymbol> imports = importLibraries.get(libName);
 
                 String[] names = new String[imports.size()];
                 int[] ids = new int[imports.size()];
 
                 int i = 0;
-                for (Iterator<ImportedSymbol> it = imports.iterator(); it.hasNext();) {
-                    ImportedSymbol imp = it.next();
-
+                for (ImportedSymbol imp : imports) {
                     names[i] = imp.getName();
                     ids[i] = imp.define(this, tagwriter, tagwriter);
 
@@ -360,9 +354,7 @@ public class Movie implements TimeLine {
             int[] ids = new int[exportedSymbols.size()];
 
             int i = 0;
-            for (Iterator<ExportedSymbol> it = exportedSymbols.iterator(); it.hasNext();) {
-                ExportedSymbol exp = it.next();
-
+            for (ExportedSymbol exp : exportedSymbols) {
                 names[i] = exp.getExportName();
                 ids[i] = exp.getSymbol().define(this, tagwriter, tagwriter);
 
@@ -373,12 +365,10 @@ public class Movie implements TimeLine {
         }
 
         int lastFrame = 0;
-        for (Iterator<Frame> iter = frames.values().iterator(); iter.hasNext();) {
-            Frame frame = iter.next();
-
+        for (Frame frame : frames.values()) {
             int number = frame.getFrameNumber();
 
-            //write any intermediate empty frames
+            // write any intermediate empty frames
             while (number > (lastFrame + 1)) {
                 tagwriter.tagShowFrame();
                 lastFrame++;
@@ -389,7 +379,7 @@ public class Movie implements TimeLine {
             lastFrame = number;
         }
 
-        //end of time line
+        // end of time line
         tagwriter.tagEnd();
     }
 

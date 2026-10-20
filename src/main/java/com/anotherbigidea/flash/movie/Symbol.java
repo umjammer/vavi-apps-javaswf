@@ -43,6 +43,7 @@ import com.anotherbigidea.flash.interfaces.SWFTagTypes;
  * Base class for all defined symbols
  */
 public abstract class Symbol {
+
     protected int id = 0;
 
     protected Symbol() {
@@ -64,17 +65,16 @@ public abstract class Symbol {
     /**
      * Make sure that the Symbol is fully defined in the given Movie and
      * return the character id
-     * @param tags a vector into which to place any definition tags required
      */
     protected int define(Movie movie, SWFTagTypes timelineWriter, SWFTagTypes definitionWriter) throws IOException {
         Integer integerId = movie.definedSymbols.get(this);
 
         if (integerId == null) {
-            integerId = new Integer(defineSymbol(movie, timelineWriter, definitionWriter));
+            integerId = defineSymbol(movie, timelineWriter, definitionWriter);
             movie.definedSymbols.put(this, integerId);
         }
 
-        id = integerId.intValue();
+        id = integerId;
         return id;
     }
 
@@ -84,6 +84,7 @@ public abstract class Symbol {
 
     /**
      * Override to provide symbol definition
+     *
      * @return the new symbol id
      */
     protected abstract int defineSymbol(Movie movie, SWFTagTypes timelineWriter, SWFTagTypes definitionwriter) throws IOException;

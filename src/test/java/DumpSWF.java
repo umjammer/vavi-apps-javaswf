@@ -9,11 +9,12 @@ import com.anotherbigidea.flash.writers.SWFTagDumper;
 /**
  * Reads and parses a SWF file and dumps a textual representation
  * to System.err.
- *
+ * <p>
  * SWFTagDumper is a class that implements the SWFTagTypes interface
  * so it can be driven by the TagParser class.
  */
 public class DumpSWF {
+
     /**
      * First arg is the name of the input SWF file
      * If second arg exists then actions are decompiled - the arg is ignored
@@ -27,7 +28,7 @@ public class DumpSWF {
         reader.readFile();
         in.close();
 
-        //must flush - or the output will be lost when the process ends
+        // must flush - or the output will be lost when the process ends
         dumper.flush();
     }
 }

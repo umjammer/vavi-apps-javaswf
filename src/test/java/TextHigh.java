@@ -12,6 +12,7 @@ import com.anotherbigidea.flash.structs.Color;
  * Copies the font glyph definitions from an existing SWF.
  */
 public class TextHigh {
+
     /**
      * arg[0] is the name of the SWF to be output.
      * Requires VerdanaFont.swf to be in the current directory

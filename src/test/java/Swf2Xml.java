@@ -2,16 +2,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import org.xml.sax.InputSource;
-
 import com.anotherbigidea.flash.readers.SWFSaxParser;
 import com.anotherbigidea.util.xml.XMLWriter;
+import org.xml.sax.InputSource;
 
 
 /**
  * Reads and parses a SWF file and write XML to System.out.
  */
 public class Swf2Xml {
+
     /**
      * @param args 0: in swf, 1: out xml
      */
@@ -26,5 +26,3 @@ public class Swf2Xml {
         in.close();
     }
 }
-
-/* */

@@ -60,21 +60,23 @@ import com.anotherbigidea.flash.writers.TagWriter;
  * Raw Audio Utilities
  */
 public class RawHelper {
+
     /**
      * Read an audio input file that is supported by the Java Sound API
+     *
      * @param soundBlocks used to return the sound blocks (byte[]) - can be null
      */
     public static SoundStreamHead streamingBlocks(InputStream audioFile, int framesPerSecond, List<byte[]> soundBlocks) throws IOException, UnsupportedAudioFileException {
         AudioInputStream audioIn = AudioSystem.getAudioInputStream(audioFile);
 
-        //audioIn = AudioSystem.getAudioInputStream( format, audioIn );
+        // audioIn = AudioSystem.getAudioInputStream( format, audioIn );
         AudioFormat format = audioIn.getFormat();
         int frameSize = format.getFrameSize();
         boolean isStereo = format.getChannels() == 2;
         boolean is16Bit = format.getSampleSizeInBits() > 8;
         int sampleRate = (int) format.getSampleRate();
 
-        //System.err.println( format );
+        // System.err.println( format );
         int rate = SWFConstants.SOUND_FREQ_5_5KHZ;
 
         if (sampleRate >= 44000) {
@@ -117,7 +119,6 @@ public class RawHelper {
                 read = 0;
 
                 while (((read = audioIn.read(b, read, frameSize - read)) < frameSize) && (read != -1)) {
-                    ;
                 }
 
                 if (read == -1) {
@@ -128,7 +129,7 @@ public class RawHelper {
                 num += read;
             }
 
-            //pad the block with zeroes
+            // pad the block with zeroes
             while (num < blockSize) {
                 bout.write(0x80);
                 num++;
@@ -147,14 +148,14 @@ public class RawHelper {
     public static Sound getSoundDefinition(InputStream audioFile, int framesPerSecond) throws IOException, UnsupportedAudioFileException {
         AudioInputStream audioIn = AudioSystem.getAudioInputStream(new BufferedInputStream(audioFile));
 
-        //audioIn = AudioSystem.getAudioInputStream( format, audioIn );
+        // audioIn = AudioSystem.getAudioInputStream( format, audioIn );
         AudioFormat format = audioIn.getFormat();
         int frameSize = format.getFrameSize();
         boolean isStereo = format.getChannels() == 2;
         boolean is16bit = format.getSampleSizeInBits() > 8;
         int sampleRate = (int) format.getSampleRate();
 
-        //System.err.println( format );
+        // System.err.println( format );
         int rate = SWFConstants.SOUND_FREQ_5_5KHZ;
 
         if (sampleRate >= 44000) {
@@ -211,16 +212,14 @@ public class RawHelper {
         tags.header(5, -1, 200, 200, 12, -1);
         tags.tagSetBackgroundColor(new Color(255, 255, 255));
 
-        List<byte[]> blocks = new ArrayList<byte[]>();
+        List<byte[]> blocks = new ArrayList<>();
 
         SoundStreamHead header = streamingBlocks(audioFile, 12, blocks);
         audioFile.close();
 
         header.write(tags);
 
-        for (Iterator<byte[]> it = blocks.iterator(); it.hasNext();) {
-            byte[] data = it.next();
-
+        for (byte[] data : blocks) {
             tags.tagSoundStreamBlock(data);
             tags.tagShowFrame();
         }

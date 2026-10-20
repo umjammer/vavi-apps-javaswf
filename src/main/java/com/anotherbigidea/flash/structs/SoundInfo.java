@@ -44,13 +44,15 @@ import com.anotherbigidea.io.OutStream;
  * A Sound Information structure - defines playback style and envelope
  */
 public class SoundInfo {
+
     /**
      * A Point in a sound envelope
      */
     public static class EnvelopePoint {
-        public int mark44;
-        public int level0;
-        public int level1;
+
+        public final int mark44;
+        public final int level0;
+        public final int level1;
 
         public EnvelopePoint(int mark44, int level0, int level1) {
             this.mark44 = mark44;
@@ -59,7 +61,7 @@ public class SoundInfo {
         }
     }
 
-    protected boolean noMultiplePlay; //only one instance can play at a time
+    protected boolean noMultiplePlay; // only one instance can play at a time
     protected boolean stopPlaying;
     protected EnvelopePoint[] envelope;
     protected int inPoint;
@@ -192,10 +194,10 @@ public class SoundInfo {
         if (hasEnvelope) {
             out.writeUI8(envelope.length);
 
-            for (int i = 0; i < envelope.length; i++) {
-                out.writeUI32(envelope[i].mark44);
-                out.writeUI16(envelope[i].level0);
-                out.writeUI16(envelope[i].level1);
+            for (EnvelopePoint envelopePoint : envelope) {
+                out.writeUI32(envelopePoint.mark44);
+                out.writeUI16(envelopePoint.level0);
+                out.writeUI16(envelopePoint.level1);
             }
         }
     }

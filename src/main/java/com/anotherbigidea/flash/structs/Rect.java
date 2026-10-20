@@ -44,6 +44,7 @@ import com.anotherbigidea.io.OutStream;
  * A SWF Rectangle structure
  */
 public class Rect {
+
     protected int bitSize = -1;
     protected int minX;
     protected int minY;
@@ -103,14 +104,14 @@ public class Rect {
     }
 
     public Rect() {
-        this(0, 0, 11000, 8000); //default size
+        this(0, 0, 11000, 8000); // default size
     }
 
     /**
      * Calculate the minimum bit size based on the current values
      */
     protected int getBitSize() {
-        if (bitSize == -1) { //bitsize not defined
+        if (bitSize == -1) { // bitsize not defined
             int bsMinX = OutStream.determineSignedBitSize(minX);
             int bsMaxX = OutStream.determineSignedBitSize(maxX);
             int bsMinY = OutStream.determineSignedBitSize(minY);

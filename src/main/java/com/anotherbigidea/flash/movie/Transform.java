@@ -42,6 +42,7 @@ import com.anotherbigidea.flash.structs.Matrix;
  * A Transformation matrix that has translation coordinates in pixels
  */
 public class Transform extends Matrix {
+
     /**
      * Copy an existing matrix
      */

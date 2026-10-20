@@ -43,12 +43,13 @@ import com.anotherbigidea.io.OutStream;
 
 
 /**
- * ButtonRecord2. 
+ * ButtonRecord2.
  *
- * @author	<a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
- * @version	0.00	041121	nsano	initial version <br>
+ * @author    <a href="mailto:vavivavi@yahoo.co.jp">Naohide Sano</a> (nsano)
+ * @version 0.00    041121	nsano	initial version <br>
  */
 public class ButtonRecord2 extends ButtonRecord {
+
     protected AlphaTransform transform;
 
     public AlphaTransform getTransform() {
@@ -63,7 +64,7 @@ public class ButtonRecord2 extends ButtonRecord {
      * Read a button record array
      */
     public static List<? extends ButtonRecord> read(InStream in) throws IOException {
-        List<ButtonRecord> records = new ArrayList<ButtonRecord>();
+        List<ButtonRecord> records = new ArrayList<>();
 
         int firstByte = 0;
         while ((firstByte = in.readUI8()) != 0) {
@@ -83,7 +84,7 @@ public class ButtonRecord2 extends ButtonRecord {
 //
 //        out.writeUI8(0);
 //    }
-//
+
     public ButtonRecord2(int id, int layer, Matrix matrix, AlphaTransform transform, int flags) {
         super(id, layer, matrix, flags);
         this.transform = transform;

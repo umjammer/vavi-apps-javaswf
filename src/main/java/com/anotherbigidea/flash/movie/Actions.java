@@ -48,6 +48,7 @@ import com.anotherbigidea.io.OutStream;
  * A set of actions
  */
 public class Actions extends ActionWriter {
+
     protected int conditions;
     protected byte[] bytes;
 
@@ -58,7 +59,7 @@ public class Actions extends ActionWriter {
         count = 0;
         bout = new ByteArrayOutputStream();
         out = new OutStream(bout);
-        pushValues = new ArrayList<Object>();
+        pushValues = new ArrayList<>();
         labels = null;
         jumps = null;
         skips = null;
@@ -95,7 +96,7 @@ public class Actions extends ActionWriter {
      * SWFActions interface
      */
     public void start(int conditions) throws IOException {
-        //do nothing
+        // do nothing
     }
 
     protected void writeBytes(byte[] bytes) throws IOException {
@@ -106,6 +107,6 @@ public class Actions extends ActionWriter {
      * SWFActions interface
      */
     public void done() throws IOException {
-        //do nothing
+        // do nothing
     }
 }

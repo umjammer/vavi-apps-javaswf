@@ -46,9 +46,10 @@ import com.anotherbigidea.flash.interfaces.SWFTagTypes;
  * A Movie Clip (aka Sprite) Symbol
  */
 public class MovieClip extends Symbol implements TimeLine {
-    protected SortedMap<Integer, Frame> frames = new TreeMap<Integer, Frame>();
+
+    protected final SortedMap<Integer, Frame> frames = new TreeMap<>();
     protected int frameCount = 0;
-    protected int depth = 1; //the next available depth    
+    protected int depth = 1; // the next available depth    
 
     public MovieClip() {
     }
@@ -72,7 +73,7 @@ public class MovieClip extends Symbol implements TimeLine {
             return null;
         }
 
-        Integer num = new Integer(frameNumber);
+        Integer num = frameNumber;
         Frame frame = frames.get(num);
 
         if (frame == null) {
@@ -92,7 +93,7 @@ public class MovieClip extends Symbol implements TimeLine {
     public Frame appendFrame() {
         frameCount++;
         Frame frame = new Frame(frameCount, this);
-        frames.put(new Integer(frameCount), frame);
+        frames.put(frameCount, frame);
         return frame;
     }
 
@@ -100,7 +101,7 @@ public class MovieClip extends Symbol implements TimeLine {
         frameCount++;
         frame.timeline = this;
         frame.frameNumber = frameCount;
-        frames.put(new Integer(frameCount), frame);
+        frames.put(frameCount, frame);
         return frame;
     }
 
@@ -113,6 +114,7 @@ public class MovieClip extends Symbol implements TimeLine {
 
     /**
      * Set the next available depth in the timeline
+     *
      * @param depth must be >= 1
      */
     public void setAvailableDepth(int depth) {
@@ -124,8 +126,7 @@ public class MovieClip extends Symbol implements TimeLine {
 
     protected int defineSymbol(Movie movie, SWFTagTypes timelineWriter, SWFTagTypes definitionWriter) throws IOException {
         // flush all symbol definitions
-        for (Iterator<Frame> iter = frames.values().iterator(); iter.hasNext();) {
-            Frame frame = iter.next();
+        for (Frame frame : frames.values()) {
             frame.flushDefinitions(movie, timelineWriter, definitionWriter);
         }
 
@@ -133,12 +134,10 @@ public class MovieClip extends Symbol implements TimeLine {
         SWFTagTypes spriteWriter = definitionWriter.tagDefineSprite(id);
 
         int lastFrame = 0;
-        for (Iterator<Frame> iter = frames.values().iterator(); iter.hasNext();) {
-            Frame frame = iter.next();
-
+        for (Frame frame : frames.values()) {
             int number = frame.getFrameNumber();
 
-            //write any intermediate empty frames
+            // write any intermediate empty frames
             while (number > (lastFrame + 1)) {
                 spriteWriter.tagShowFrame();
                 lastFrame++;
@@ -149,7 +148,7 @@ public class MovieClip extends Symbol implements TimeLine {
             lastFrame = number;
         }
 
-        //end of time line
+        // end of time line
         spriteWriter.tagEnd();
 
         return id;

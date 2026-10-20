@@ -41,12 +41,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import org.xml.sax.ContentHandler;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import com.anotherbigidea.flash.SWFConstants;
 import com.anotherbigidea.flash.interfaces.SWFActions;
@@ -69,7 +65,10 @@ import com.anotherbigidea.io.OutStream;
 import com.anotherbigidea.util.Base64;
 import com.anotherbigidea.util.xml.SaxParserBase;
 import com.anotherbigidea.util.xml.XMLWriter;
-
+import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import vavi.util.Debug;
 
 
@@ -78,12 +77,13 @@ import vavi.util.Debug;
  * and produces an XML representation of the Flash movie.
  */
 public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
-                                                           SWFShape, SWFActions,
-                                                           SWFText {
+        SWFShape, SWFActions,
+        SWFText {
+
     /**
      * The namespace for the SWF XML vocabulary
      */
-    public static final String NAMESPACE = "http://www.anotherbigidea.com/javaswf2";
+    public static final String NAMESPACE = "http:// www.anotherbigidea.com/javaswf2";
     protected String frameLabel;
     protected boolean definingSprite;
     protected int actionsType = 0; // 1=frame, 2=clip, 3=button
@@ -120,7 +120,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         parse(istream);
     }
 
-    /** */
+    /**  */
     protected void parse(InputStream istream) throws IOException {
         TagParser parser = new TagParser(this);
         SWFReader reader = new SWFReader(parser, istream);
@@ -133,8 +133,8 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * @see SWFTags interface
      */
     public void tag(int tagType, boolean longTag, byte[] contents)
-        throws IOException {
-        start("tag", new String[] { "type", Integer.toString(tagType) });
+            throws IOException {
+        start("tag", new String[] {"type", Integer.toString(tagType)});
 
         text(Base64.encode(contents));
 
@@ -146,22 +146,22 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      */
     public void header(int version, long length, int twipsWidth,
                        int twipsHeight, int frameRate, int frameCount)
-        throws IOException {
+            throws IOException {
         startDoc();
         start("movie",
-              new String[] {
-                  "version", Integer.toString(version), "width",
-                  Integer.toString(twipsWidth / SWFConstants.TWIPS), "height",
-                  Integer.toString(twipsHeight / SWFConstants.TWIPS), "rate",
-                  Integer.toString(frameRate)
-              });
+                new String[] {
+                        "version", Integer.toString(version), "width",
+                        Integer.toString(twipsWidth / SWFConstants.TWIPS), "height",
+                        Integer.toString(twipsHeight / SWFConstants.TWIPS), "rate",
+                        Integer.toString(frameRate)
+                });
     }
 
     /**
      * @see SWFTagTypes interface
      */
     public void tagEnd() throws IOException {
-        end(); //movie or sprite
+        end(); // movie or sprite
 
         if (!definingSprite) {
             endDoc();
@@ -175,7 +175,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      */
     public void tagShowFrame() throws IOException {
         element("frame",
-                (frameLabel == null) ? null : new String[] { "label", frameLabel });
+                (frameLabel == null) ? null : new String[] {"label", frameLabel});
 
         frameLabel = null;
     }
@@ -188,51 +188,51 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
                                byte[] soundData) throws IOException {
         String sndFormat = null;
         switch (format) {
-        case SWFConstants.SOUND_FORMAT_RAW:
-            sndFormat = "raw";
-            break;
-        case SWFConstants.SOUND_FORMAT_ADPCM:
-            sndFormat = "adpcm";
-            break;
-        case SWFConstants.SOUND_FORMAT_MP3:
-            sndFormat = "mp3";
-            break;
-        default:
-            break;
+            case SWFConstants.SOUND_FORMAT_RAW:
+                sndFormat = "raw";
+                break;
+            case SWFConstants.SOUND_FORMAT_ADPCM:
+                sndFormat = "adpcm";
+                break;
+            case SWFConstants.SOUND_FORMAT_MP3:
+                sndFormat = "mp3";
+                break;
+            default:
+                break;
         }
 
         String freq = null;
         switch (frequency) {
-        case SWFConstants.SOUND_FREQ_5_5KHZ:
-            freq = "5.5";
-            break;
-        case SWFConstants.SOUND_FREQ_11KHZ:
-            freq = "11";
-            break;
-        case SWFConstants.SOUND_FREQ_22KHZ:
-            freq = "22";
-            break;
-        case SWFConstants.SOUND_FREQ_44KHZ:
-            freq = "44";
-            break;
-        default:
-            break;
+            case SWFConstants.SOUND_FREQ_5_5KHZ:
+                freq = "5.5";
+                break;
+            case SWFConstants.SOUND_FREQ_11KHZ:
+                freq = "11";
+                break;
+            case SWFConstants.SOUND_FREQ_22KHZ:
+                freq = "22";
+                break;
+            case SWFConstants.SOUND_FREQ_44KHZ:
+                freq = "44";
+                break;
+            default:
+                break;
         }
 
         start("sound",
-              new String[] {
-                  "id", Integer.toString(id), "format", sndFormat, "rate", freq,
-                  "bits", (bits16 ? "16" : "8"), "stereo",
-                  (stereo ? "yes" : "no"), "sample-count",
-                  Integer.toString(sampleCount)
-              });
+                new String[] {
+                        "id", Integer.toString(id), "format", sndFormat, "rate", freq,
+                        "bits", (bits16 ? "16" : "8"), "stereo",
+                        (stereo ? "yes" : "no"), "sample-count",
+                        Integer.toString(sampleCount)
+                });
         text(Base64.encode(soundData));
         end();
     }
 
-    /** */
+    /**  */
     protected void soundInfo(SoundInfo info, String event, int id)
-        throws IOException {
+            throws IOException {
         int loopCount = info.getLoopCount();
         int inpoint = info.getInPoint();
         int outpoint = info.getOutPoint();
@@ -242,21 +242,21 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         String outpnt = (outpoint >= 0) ? Integer.toString(outpoint) : null;
 
         start("sound-info",
-              new String[] {
-                  "event", event, "sound-id", Integer.toString(id),
-                  "single-instance", (info.isNoMultiplePlay() ? "yes" : "no"),
-                  "stop-playing", (info.isStopPlaying() ? "yes" : "no"),
-                  "loop-count", loop, "fade-in", inpnt, "fade-out", outpnt
-              });
+                new String[] {
+                        "event", event, "sound-id", Integer.toString(id),
+                        "single-instance", (info.isNoMultiplePlay() ? "yes" : "no"),
+                        "stop-playing", (info.isStopPlaying() ? "yes" : "no"),
+                        "loop-count", loop, "fade-in", inpnt, "fade-out", outpnt
+                });
 
         SoundInfo.EnvelopePoint[] envelope = info.getEnvelope();
         if ((envelope != null) && (envelope.length > 0)) {
-            for (int i = 0; i < envelope.length; i++) {
+            for (SoundInfo.EnvelopePoint envelopePoint : envelope) {
                 element("envelope-point",
                         new String[] {
-                            "position", Integer.toString(envelope[i].mark44),
-                            "level-0", Integer.toString(envelope[i].level0),
-                            "level-1", Integer.toString(envelope[i].level1)
+                                "position", Integer.toString(envelopePoint.mark44),
+                                "level-0", Integer.toString(envelopePoint.level0),
+                                "level-1", Integer.toString(envelopePoint.level1)
                         });
             }
         }
@@ -275,8 +275,8 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
                                      SoundInfo pressSoundInfo,
                                      int releaseSoundId,
                                      SoundInfo releaseSoundInfo)
-        throws IOException {
-        start("button-sound", new String[] { "id", Integer.toString(buttonId) });
+            throws IOException {
+        start("button-sound", new String[] {"id", Integer.toString(buttonId)});
 
         if (rollOverSoundId != 0) {
             soundInfo(rollOverSoundInfo, "roll-over", rollOverSoundId);
@@ -293,14 +293,14 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         if (releaseSoundId != 0) {
             soundInfo(releaseSoundInfo, "release", releaseSoundId);
         }
-        end(); //button-sound
+        end(); // button-sound
     }
 
     /**
      * SWFTagTypes interface
      */
     public void tagStartSound(int soundId, SoundInfo info)
-        throws IOException {
+            throws IOException {
         start("start-sound", null);
         soundInfo(info, null, soundId);
         end();
@@ -311,69 +311,69 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
                                    boolean playbackStereo, int streamFormat,
                                    int streamFrequency, boolean stream16bit,
                                    boolean streamStereo, int averageSampleCount)
-        throws IOException {
+            throws IOException {
         String sndFormat = null;
         switch (streamFormat) {
-        case SWFConstants.SOUND_FORMAT_RAW:
-            sndFormat = "raw";
-            break;
-        case SWFConstants.SOUND_FORMAT_ADPCM:
-            sndFormat = "adpcm";
-            break;
-        case SWFConstants.SOUND_FORMAT_MP3:
-            sndFormat = "mp3";
-            break;
-        default:
-            break;
+            case SWFConstants.SOUND_FORMAT_RAW:
+                sndFormat = "raw";
+                break;
+            case SWFConstants.SOUND_FORMAT_ADPCM:
+                sndFormat = "adpcm";
+                break;
+            case SWFConstants.SOUND_FORMAT_MP3:
+                sndFormat = "mp3";
+                break;
+            default:
+                break;
         }
 
         String playfreq = null;
         switch (playbackFrequency) {
-        case SWFConstants.SOUND_FREQ_5_5KHZ:
-            playfreq = "5.5";
-            break;
-        case SWFConstants.SOUND_FREQ_11KHZ:
-            playfreq = "11";
-            break;
-        case SWFConstants.SOUND_FREQ_22KHZ:
-            playfreq = "22";
-            break;
-        case SWFConstants.SOUND_FREQ_44KHZ:
-            playfreq = "44";
-            break;
-        default:
-            break;
+            case SWFConstants.SOUND_FREQ_5_5KHZ:
+                playfreq = "5.5";
+                break;
+            case SWFConstants.SOUND_FREQ_11KHZ:
+                playfreq = "11";
+                break;
+            case SWFConstants.SOUND_FREQ_22KHZ:
+                playfreq = "22";
+                break;
+            case SWFConstants.SOUND_FREQ_44KHZ:
+                playfreq = "44";
+                break;
+            default:
+                break;
         }
 
         String streamfreq = null;
         switch (streamFrequency) {
-        case SWFConstants.SOUND_FREQ_5_5KHZ:
-            streamfreq = "5.5";
-            break;
-        case SWFConstants.SOUND_FREQ_11KHZ:
-            streamfreq = "11";
-            break;
-        case SWFConstants.SOUND_FREQ_22KHZ:
-            streamfreq = "22";
-            break;
-        case SWFConstants.SOUND_FREQ_44KHZ:
-            streamfreq = "44";
-            break;
-        default:
-            break;
+            case SWFConstants.SOUND_FREQ_5_5KHZ:
+                streamfreq = "5.5";
+                break;
+            case SWFConstants.SOUND_FREQ_11KHZ:
+                streamfreq = "11";
+                break;
+            case SWFConstants.SOUND_FREQ_22KHZ:
+                streamfreq = "22";
+                break;
+            case SWFConstants.SOUND_FREQ_44KHZ:
+                streamfreq = "44";
+                break;
+            default:
+                break;
         }
 
         element("sound-stream-header",
                 new String[] {
-                    "type", type, "play-rate", playfreq, "play-bits",
-                    (playback16bit ? "16" : "8"), "play-stereo",
-                    (playbackStereo ? "yes" : "no"),
-                    
-        "stream-format", sndFormat, "stream-rate", streamfreq, "stream-bits",
-                    (stream16bit ? "16" : "8"), "stream-stereo",
-                    (streamStereo ? "yes" : "no"),
-                    
-        "average-sample-count", Integer.toString(averageSampleCount)
+                        "type", type, "play-rate", playfreq, "play-bits",
+                        (playback16bit ? "16" : "8"), "play-stereo",
+                        (playbackStereo ? "yes" : "no"),
+
+                        "stream-format", sndFormat, "stream-rate", streamfreq, "stream-bits",
+                        (stream16bit ? "16" : "8"), "stream-stereo",
+                        (streamStereo ? "yes" : "no"),
+
+                        "average-sample-count", Integer.toString(averageSampleCount)
                 });
     }
 
@@ -385,10 +385,10 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
                                    boolean playbackStereo, int streamFormat,
                                    int streamFrequency, boolean stream16bit,
                                    boolean streamStereo, int averageSampleCount)
-        throws IOException {
+            throws IOException {
         soundStreamHead("1", playbackFrequency, playback16bit, playbackStereo,
-                        streamFormat, streamFrequency, stream16bit,
-                        streamStereo, averageSampleCount);
+                streamFormat, streamFrequency, stream16bit,
+                streamStereo, averageSampleCount);
     }
 
     /**
@@ -399,10 +399,10 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
                                     boolean playbackStereo, int streamFormat,
                                     int streamFrequency, boolean stream16bit,
                                     boolean streamStereo, int averageSampleCount)
-        throws IOException {
+            throws IOException {
         soundStreamHead("2", playbackFrequency, playback16bit, playbackStereo,
-                        streamFormat, streamFrequency, stream16bit,
-                        streamStereo, averageSampleCount);
+                streamFormat, streamFrequency, stream16bit,
+                streamStereo, averageSampleCount);
     }
 
     /**
@@ -472,9 +472,9 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public void tagDefineBits(int id, byte[] imageData)
-        throws IOException {
+            throws IOException {
         start("jpeg",
-              new String[] { "id", Integer.toString(id), "common-header", "yes" });
+                new String[] {"id", Integer.toString(id), "common-header", "yes"});
         start("image", null);
         text(Base64.encode(imageData));
         end();
@@ -485,7 +485,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public void tagJPEGTables(byte[] jpegEncodingData)
-        throws IOException {
+            throws IOException {
         start("jpeg-header", null);
         text(Base64.encode(jpegEncodingData));
         end();
@@ -495,8 +495,8 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public void tagDefineBitsJPEG3(int id, byte[] imageData, byte[] alphaData)
-        throws IOException {
-        start("jpeg", new String[] { "id", Integer.toString(id) });
+            throws IOException {
+        start("jpeg", new String[] {"id", Integer.toString(id)});
 
         start("image", null);
         text(Base64.encode(imageData));
@@ -513,7 +513,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFActions tagDoAction() throws IOException {
-        actionsType = 1; //frame actions
+        actionsType = 1; // frame actions
         return this;
     }
 
@@ -521,18 +521,18 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFShape tagDefineShape(int id, Rect outline)
-        throws IOException {
+            throws IOException {
         start("shape",
-              new String[] {
-                  "id", Integer.toString(id), "has-alpha", "no", "min-x",
-                  Double.toString(((double) outline.getMinX()) / SWFConstants.TWIPS),
-                  "min-y",
-                  Double.toString(((double) outline.getMinY()) / SWFConstants.TWIPS),
-                  "max-x",
-                  Double.toString(((double) outline.getMaxX()) / SWFConstants.TWIPS),
-                  "max-y",
-                  Double.toString(((double) outline.getMaxY()) / SWFConstants.TWIPS)
-              });
+                new String[] {
+                        "id", Integer.toString(id), "has-alpha", "no", "min-x",
+                        Double.toString(((double) outline.getMinX()) / SWFConstants.TWIPS),
+                        "min-y",
+                        Double.toString(((double) outline.getMinY()) / SWFConstants.TWIPS),
+                        "max-x",
+                        Double.toString(((double) outline.getMaxX()) / SWFConstants.TWIPS),
+                        "max-y",
+                        Double.toString(((double) outline.getMaxY()) / SWFConstants.TWIPS)
+                });
 
         return this;
     }
@@ -541,18 +541,18 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFShape tagDefineShape2(int id, Rect outline)
-        throws IOException {
+            throws IOException {
         start("shape",
-              new String[] {
-                  "id", Integer.toString(id), "has-alpha", "no", "min-x",
-                  Double.toString(((double) outline.getMinX()) / SWFConstants.TWIPS),
-                  "min-y",
-                  Double.toString(((double) outline.getMinY()) / SWFConstants.TWIPS),
-                  "max-x",
-                  Double.toString(((double) outline.getMaxX()) / SWFConstants.TWIPS),
-                  "max-y",
-                  Double.toString(((double) outline.getMaxY()) / SWFConstants.TWIPS)
-              });
+                new String[] {
+                        "id", Integer.toString(id), "has-alpha", "no", "min-x",
+                        Double.toString(((double) outline.getMinX()) / SWFConstants.TWIPS),
+                        "min-y",
+                        Double.toString(((double) outline.getMinY()) / SWFConstants.TWIPS),
+                        "max-x",
+                        Double.toString(((double) outline.getMaxX()) / SWFConstants.TWIPS),
+                        "max-y",
+                        Double.toString(((double) outline.getMaxY()) / SWFConstants.TWIPS)
+                });
 
         return this;
     }
@@ -561,18 +561,18 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFShape tagDefineShape3(int id, Rect outline)
-        throws IOException {
+            throws IOException {
         start("shape",
-              new String[] {
-                  "id", Integer.toString(id), "has-alpha", "yes", "min-x",
-                  Double.toString(((double) outline.getMinX()) / SWFConstants.TWIPS),
-                  "min-y",
-                  Double.toString(((double) outline.getMinY()) / SWFConstants.TWIPS),
-                  "max-x",
-                  Double.toString(((double) outline.getMaxX()) / SWFConstants.TWIPS),
-                  "max-y",
-                  Double.toString(((double) outline.getMaxY()) / SWFConstants.TWIPS)
-              });
+                new String[] {
+                        "id", Integer.toString(id), "has-alpha", "yes", "min-x",
+                        Double.toString(((double) outline.getMinX()) / SWFConstants.TWIPS),
+                        "min-y",
+                        Double.toString(((double) outline.getMinY()) / SWFConstants.TWIPS),
+                        "max-x",
+                        Double.toString(((double) outline.getMaxX()) / SWFConstants.TWIPS),
+                        "max-y",
+                        Double.toString(((double) outline.getMaxY()) / SWFConstants.TWIPS)
+                });
 
         return this;
     }
@@ -581,7 +581,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public void tagFreeCharacter(int charId) throws IOException {
-        element("release", new String[] { "id", Integer.toString(charId) });
+        element("release", new String[] {"id", Integer.toString(charId)});
     }
 
     /**
@@ -590,10 +590,10 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
     public void tagPlaceObject(int charId, int depth, Matrix matrix,
                                AlphaTransform cxform) throws IOException {
         start("place",
-              new String[] {
-                  "id", Integer.toString(charId), "depth",
-                  Integer.toString(depth)
-              });
+                new String[] {
+                        "id", Integer.toString(charId), "depth",
+                        Integer.toString(depth)
+                });
 
         if (matrix != null) {
             writeMatrix(matrix);
@@ -602,7 +602,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
             writeCXForm(cxform);
         }
 
-        end(); //place
+        end(); // place
     }
 
     /**
@@ -612,8 +612,8 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
                                       int charId, Matrix matrix,
                                       AlphaTransform cxform, int ratio,
                                       String name, int clipActionFlags)
-        throws IOException {
-        List<String> attrs = new ArrayList<String>();
+            throws IOException {
+        List<String> attrs = new ArrayList<>();
 
         if (charId > 0) {
             attrs.add("id");
@@ -638,7 +638,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         attrs.add("depth");
         attrs.add(Integer.toString(depth));
 
-        if ((name != null) && (name.length() > 0)) {
+        if ((name != null) && (!name.isEmpty())) {
             attrs.add("name");
             attrs.add(name);
         }
@@ -656,11 +656,11 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         }
 
         if (clipActionFlags == 0) {
-            end(); //place
+            end(); // place
             return null;
         }
 
-        actionsType = 2; //clip actions
+        actionsType = 2; // clip actions
         return this;
     }
 
@@ -668,15 +668,15 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public void tagRemoveObject(int charId, int depth)
-        throws IOException {
-        element("remove", new String[] { "depth", Integer.toString(depth) });
+            throws IOException {
+        element("remove", new String[] {"depth", Integer.toString(depth)});
     }
 
     /**
      * SWFTagTypes interface
      */
     public void tagRemoveObject2(int depth) throws IOException {
-        element("remove", new String[] { "depth", Integer.toString(depth) });
+        element("remove", new String[] {"depth", Integer.toString(depth)});
     }
 
     /**
@@ -685,9 +685,9 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
     public void tagSetBackgroundColor(Color color) throws IOException {
         element("background-color",
                 new String[] {
-                    "red", Integer.toString(color.getRed()), "green",
-                    Integer.toString(color.getGreen()), "blue",
-                    Integer.toString(color.getBlue())
+                        "red", Integer.toString(color.getRed()), "green",
+                        Integer.toString(color.getGreen()), "blue",
+                        Integer.toString(color.getBlue())
                 });
     }
 
@@ -702,7 +702,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFTagTypes tagDefineSprite(int id) throws IOException {
-        start("sprite", new String[] { "id", Integer.toString(id) });
+        start("sprite", new String[] {"id", Integer.toString(id)});
         definingSprite = true;
         return this;
     }
@@ -713,10 +713,10 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
     public void tagProtect(byte[] password) throws IOException {
         element("protect",
                 ((password == null) || (password.length == 0)) ? null
-                                                               : new String[] {
-                                                                   "password",
-                                                                   Base64.encode(password)
-                                                               });
+                        : new String[] {
+                        "password",
+                        Base64.encode(password)
+                });
     }
 
     /**
@@ -725,18 +725,18 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
     public void tagEnableDebug(byte[] password) throws IOException {
         element("enable-debug",
                 ((password == null) || (password.length == 0)) ? null
-                                                               : new String[] {
-                                                                   "password",
-                                                                   Base64.encode(password)
-                                                               });
+                        : new String[] {
+                        "password",
+                        Base64.encode(password)
+                });
     }
 
     /**
      * SWFTagTypes interface
      */
     public SWFVectors tagDefineFont(int id, int numGlyphs)
-        throws IOException {
-        start("text-font", new String[] { "id", Integer.toString(id) });
+            throws IOException {
+        start("text-font", new String[] {"id", Integer.toString(id)});
         glyphCount = numGlyphs;
         start("glyph", null);
         return this;
@@ -747,7 +747,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      */
     public void tagDefineFontInfo(int fontId, String fontName, int flags,
                                   int[] codes) throws IOException {
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
 
         if ((flags & SWFConstants.FONT_UNICODE) != 0) {
             buff.append("unicode");
@@ -766,13 +766,13 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         }
 
         start("font-info",
-              new String[] {
-                  "id", Integer.toString(fontId), "name", fontName, "flags",
-                  buff.toString().trim()
-              });
+                new String[] {
+                        "id", Integer.toString(fontId), "name", fontName, "flags",
+                        buff.toString().trim()
+                });
 
-        for (int i = 0; i < codes.length; i++) {
-            element("code", new String[] { "code", Integer.toString(codes[i]) });
+        for (int code : codes) {
+            element("code", new String[] {"code", Integer.toString(code)});
         }
 
         end();
@@ -786,8 +786,8 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
                                      int leading, int[] codes, int[] advances,
                                      Rect[] bounds, int[] kernCodes1,
                                      int[] kernCodes2, int[] kernAdjustments)
-        throws IOException {
-        StringBuffer buff = new StringBuffer();
+            throws IOException {
+        StringBuilder buff = new StringBuilder();
 
         if ((flags & SWFConstants.FONT2_UNICODE) != 0) {
             buff.append("unicode");
@@ -806,15 +806,15 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         }
 
         start("edit-font",
-              new String[] {
-                  "id", Integer.toString(id), "flags", buff.toString().trim(),
-                  "name", name, "ascent",
-                  Double.toString(((double) ascent) / SWFConstants.TWIPS),
-                  "descent",
-                  Double.toString(((double) descent) / SWFConstants.TWIPS),
-                  "leading",
-                  Double.toString(((double) leading) / SWFConstants.TWIPS)
-              });
+                new String[] {
+                        "id", Integer.toString(id), "flags", buff.toString().trim(),
+                        "name", name, "ascent",
+                        Double.toString(((double) ascent) / SWFConstants.TWIPS),
+                        "descent",
+                        Double.toString(((double) descent) / SWFConstants.TWIPS),
+                        "leading",
+                        Double.toString(((double) leading) / SWFConstants.TWIPS)
+                });
 
         if ((kernCodes1 != null) && (kernCodes1.length > 0)) {
             start("kerning-info", null);
@@ -822,9 +822,9 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
             for (int i = 0; i < kernCodes1.length; i++) {
                 element("kerning",
                         new String[] {
-                            "code-1", Integer.toString(kernCodes1[i]), "code-2",
-                            Integer.toString(kernCodes2[i]), "offset",
-                            Double.toString(((double) kernAdjustments[i]) / SWFConstants.TWIPS)
+                                "code-1", Integer.toString(kernCodes1[i]), "code-2",
+                                Integer.toString(kernCodes2[i]), "offset",
+                                Double.toString(((double) kernAdjustments[i]) / SWFConstants.TWIPS)
                         });
             }
 
@@ -852,18 +852,18 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         }
 
         start("glyph",
-              new String[] {
-                  "code", Integer.toString(glyphCodes[0]), "advance",
-                  Double.toString(((double) advance) / SWFConstants.TWIPS),
-                  "min-x",
-                  Double.toString(((double) bound.getMinX()) / SWFConstants.TWIPS),
-                  "min-y",
-                  Double.toString(((double) bound.getMinY()) / SWFConstants.TWIPS),
-                  "max-x",
-                  Double.toString(((double) bound.getMaxX()) / SWFConstants.TWIPS),
-                  "max-y",
-                  Double.toString(((double) bound.getMaxY()) / SWFConstants.TWIPS)
-              });
+                new String[] {
+                        "code", Integer.toString(glyphCodes[0]), "advance",
+                        Double.toString(((double) advance) / SWFConstants.TWIPS),
+                        "min-x",
+                        Double.toString(((double) bound.getMinX()) / SWFConstants.TWIPS),
+                        "min-y",
+                        Double.toString(((double) bound.getMinY()) / SWFConstants.TWIPS),
+                        "max-x",
+                        Double.toString(((double) bound.getMaxX()) / SWFConstants.TWIPS),
+                        "max-y",
+                        Double.toString(((double) bound.getMaxY()) / SWFConstants.TWIPS)
+                });
 
         return this;
     }
@@ -890,51 +890,51 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         }
 
         start("edit-field",
-              new String[] {
-                  "id", Integer.toString(fieldId), "font",
-                  Integer.toString(fontId), "size",
-                  Double.toString(((double) fontSize) / SWFConstants.TWIPS),
-                  "limit", (charLimit > 0) ? Integer.toString(charLimit) : null,
-                  "left-margin",
-                  Double.toString(((double) leftMargin) / SWFConstants.TWIPS),
-                  "right-margin",
-                  Double.toString(((double) rightMargin) / SWFConstants.TWIPS),
-                  "indentation",
-                  Double.toString(((double) indentation) / SWFConstants.TWIPS),
-                  "linespacing",
-                  Double.toString(((double) lineSpacing) / SWFConstants.TWIPS),
-                  "name", fieldName, "text", initialText, "align", align,
-                  "min-x",
-                  Double.toString(((double) boundary.getMinX()) / SWFConstants.TWIPS),
-                  "min-y",
-                  Double.toString(((double) boundary.getMinY()) / SWFConstants.TWIPS),
-                  "max-x",
-                  Double.toString(((double) boundary.getMaxX()) / SWFConstants.TWIPS),
-                  "max-y",
-                  Double.toString(((double) boundary.getMaxY()) / SWFConstants.TWIPS),
-                  "selectable",
-                  ((flags & SWFConstants.TEXTFIELD_NO_SELECTION) != 0) ? "no"
-                                                                       : "yes",
-                  "border",
-                  ((flags & SWFConstants.TEXTFIELD_DRAW_BORDER) != 0) ? "yes"
-                                                                      : "no",
-                  "html",
-                  ((flags & SWFConstants.TEXTFIELD_HTML) != 0) ? "yes" : "no",
-                  "system-font",
-                  ((flags & SWFConstants.TEXTFIELD_FONT_GLYPHS) != 0) ? "no"
-                                                                      : "yes",
-                  "wordwrap",
-                  ((flags & SWFConstants.TEXTFIELD_WORD_WRAP) != 0) ? "yes" : "no",
-                  "multiline",
-                  ((flags & SWFConstants.TEXTFIELD_IS_MULTILINE) != 0) ? "yes"
-                                                                       : "no",
-                  "password",
-                  ((flags & SWFConstants.TEXTFIELD_IS_PASSWORD) != 0) ? "yes"
-                                                                      : "no",
-                  "read-only",
-                  ((flags & SWFConstants.TEXTFIELD_DISABLE_EDIT) != 0) ? "yes"
-                                                                       : "no"
-              });
+                new String[] {
+                        "id", Integer.toString(fieldId), "font",
+                        Integer.toString(fontId), "size",
+                        Double.toString(((double) fontSize) / SWFConstants.TWIPS),
+                        "limit", (charLimit > 0) ? Integer.toString(charLimit) : null,
+                        "left-margin",
+                        Double.toString(((double) leftMargin) / SWFConstants.TWIPS),
+                        "right-margin",
+                        Double.toString(((double) rightMargin) / SWFConstants.TWIPS),
+                        "indentation",
+                        Double.toString(((double) indentation) / SWFConstants.TWIPS),
+                        "linespacing",
+                        Double.toString(((double) lineSpacing) / SWFConstants.TWIPS),
+                        "name", fieldName, "text", initialText, "align", align,
+                        "min-x",
+                        Double.toString(((double) boundary.getMinX()) / SWFConstants.TWIPS),
+                        "min-y",
+                        Double.toString(((double) boundary.getMinY()) / SWFConstants.TWIPS),
+                        "max-x",
+                        Double.toString(((double) boundary.getMaxX()) / SWFConstants.TWIPS),
+                        "max-y",
+                        Double.toString(((double) boundary.getMaxY()) / SWFConstants.TWIPS),
+                        "selectable",
+                        ((flags & SWFConstants.TEXTFIELD_NO_SELECTION) != 0) ? "no"
+                                : "yes",
+                        "border",
+                        ((flags & SWFConstants.TEXTFIELD_DRAW_BORDER) != 0) ? "yes"
+                                : "no",
+                        "html",
+                        ((flags & SWFConstants.TEXTFIELD_HTML) != 0) ? "yes" : "no",
+                        "system-font",
+                        ((flags & SWFConstants.TEXTFIELD_FONT_GLYPHS) != 0) ? "no"
+                                : "yes",
+                        "wordwrap",
+                        ((flags & SWFConstants.TEXTFIELD_WORD_WRAP) != 0) ? "yes" : "no",
+                        "multiline",
+                        ((flags & SWFConstants.TEXTFIELD_IS_MULTILINE) != 0) ? "yes"
+                                : "no",
+                        "password",
+                        ((flags & SWFConstants.TEXTFIELD_IS_PASSWORD) != 0) ? "yes"
+                                : "no",
+                        "read-only",
+                        ((flags & SWFConstants.TEXTFIELD_DISABLE_EDIT) != 0) ? "yes"
+                                : "no"
+                });
 
         writeColor(textColor);
 
@@ -945,7 +945,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFText tagDefineText(int id, Rect bounds, Matrix matrix)
-        throws IOException {
+            throws IOException {
         return defineText(id, bounds, matrix, false);
     }
 
@@ -953,24 +953,24 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFText tagDefineText2(int id, Rect bounds, Matrix matrix)
-        throws IOException {
+            throws IOException {
         return defineText(id, bounds, matrix, true);
     }
 
     protected SWFText defineText(int id, Rect bounds, Matrix matrix,
                                  boolean hasAlpha) throws IOException {
         start("text",
-              new String[] {
-                  "has-alpha", hasAlpha ? "yes" : "no", "id",
-                  Integer.toString(id), "min-x",
-                  Double.toString(((double) bounds.getMinX()) / SWFConstants.TWIPS),
-                  "min-y",
-                  Double.toString(((double) bounds.getMinY()) / SWFConstants.TWIPS),
-                  "max-x",
-                  Double.toString(((double) bounds.getMaxX()) / SWFConstants.TWIPS),
-                  "max-y",
-                  Double.toString(((double) bounds.getMaxY()) / SWFConstants.TWIPS)
-              });
+                new String[] {
+                        "has-alpha", hasAlpha ? "yes" : "no", "id",
+                        Integer.toString(id), "min-x",
+                        Double.toString(((double) bounds.getMinX()) / SWFConstants.TWIPS),
+                        "min-y",
+                        Double.toString(((double) bounds.getMinY()) / SWFConstants.TWIPS),
+                        "max-x",
+                        Double.toString(((double) bounds.getMaxX()) / SWFConstants.TWIPS),
+                        "max-y",
+                        Double.toString(((double) bounds.getMaxY()) / SWFConstants.TWIPS)
+                });
 
         writeMatrix(matrix);
 
@@ -981,13 +981,13 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFActions tagDefineButton(int id, List<? extends ButtonRecord> buttonRecords)
-        throws IOException {
+            throws IOException {
         start("button",
-              new String[] { "id", Integer.toString(id), "menu", "no" });
+                new String[] {"id", Integer.toString(id), "menu", "no"});
 
         for (ButtonRecord rec : buttonRecords) {
 
-            StringBuffer buff = new StringBuffer();
+            StringBuilder buff = new StringBuilder();
             if (rec.isHitTest()) {
                 buff.append("hit");
             }
@@ -1002,11 +1002,11 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
             }
 
             start("layer",
-                  new String[] {
-                      "id", Integer.toString(rec.getCharId()), "depth",
-                      Integer.toString(rec.getLayer()), "for",
-                      buff.toString().trim()
-                  });
+                    new String[] {
+                            "id", Integer.toString(rec.getCharId()), "depth",
+                            Integer.toString(rec.getLayer()), "for",
+                            buff.toString().trim()
+                    });
 
             Matrix matrix = rec.getMatrix();
 
@@ -1025,8 +1025,8 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public void tagButtonCXForm(int buttonId, ColorTransform transform)
-        throws IOException {
-        start("button-cxform", new String[] { "id", Integer.toString(buttonId) });
+            throws IOException {
+        start("button-cxform", new String[] {"id", Integer.toString(buttonId)});
         writeCXForm(transform);
         end();
     }
@@ -1035,15 +1035,15 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFActions tagDefineButton2(int id, boolean trackAsMenu, List<? extends ButtonRecord> buttonRecord2s)
-        throws IOException {
+            throws IOException {
         start("button",
-              new String[] {
-                  "id", Integer.toString(id), "menu", trackAsMenu ? "yes" : "no"
-              });
+                new String[] {
+                        "id", Integer.toString(id), "menu", trackAsMenu ? "yes" : "no"
+                });
 
         for (ButtonRecord rec : buttonRecord2s) {
 
-            StringBuffer buff = new StringBuffer();
+            StringBuilder buff = new StringBuilder();
             if (rec.isHitTest()) {
                 buff.append("hit");
             }
@@ -1058,11 +1058,11 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
             }
 
             start("layer",
-                  new String[] {
-                      "id", Integer.toString(rec.getCharId()), "depth",
-                      Integer.toString(rec.getLayer()), "for",
-                      buff.toString().trim()
-                  });
+                    new String[] {
+                            "id", Integer.toString(rec.getCharId()), "depth",
+                            Integer.toString(rec.getLayer()), "for",
+                            buff.toString().trim()
+                    });
 
             Matrix matrix = rec.getMatrix();
             AlphaTransform cxform = ((ButtonRecord2) rec).getTransform();
@@ -1090,45 +1090,45 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         for (int i = 0; i < names.length; i++) {
             element("symbol",
                     new String[] {
-                        "name", names[i], "id", Integer.toString(ids[i])
+                            "name", names[i], "id", Integer.toString(ids[i])
                     });
         }
 
-        end(); //export
+        end(); // export
     }
 
     /**
      * SWFTagTypes interface
      */
     public void tagImport(String movieName, String[] names, int[] ids)
-        throws IOException {
-        start("import", new String[] { "movie", movieName });
+            throws IOException {
+        start("import", new String[] {"movie", movieName});
 
         for (int i = 0; i < names.length; i++) {
             element("symbol",
                     new String[] {
-                        "name", names[i], "id", Integer.toString(ids[i])
+                            "name", names[i], "id", Integer.toString(ids[i])
                     });
         }
 
-        end(); //export
+        end(); // export
     }
 
     /**
      * SWFTagTypes interface
      */
     public void tagDefineQuickTimeMovie(int id, String filename)
-        throws IOException {
+            throws IOException {
         element("quicktime-movie",
-                new String[] { "id", Integer.toString(id), "name", filename });
+                new String[] {"id", Integer.toString(id), "name", filename});
     }
 
     /**
      * SWFTagTypes interface
      */
     public void tagDefineBitsJPEG2(int id, byte[] data)
-        throws IOException {
-        start("jpeg", new String[] { "id", Integer.toString(id) });
+            throws IOException {
+        start("jpeg", new String[] {"id", Integer.toString(id)});
 
         start("image", null);
         text(Base64.encode(data));
@@ -1141,7 +1141,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public void tagDefineBitsJPEG2(int id, InputStream jpegImage)
-        throws IOException {
+            throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         OutStream out = new OutStream(bout);
 
@@ -1167,20 +1167,20 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
      * SWFTagTypes interface
      */
     public SWFShape tagDefineMorphShape(int id, Rect startBounds, Rect endBounds)
-        throws IOException {
-        start("morph", new String[] { "id", Integer.toString(id) });
+            throws IOException {
+        start("morph", new String[] {"id", Integer.toString(id)});
 
         start("shape",
-              new String[] {
-                  "min-x",
-                  Double.toString(((double) startBounds.getMinX()) / SWFConstants.TWIPS),
-                  "min-y",
-                  Double.toString(((double) startBounds.getMinY()) / SWFConstants.TWIPS),
-                  "max-x",
-                  Double.toString(((double) startBounds.getMaxX()) / SWFConstants.TWIPS),
-                  "max-y",
-                  Double.toString(((double) startBounds.getMaxY()) / SWFConstants.TWIPS)
-              });
+                new String[] {
+                        "min-x",
+                        Double.toString(((double) startBounds.getMinX()) / SWFConstants.TWIPS),
+                        "min-y",
+                        Double.toString(((double) startBounds.getMinY()) / SWFConstants.TWIPS),
+                        "max-x",
+                        Double.toString(((double) startBounds.getMaxX()) / SWFConstants.TWIPS),
+                        "max-y",
+                        Double.toString(((double) startBounds.getMaxY()) / SWFConstants.TWIPS)
+                });
 
         morphEndRect = endBounds;
         morph = true;
@@ -1193,7 +1193,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
     public void tagDefineBitsLossless(int id, int format, int width,
                                       int height, Color[] colors,
                                       byte[] imageData)
-        throws IOException {
+            throws IOException {
         defineBitsLossless(id, format, width, height, colors, imageData, false);
     }
 
@@ -1203,7 +1203,7 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
     public void tagDefineBitsLossless2(int id, int format, int width,
                                        int height, Color[] colors,
                                        byte[] imageData)
-        throws IOException {
+            throws IOException {
         defineBitsLossless(id, format, width, height, colors, imageData, true);
     }
 
@@ -1220,17 +1220,17 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         }
 
         start("bitmap",
-              new String[] {
-                  "id", Integer.toString(id), "width", Integer.toString(width),
-                  "height", Integer.toString(height), "has-alpha",
-                  hasAlpha ? "yes" : "no", "bits", bits
-              });
+                new String[] {
+                        "id", Integer.toString(id), "width", Integer.toString(width),
+                        "height", Integer.toString(height), "has-alpha",
+                        hasAlpha ? "yes" : "no", "bits", bits
+                });
 
         if ((colors != null) && (colors.length > 0)) {
             start("colors", null);
 
-            for (int i = 0; i < colors.length; i++) {
-                writeColor(colors[i]);
+            for (Color color : colors) {
+                writeColor(color);
             }
 
             end();
@@ -1260,16 +1260,16 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         if (morph) {
             if (morphEndRect != null) {
                 start("shape",
-                      new String[] {
-                          "min-x",
-                          Double.toString(((double) morphEndRect.getMinX()) / SWFConstants.TWIPS),
-                          "min-y",
-                          Double.toString(((double) morphEndRect.getMinY()) / SWFConstants.TWIPS),
-                          "max-x",
-                          Double.toString(((double) morphEndRect.getMaxX()) / SWFConstants.TWIPS),
-                          "max-y",
-                          Double.toString(((double) morphEndRect.getMaxY()) / SWFConstants.TWIPS)
-                      });
+                        new String[] {
+                                "min-x",
+                                Double.toString(((double) morphEndRect.getMinX()) / SWFConstants.TWIPS),
+                                "min-y",
+                                Double.toString(((double) morphEndRect.getMinY()) / SWFConstants.TWIPS),
+                                "max-x",
+                                Double.toString(((double) morphEndRect.getMaxX()) / SWFConstants.TWIPS),
+                                "max-y",
+                                Double.toString(((double) morphEndRect.getMaxY()) / SWFConstants.TWIPS)
+                        });
 
                 morphEndRect = null;
             } else {
@@ -1281,19 +1281,19 @@ public class SWFSaxParser extends SaxParserBase implements SWFTagTypes,
         }
 
         if (glyphCount > 0) {
-            if (glyphCount == 1) //end of glyphs
-             {
+            if (glyphCount == 1) // end of glyphs
+            {
                 glyphCount = 0;
                 glyphRects = null;
                 glyphAdvances = null;
                 glyphCodes = null;
-                end(); //font
+                end(); // font
             } else {
                 if (glyphRects == null || glyphRects.length == 0) { // TODO vavi len 0
                     start("glyph", null);
-if (glyphRects.length == 0) {
- Debug.println("done: glyphRects.length: " + glyphRects.length);
-}
+                    if (glyphRects.length == 0) {
+                        Debug.println("done: glyphRects.length: " + glyphRects.length);
+                    }
                     end();
                 } else {
                     int idx = glyphRects.length - glyphCount + 1;
@@ -1304,19 +1304,19 @@ if (glyphRects.length == 0) {
                     }
 
                     start("glyph",
-                          new String[] {
-                              "code", Integer.toString(glyphCodes[idx]),
-                              "advance",
-                              Double.toString(((double) advance) / SWFConstants.TWIPS),
-                              "min-x",
-                              Double.toString(((double) bound.getMinX()) / SWFConstants.TWIPS),
-                              "min-y",
-                              Double.toString(((double) bound.getMinY()) / SWFConstants.TWIPS),
-                              "max-x",
-                              Double.toString(((double) bound.getMaxX()) / SWFConstants.TWIPS),
-                              "max-y",
-                              Double.toString(((double) bound.getMaxY()) / SWFConstants.TWIPS)
-                          });
+                            new String[] {
+                                    "code", Integer.toString(glyphCodes[idx]),
+                                    "advance",
+                                    Double.toString(((double) advance) / SWFConstants.TWIPS),
+                                    "min-x",
+                                    Double.toString(((double) bound.getMinX()) / SWFConstants.TWIPS),
+                                    "min-y",
+                                    Double.toString(((double) bound.getMinY()) / SWFConstants.TWIPS),
+                                    "max-x",
+                                    Double.toString(((double) bound.getMaxX()) / SWFConstants.TWIPS),
+                                    "max-y",
+                                    Double.toString(((double) bound.getMaxY()) / SWFConstants.TWIPS)
+                            });
                 }
             }
 
@@ -1330,8 +1330,8 @@ if (glyphRects.length == 0) {
     public void line(int dx, int dy) throws IOException {
         element("line",
                 new String[] {
-                    "dx", Double.toString(((double) dx) / SWFConstants.TWIPS),
-                    "dy", Double.toString(((double) dy) / SWFConstants.TWIPS)
+                        "dx", Double.toString(((double) dx) / SWFConstants.TWIPS),
+                        "dy", Double.toString(((double) dy) / SWFConstants.TWIPS)
                 });
     }
 
@@ -1341,10 +1341,10 @@ if (glyphRects.length == 0) {
     public void curve(int cx, int cy, int dx, int dy) throws IOException {
         element("curve",
                 new String[] {
-                    "cx", Double.toString(((double) cx) / SWFConstants.TWIPS),
-                    "cy", Double.toString(((double) cy) / SWFConstants.TWIPS),
-                    "dx", Double.toString(((double) dx) / SWFConstants.TWIPS),
-                    "dy", Double.toString(((double) dy) / SWFConstants.TWIPS)
+                        "cx", Double.toString(((double) cx) / SWFConstants.TWIPS),
+                        "cy", Double.toString(((double) cy) / SWFConstants.TWIPS),
+                        "dx", Double.toString(((double) dx) / SWFConstants.TWIPS),
+                        "dy", Double.toString(((double) dy) / SWFConstants.TWIPS)
                 });
     }
 
@@ -1354,8 +1354,8 @@ if (glyphRects.length == 0) {
     public void move(int x, int y) throws IOException {
         element("move",
                 new String[] {
-                    "x", Double.toString(((double) x) / SWFConstants.TWIPS), "y",
-                    Double.toString(((double) y) / SWFConstants.TWIPS)
+                        "x", Double.toString(((double) x) / SWFConstants.TWIPS), "y",
+                        Double.toString(((double) y) / SWFConstants.TWIPS)
                 });
     }
 
@@ -1369,7 +1369,7 @@ if (glyphRects.length == 0) {
         }
 
         element("set-primary-fill",
-                new String[] { "index", Integer.toString(styleIndex) });
+                new String[] {"index", Integer.toString(styleIndex)});
     }
 
     /**
@@ -1381,7 +1381,7 @@ if (glyphRects.length == 0) {
         }
 
         element("set-secondary-fill",
-                new String[] { "index", Integer.toString(styleIndex) });
+                new String[] {"index", Integer.toString(styleIndex)});
     }
 
     /**
@@ -1393,7 +1393,7 @@ if (glyphRects.length == 0) {
         }
 
         element("set-line-style",
-                new String[] { "index", Integer.toString(styleIndex) });
+                new String[] {"index", Integer.toString(styleIndex)});
     }
 
     /**
@@ -1410,87 +1410,86 @@ if (glyphRects.length == 0) {
      */
     public void defineFillStyle(Matrix matrix, int[] ratios, Color[] colors,
                                 boolean radial) throws IOException {
-        start("gradient-fill", new String[] { "radial", radial ? "yes" : "no" });
+        start("gradient-fill", new String[] {"radial", radial ? "yes" : "no"});
         writeMatrix(matrix);
 
         start("gradient", null);
         for (int i = 0; i < ratios.length; i++) {
-            start("step", new String[] { "ratio", Integer.toString(ratios[i]) });
+            start("step", new String[] {"ratio", Integer.toString(ratios[i])});
             writeColor(colors[i]);
-            end(); //step
+            end(); // step
         }
-        end(); //gradient
-        end(); //gradient-fill 
+        end(); // gradient
+        end(); // gradient-fill 
     }
 
     /**
      * SWFShape interface
      */
     public void defineFillStyle(int bitmapId, Matrix matrix, boolean clipped)
-        throws IOException {
+            throws IOException {
         start("image-fill",
-              new String[] {
-                  "clipped", clipped ? "yes" : "no", "image-id",
-                  Integer.toString(bitmapId)
-              });
+                new String[] {
+                        "clipped", clipped ? "yes" : "no", "image-id",
+                        Integer.toString(bitmapId)
+                });
 
         writeMatrix(matrix);
 
-        end(); //image-fill 
+        end(); // image-fill 
     }
 
     /**
      * SWFShape interface
      */
     public void defineLineStyle(int width, Color color)
-        throws IOException {
+            throws IOException {
         start("line-style",
-              new String[] {
-                  "width",
-                  Double.toString(((double) width) / SWFConstants.TWIPS)
-              });
+                new String[] {
+                        "width",
+                        Double.toString(((double) width) / SWFConstants.TWIPS)
+                });
 
         writeColor(color);
 
-        end(); //line-style
+        end(); // line-style
     }
 
     protected void writeMatrix(Matrix matrix) throws IOException {
         element("matrix",
                 new String[] {
-                    "skew0", Double.toString(matrix.getSkew0()), "skew1",
-                    Double.toString(matrix.getSkew1()), "scale-x",
-                    Double.toString(matrix.getScaleX()), "scale-y",
-                    Double.toString(matrix.getScaleY()), "x",
-                    Double.toString(matrix.getTranslateX() / SWFConstants.TWIPS),
-                    "y",
-                    Double.toString(matrix.getTranslateY() / SWFConstants.TWIPS)
+                        "skew0", Double.toString(matrix.getSkew0()), "skew1",
+                        Double.toString(matrix.getSkew1()), "scale-x",
+                        Double.toString(matrix.getScaleX()), "scale-y",
+                        Double.toString(matrix.getScaleY()), "x",
+                        Double.toString(matrix.getTranslateX() / SWFConstants.TWIPS),
+                        "y",
+                        Double.toString(matrix.getTranslateY() / SWFConstants.TWIPS)
                 });
     }
 
     protected void writeColor(Color color) throws IOException {
-        if (color instanceof AlphaColor) {
-            AlphaColor acolor = (AlphaColor) color;
+        if (color instanceof AlphaColor acolor) {
 
             element("color",
                     new String[] {
-                        "red", Integer.toString(acolor.getRed()), "green",
-                        Integer.toString(acolor.getGreen()), "blue",
-                        Integer.toString(acolor.getBlue()), "alpha",
-                        Integer.toString(acolor.getAlpha())
+                            "red", Integer.toString(acolor.getRed()), "green",
+                            Integer.toString(acolor.getGreen()), "blue",
+                            Integer.toString(acolor.getBlue()), "alpha",
+                            Integer.toString(acolor.getAlpha())
                     });
         } else {
             element("color",
                     new String[] {
-                        "red", Integer.toString(color.getRed()), "green",
-                        Integer.toString(color.getGreen()), "blue",
-                        Integer.toString(color.getBlue())
+                            "red", Integer.toString(color.getRed()), "green",
+                            Integer.toString(color.getGreen()), "blue",
+                            Integer.toString(color.getBlue())
                     });
         }
     }
 
     protected void writeCXForm(ColorTransform cxform) throws IOException {
-        List<String> attrs = new ArrayList<String>();
+        List<String> attrs = new ArrayList<>();
 
         int addRed = cxform.getAddRed();
         int addGreen = cxform.getAddGreen();
@@ -1529,8 +1528,7 @@ if (glyphRects.length == 0) {
             attrs.add(Double.toString(multBlue));
         }
 
-        if (cxform instanceof AlphaTransform) {
-            AlphaTransform axform = (AlphaTransform) cxform;
+        if (cxform instanceof AlphaTransform axform) {
 
             int addAlpha = axform.getAddAlpha();
             double multAlpha = axform.getMultAlpha();
@@ -1558,12 +1556,12 @@ if (glyphRects.length == 0) {
     public void start(int flags) throws IOException {
         String[] attrs = null;
 
-        if (actionsType == 1) //frame actions
-         {
-            //nothing
-        } else if (actionsType == 2) //clip
-         {
-            StringBuffer conds = new StringBuffer();
+        if (actionsType == 1) // frame actions
+        {
+            // nothing
+        } else if (actionsType == 2) // clip
+        {
+            StringBuilder conds = new StringBuilder();
 
             if ((flags & SWFConstants.CLIP_ACTION_ON_LOAD) > 0) {
                 conds.append("load");
@@ -1594,10 +1592,10 @@ if (glyphRects.length == 0) {
             }
 
             String conditions = conds.toString().trim();
-            attrs = new String[] { "conditions", conditions };
-        } else if (actionsType == 3) //button
-         {
-            StringBuffer conds = new StringBuffer();
+            attrs = new String[] {"conditions", conditions};
+        } else if (actionsType == 3) // button
+        {
+            StringBuilder conds = new StringBuilder();
 
             if (flags == 0) {
                 flags = SWFConstants.BUTTON2_OVERDOWN2OVERUP;
@@ -1633,16 +1631,16 @@ if (glyphRects.length == 0) {
 
             String conditions = conds.toString().trim();
 
-            if ((flags & 0xfe00) > 0) //has a key press condition
-             {
+            if ((flags & 0xfe00) > 0) // has a key press condition
+            {
                 int charcode = (flags & 0xfe00) >> 9;
 
                 attrs = new String[] {
-                            "conditions", conditions, "char-code",
-                            Integer.toString(charcode)
-                        };
+                        "conditions", conditions, "char-code",
+                        Integer.toString(charcode)
+                };
             } else {
-                attrs = new String[] { "conditions", conditions };
+                attrs = new String[] {"conditions", conditions};
             }
         }
 
@@ -1660,19 +1658,19 @@ if (glyphRects.length == 0) {
      * SWFActions interface
      */
     public void blob(byte[] blob) throws IOException {
-        //not used
+        // not used
     }
 
     /**
      * SWFActions interface
      */
     public void unknown(int code, byte[] data) throws IOException {
-        start("unknown", new String[] { "code", Integer.toString(code) });
-if (data != null) { // TODO vavi null
-        text(Base64.encode(data));
-} else {
- Debug.println("unknown: data: " + data);
-}
+        start("unknown", new String[] {"code", Integer.toString(code)});
+        if (data != null) { // TODO vavi null
+            text(Base64.encode(data));
+        } else {
+            Debug.println("unknown: data: " + Arrays.toString(data));
+        }
         end();
     }
 
@@ -1680,7 +1678,7 @@ if (data != null) { // TODO vavi null
      * SWFActions interface
      */
     public void jumpLabel(String label) throws IOException {
-        element("jump-label", new String[] { "label", label });
+        element("jump-label", new String[] {"label", label});
     }
 
     /**
@@ -1697,21 +1695,21 @@ if (data != null) { // TODO vavi null
      */
     public void gotoFrame(int frameNumber) throws IOException {
         element("goto-frame",
-                new String[] { "number", Integer.toString(frameNumber) });
+                new String[] {"number", Integer.toString(frameNumber)});
     }
 
     /**
      * SWFActions interface
      */
     public void gotoFrame(String label) throws IOException {
-        element("goto-frame", new String[] { "label", label });
+        element("goto-frame", new String[] {"label", label});
     }
 
     /**
      * SWFActions interface
      */
     public void getURL(String url, String target) throws IOException {
-        element("get-url", new String[] { "url", url, "target", target });
+        element("get-url", new String[] {"url", url, "target", target});
     }
 
     /**
@@ -1760,11 +1758,11 @@ if (data != null) { // TODO vavi null
      * SWFActions interface
      */
     public void waitForFrame(int frameNumber, String jumpLabel)
-        throws IOException {
+            throws IOException {
         element("wait-for-frame",
                 new String[] {
-                    "number", Integer.toString(frameNumber), "jump-label",
-                    jumpLabel
+                        "number", Integer.toString(frameNumber), "jump-label",
+                        jumpLabel
                 });
     }
 
@@ -1772,21 +1770,21 @@ if (data != null) { // TODO vavi null
      * SWFActions interface
      */
     public void setTarget(String target) throws IOException {
-        element("set-target", new String[] { "target", target });
+        element("set-target", new String[] {"target", target});
     }
 
     /**
      * SWFActions interface
      */
     public void push(String value) throws IOException {
-        element("push", new String[] { "string", value });
+        element("push", new String[] {"string", value});
     }
 
     /**
      * SWFActions interface
      */
     public void push(float value) throws IOException {
-        element("push", new String[] { "float", Float.toString(value) });
+        element("push", new String[] {"float", Float.toString(value)});
     }
 
     /**
@@ -1947,14 +1945,14 @@ if (data != null) { // TODO vavi null
      * SWFActions interface
      */
     public void jump(String jumpLabel) throws IOException {
-        element("jump", new String[] { "jump-label", jumpLabel });
+        element("jump", new String[] {"jump-label", jumpLabel});
     }
 
     /**
      * SWFActions interface
      */
     public void ifJump(String jumpLabel) throws IOException {
-        element("if", new String[] { "jump-label", jumpLabel });
+        element("if", new String[] {"jump-label", jumpLabel});
     }
 
     /**
@@ -2003,14 +2001,14 @@ if (data != null) { // TODO vavi null
             target = "load-vars-into";
         }
 
-        element("get-url", new String[] { "send-vars", method, target, mode });
+        element("get-url", new String[] {"send-vars", method, target, mode});
     }
 
     /**
      * SWFActions interface
      */
     public void gotoFrame(boolean play) throws IOException {
-        element("goto-frame", new String[] { "play", play ? "yes" : "no" });
+        element("goto-frame", new String[] {"play", play ? "yes" : "no"});
     }
 
     /**
@@ -2066,7 +2064,7 @@ if (data != null) { // TODO vavi null
      * SWFActions interface
      */
     public void waitForFrame(String jumpLabel) throws IOException {
-        element("wait-for-frame", new String[] { "jump-label", jumpLabel });
+        element("wait-for-frame", new String[] {"jump-label", jumpLabel});
     }
 
     /**
@@ -2110,9 +2108,9 @@ if (data != null) { // TODO vavi null
     public void lookupTable(String[] values) throws IOException {
         start("lookup-table", null);
 
-        for (int i = 0; i < values.length; i++) {
+        for (String value : values) {
             start("value", null);
-            text(values[i]);
+            text(value);
             end();
         }
 
@@ -2123,16 +2121,16 @@ if (data != null) { // TODO vavi null
      * SWFActions interface
      */
     public void startFunction(String name, String[] paramNames)
-        throws IOException {
-        StringBuffer parms = new StringBuffer();
+            throws IOException {
+        StringBuilder parms = new StringBuilder();
 
-        for (int i = 0; i < paramNames.length; i++) {
+        for (String paramName : paramNames) {
             parms.append(" ");
-            parms.append(paramNames[i]);
+            parms.append(paramName);
         }
 
         start("function",
-              new String[] { "name", name, "params", parms.toString().trim() });
+                new String[] {"name", name, "params", parms.toString().trim()});
     }
 
     /**
@@ -2364,14 +2362,14 @@ if (data != null) { // TODO vavi null
      */
     public void storeInRegister(int registerNumber) throws IOException {
         element("store",
-                new String[] { "register", Integer.toString(registerNumber) });
+                new String[] {"register", Integer.toString(registerNumber)});
     }
 
     /**
      * SWFActions interface
      */
     public void push(double value) throws IOException {
-        element("push", new String[] { "double", Double.toString(value) });
+        element("push", new String[] {"double", Double.toString(value)});
     }
 
     /**
@@ -2386,21 +2384,21 @@ if (data != null) { // TODO vavi null
      */
     public void pushRegister(int registerNumber) throws IOException {
         element("push",
-                new String[] { "register", Integer.toString(registerNumber) });
+                new String[] {"register", Integer.toString(registerNumber)});
     }
 
     /**
      * SWFActions interface
      */
     public void push(boolean value) throws IOException {
-        element("push", new String[] { "boolean", "" + value });
+        element("push", new String[] {"boolean", "" + value});
     }
 
     /**
      * SWFActions interface
      */
     public void push(int value) throws IOException {
-        element("push", new String[] { "int", Integer.toString(value) });
+        element("push", new String[] {"int", Integer.toString(value)});
     }
 
     /**
@@ -2408,7 +2406,7 @@ if (data != null) { // TODO vavi null
      */
     public void lookup(int dictionaryIndex) throws IOException {
         element("push",
-                new String[] { "lookup", Integer.toString(dictionaryIndex) });
+                new String[] {"lookup", Integer.toString(dictionaryIndex)});
     }
 
     /**
@@ -2417,8 +2415,8 @@ if (data != null) { // TODO vavi null
     public void font(int fontId, int textHeight) throws IOException {
         element("set-font",
                 new String[] {
-                    "id", Integer.toString(fontId), "size",
-                    Double.toString(((double) textHeight) / SWFConstants.TWIPS)
+                        "id", Integer.toString(fontId), "size",
+                        Double.toString(((double) textHeight) / SWFConstants.TWIPS)
                 });
     }
 
@@ -2435,7 +2433,7 @@ if (data != null) { // TODO vavi null
     public void setX(int x) throws IOException {
         element("set-x",
                 new String[] {
-                    "x", Double.toString(((double) x) / SWFConstants.TWIPS)
+                        "x", Double.toString(((double) x) / SWFConstants.TWIPS)
                 });
     }
 
@@ -2445,7 +2443,7 @@ if (data != null) { // TODO vavi null
     public void setY(int y) throws IOException {
         element("set-y",
                 new String[] {
-                    "y", Double.toString(((double) y) / SWFConstants.TWIPS)
+                        "y", Double.toString(((double) y) / SWFConstants.TWIPS)
                 });
     }
 
@@ -2453,13 +2451,13 @@ if (data != null) { // TODO vavi null
      * SWFText interface
      */
     public void text(int[] glyphIndices, int[] glyphAdvances)
-        throws IOException {
+            throws IOException {
         for (int i = 0; i < glyphIndices.length; i++) {
             element("char",
                     new String[] {
-                        "glyph-index", Integer.toString(glyphIndices[i]),
-                        "advance",
-                        Double.toString(((double) glyphAdvances[i]) / SWFConstants.TWIPS)
+                            "glyph-index", Integer.toString(glyphIndices[i]),
+                            "advance",
+                            Double.toString(((double) glyphAdvances[i]) / SWFConstants.TWIPS)
                     });
         }
     }
@@ -2480,7 +2478,7 @@ if (data != null) { // TODO vavi null
     /** @see com.anotherbigidea.flash.interfaces.SWFTagTypes#tagDefineFontInfo2(int, java.lang.String, int, int[], int) */
     public void tagDefineFontInfo2(int fontId, String fontName, int flags,
                                    int[] codes, int languageCode)
-        throws IOException {
+            throws IOException {
         // TODO Auto-generated method stub
     }
 
@@ -2497,7 +2495,7 @@ if (data != null) { // TODO vavi null
 
     /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagFrameLabel(java.lang.String, boolean) */
     public void tagFrameLabel(String label, boolean isAnchor)
-        throws IOException {
+            throws IOException {
         // TODO Auto-generated method stub
     }
 

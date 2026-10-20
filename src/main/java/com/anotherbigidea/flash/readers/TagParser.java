@@ -70,13 +70,13 @@ import vavi.util.Debug;
  * Parse Tags and drive a SWFTagTypes interface.
  */
 public class TagParser implements SWFTags, SWFConstants, SWFFileSignature {
+
     protected String mStringEncoding = SWFConstants.STRING_ENCODING_MX;
     protected int mFlashVersion = SWFConstants.FLASH_MX_VERSION;
-    protected SWFTagTypes mTagtypes;
+    protected final SWFTagTypes mTagtypes;
 
     /** for debugging */
     // protected byte[] contents;
-
     public TagParser(SWFTagTypes tagtypes) {
         mTagtypes = tagtypes;
     }
@@ -96,7 +96,7 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature {
     public void header(int version, long length, int twipsWidth, int twipsHeight, int frameRate, int frameCount) throws IOException {
         mTagtypes.header(version, length, twipsWidth, twipsHeight, frameRate, frameCount);
 
-        //revert to old encoding for pre-MX
+        // revert to old encoding for pre-MX
         if (version < SWFConstants.FLASH_MX_VERSION) {
             mStringEncoding = "Windows-31J" /* SWFConstants.STRING_ENCODING_PRE_MX */;
         }
@@ -107,83 +107,83 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature {
     /**
      * Interface SWFTags
 
-    public void tag( int tagType, boolean longTag, byte[] contents )
-        throws IOException
-    {
-        //this.contents = contents; //for debugging
+     public void tag( int tagType, boolean longTag, byte[] contents )
+     throws IOException
+     {
+     // this.contents = contents; // for debugging
 
-        int length = ( contents != null ) ? contents.length : 0;
+     int length = ( contents != null ) ? contents.length : 0;
 
-        InStream in = ( length > 0 ) ? new InStream( contents ) : null;
+     InStream in = ( length > 0 ) ? new InStream( contents ) : null;
 
-        //System.err.println( "IN  Tag " + tagType + " " + longTag + " " + length );
+     // System.err.println( "IN  Tag " + tagType + " " + longTag + " " + length );
 
-        switch( tagType )
-        {
-            case TAG_END:       tagtypes.tagEnd(); break;
-            case TAG_SHOWFRAME: tagtypes.tagShowFrame(); break;
+     switch( tagType )
+     {
+     case TAG_END:       tagtypes.tagEnd(); break;
+     case TAG_SHOWFRAME: tagtypes.tagShowFrame(); break;
 
-            //case TAG_DEFINESHAPE :
-            //case TAG_DEFINESHAPE2:
-            //case TAG_DEFINESHAPE3: parseDefineShape( tagType, in ); break;
+     // case TAG_DEFINESHAPE :
+     // case TAG_DEFINESHAPE2:
+     // case TAG_DEFINESHAPE3: parseDefineShape( tagType, in ); break;
 
-            case TAG_DOACTION      : parseDoAction( in ); break;
-            //case TAG_FREECHARACTER : tagtypes.tagFreeCharacter( in.readUI16() ); break;
-            //case TAG_PLACEOBJECT   : parsePlaceObject( in, length ); break;
-            case TAG_PLACEOBJECT2  : parsePlaceObject2( in ); break;
-            //case TAG_REMOVEOBJECT  : tagtypes.tagRemoveObject( in.readUI16(), in.readUI16() ); break;
-            //case TAG_REMOVEOBJECT2 : tagtypes.tagRemoveObject2( in.readUI16() ); break;
-            //case TAG_SETBACKGROUNDCOLOR : tagtypes.tagSetBackgroundColor( new Color(in) ); break;
-            //case TAG_FRAMELABEL    : tagtypes.tagFrameLabel( in.readString() ); break;
-            case TAG_DEFINESPRITE  : parseDefineSprite( in ); break;
-            //case TAG_PROTECT       : tagtypes.tagProtect( (length>0) ? in.read(length) : null ); break;
-            //case TAG_ENABLEDEBUG   : tagtypes.tagEnableDebug( (length>0) ? in.read(length) : null ); break;
-            //case TAG_DEFINEFONT    : parseDefineFont( in ); break;
-            //case TAG_DEFINEFONTINFO: parseFontInfo( in, length ); break;
-            //case TAG_DEFINEFONT2   : parseDefineFont2( in ); break;
-            //case TAG_DEFINETEXTFIELD: parseDefineTextField( in ); break;
+     case TAG_DOACTION      : parseDoAction( in ); break;
+     // case TAG_FREECHARACTER : tagtypes.tagFreeCharacter( in.readUI16() ); break;
+     // case TAG_PLACEOBJECT   : parsePlaceObject( in, length ); break;
+     case TAG_PLACEOBJECT2  : parsePlaceObject2( in ); break;
+     // case TAG_REMOVEOBJECT  : tagtypes.tagRemoveObject( in.readUI16(), in.readUI16() ); break;
+     // case TAG_REMOVEOBJECT2 : tagtypes.tagRemoveObject2( in.readUI16() ); break;
+     // case TAG_SETBACKGROUNDCOLOR : tagtypes.tagSetBackgroundColor( new Color(in) ); break;
+     // case TAG_FRAMELABEL    : tagtypes.tagFrameLabel( in.readString() ); break;
+     case TAG_DEFINESPRITE  : parseDefineSprite( in ); break;
+     // case TAG_PROTECT       : tagtypes.tagProtect( (length>0) ? in.read(length) : null ); break;
+     // case TAG_ENABLEDEBUG   : tagtypes.tagEnableDebug( (length>0) ? in.read(length) : null ); break;
+     // case TAG_DEFINEFONT    : parseDefineFont( in ); break;
+     // case TAG_DEFINEFONTINFO: parseFontInfo( in, length ); break;
+     // case TAG_DEFINEFONT2   : parseDefineFont2( in ); break;
+     // case TAG_DEFINETEXTFIELD: parseDefineTextField( in ); break;
 
-            //case TAG_DEFINETEXT    :
-            //case TAG_DEFINETEXT2   : parseDefineText( tagType, in ); break;
+     // case TAG_DEFINETEXT    :
+     // case TAG_DEFINETEXT2   : parseDefineText( tagType, in ); break;
 
-            case TAG_DEFINEBUTTON  : parseDefineButton( in ); break;
-            case TAG_DEFINEBUTTON2 : parseDefineButton2( in ); break;
-            //case TAG_DEFINEBUTTONCXFORM : parseButtonCXForm( in ); break;
+     case TAG_DEFINEBUTTON  : parseDefineButton( in ); break;
+     case TAG_DEFINEBUTTON2 : parseDefineButton2( in ); break;
+     // case TAG_DEFINEBUTTONCXFORM : parseButtonCXForm( in ); break;
 
-            //case TAG_EXPORT : parseExport( in ); break;
-            //case TAG_IMPORT : parseImport( in ); break;
+     // case TAG_EXPORT : parseExport( in ); break;
+     // case TAG_IMPORT : parseImport( in ); break;
 
-            //case TAG_DEFINEQUICKTIMEMOVIE : tagtypes.tagDefineQuickTimeMovie( in.readUI16(), in.readString() ); break;
+     // case TAG_DEFINEQUICKTIMEMOVIE : tagtypes.tagDefineQuickTimeMovie( in.readUI16(), in.readString() ); break;
 
-            //case TAG_DEFINEBITSJPEG2     : parseDefineJPEG2( in, length ); break;
-            //case TAG_DEFINEBITSLOSSLESS  : parseDefineBitsLossless( in, length, false ); break;
-            //case TAG_DEFINEBITSLOSSLESS2 : parseDefineBitsLossless( in, length, true  ); break;
+     // case TAG_DEFINEBITSJPEG2     : parseDefineJPEG2( in, length ); break;
+     // case TAG_DEFINEBITSLOSSLESS  : parseDefineBitsLossless( in, length, false ); break;
+     // case TAG_DEFINEBITSLOSSLESS2 : parseDefineBitsLossless( in, length, true  ); break;
 
-            //case TAG_DEFINEMORPHSHAPE : parseMorphShape( in ); break;
+     // case TAG_DEFINEMORPHSHAPE : parseMorphShape( in ); break;
 
-            //case TAG_NAMECHARACTER:     tagtypes.tagNameCharacter   ( contents ); break;
-            //case TAG_GENERATOR_TEXT:    tagtypes.tagGeneratorText   ( contents ); break;
-            //case TAG_TEMPLATECOMMAND:   tagtypes.tagGeneratorCommand( contents ); break;
-            //case TAG_FLASHGENERATOR:    tagtypes.tagGenerator       ( contents ); break;
-            //case TAG_GEN_EXTERNAL_FONT: tagtypes.tagGeneratorFont   ( contents ); break;
-            //case TAG_SERIALNUMBER:      tagtypes.tagSerialNumber( in.readString() ); break;
+     // case TAG_NAMECHARACTER:     tagtypes.tagNameCharacter   ( contents ); break;
+     // case TAG_GENERATOR_TEXT:    tagtypes.tagGeneratorText   ( contents ); break;
+     // case TAG_TEMPLATECOMMAND:   tagtypes.tagGeneratorCommand( contents ); break;
+     // case TAG_FLASHGENERATOR:    tagtypes.tagGenerator       ( contents ); break;
+     // case TAG_GEN_EXTERNAL_FONT: tagtypes.tagGeneratorFont   ( contents ); break;
+     // case TAG_SERIALNUMBER:      tagtypes.tagSerialNumber( in.readString() ); break;
 
-            //case TAG_DEFINESOUND:       parseDefineSound( in ); break;
-            //case TAG_STARTSOUND:        parseStartSound( in ); break;
-            //case TAG_DEFINEBUTTONSOUND: parseDefineButtonSound( in ); break;
-            //case TAG_SOUNDSTREAMHEAD:   parseSoundStreamHead( true, in ); break;
-            //case TAG_SOUNDSTREAMHEAD2:  parseSoundStreamHead( false, in ); break;
-            //case TAG_SOUNDSTREAMBLOCK:  parseSoundStreamBlock( in ); break;
+     // case TAG_DEFINESOUND:       parseDefineSound( in ); break;
+     // case TAG_STARTSOUND:        parseStartSound( in ); break;
+     // case TAG_DEFINEBUTTONSOUND: parseDefineButtonSound( in ); break;
+     // case TAG_SOUNDSTREAMHEAD:   parseSoundStreamHead( true, in ); break;
+     // case TAG_SOUNDSTREAMHEAD2:  parseSoundStreamHead( false, in ); break;
+     // case TAG_SOUNDSTREAMBLOCK:  parseSoundStreamBlock( in ); break;
 
-            //case TAG_DEFINEBITS:      parseDefineBits( in ); break;
-            //case TAG_JPEGTABLES:      parseDefineJPEGTables( in ); break;
-            //case TAG_DEFINEBITSJPEG3: parseDefineBitsJPEG3( in ); break;
+     // case TAG_DEFINEBITS:      parseDefineBits( in ); break;
+     // case TAG_JPEGTABLES:      parseDefineJPEGTables( in ); break;
+     // case TAG_DEFINEBITSJPEG3: parseDefineBitsJPEG3( in ); break;
 
-            default: // Unknown Tag Type
-                tagtypes.tag( tagType, longTag, contents );
-                break;
-        }
-    } */
+     default: // Unknown Tag Type
+     tagtypes.tag( tagType, longTag, contents );
+     break;
+     }
+     } */
 
     /**
      * Interface SWFTags
@@ -194,157 +194,157 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature {
 
         InStream in = (length > 0) ? new InStream(contents) : null;
 
-//System.err.println("IN  Tag " + tagType + " " + longTag + " " + length );
+// System.err.println("IN  Tag " + tagType + " " + longTag + " " + length );
         switch (tagType) {
-        case TAG_END:
-            mTagtypes.tagEnd();
-            break;
-        case TAG_SHOWFRAME:
-            mTagtypes.tagShowFrame();
-            break;
-        case TAG_DEFINESHAPE:
-        case TAG_DEFINESHAPE2:
-        case TAG_DEFINESHAPE3:
-            parseDefineShape(tagType, in);
-            break;
-        case TAG_DOACTION:
-            parseDoAction(in);
-            break;
-        case TAG_DOINITACTION:
-            parseDoInitAction(in);
-            break;
-        case TAG_FREECHARACTER:
-            mTagtypes.tagFreeCharacter(in.readUI16());
-            break;
-        case TAG_PLACEOBJECT:
-            parsePlaceObject(in, length);
-            break;
-        case TAG_PLACEOBJECT2:
-            parsePlaceObject2(in);
-            break;
-        case TAG_REMOVEOBJECT:
-            mTagtypes.tagRemoveObject(in.readUI16(), in.readUI16());
-            break;
-        case TAG_REMOVEOBJECT2:
-            mTagtypes.tagRemoveObject2(in.readUI16());
-            break;
-        case TAG_SETBACKGROUNDCOLOR:
-            mTagtypes.tagSetBackgroundColor(new Color(in));
-            break;
-        case TAG_FRAMELABEL:
-            parseFrameLabel(in, contents);
-            break;
-        case TAG_DEFINESPRITE:
-            parseDefineSprite(in);
-            break;
-        case TAG_PROTECT:
-            mTagtypes.tagProtect((length > 0) ? in.read(length) : null);
-            break;
-        case TAG_ENABLEDEBUG:
-            mTagtypes.tagEnableDebug((length > 0) ? in.read(length) : null);
-            break;
-        case TAG_DEFINEFONT:
-            parseDefineFont(in);
-            break;
-        case TAG_DEFINEFONTINFO:
-            parseFontInfo(in, length, false);
-            break;
-        case TAG_DEFINEFONTINFO2:
-            parseFontInfo(in, length, true);
-            break;
-        case TAG_DEFINEFONT2:
-            parseDefineFont2(in);
-            break;
-        case TAG_DEFINETEXTFIELD:
-            parseDefineTextField(in);
-            break;
-        case TAG_DEFINETEXT:
-        case TAG_DEFINETEXT2:
-            parseDefineText(tagType, in);
-            break;
-        case TAG_DEFINEBUTTON:
-            parseDefineButton(in);
-            break;
-        case TAG_DEFINEBUTTON2:
-            parseDefineButton2(in);
-            break;
-        case TAG_DEFINEBUTTONCXFORM:
-            parseButtonCXForm(in);
-            break;
-        case TAG_EXPORT:
-            parseExport(in);
-            break;
-        case TAG_IMPORT:
-            parseImport(in);
-            break;
-        case TAG_DEFINEQUICKTIMEMOVIE:
-            mTagtypes.tagDefineQuickTimeMovie(in.readUI16(), in.readString(mStringEncoding));
-            break;
-        case TAG_DEFINEBITSJPEG2:
-            parseDefineJPEG2(in, length);
-            break;
-        case TAG_DEFINEBITSLOSSLESS:
-            parseDefineBitsLossless(in, length, false);
-            break;
-        case TAG_DEFINEBITSLOSSLESS2:
-            parseDefineBitsLossless(in, length, true);
-            break;
-        case TAG_DEFINEMORPHSHAPE:
-            parseMorphShape(in);
-            break;
-        case TAG_NAMECHARACTER:
-            mTagtypes.tagNameCharacter(contents);
-            break;
-        case TAG_GENERATOR_TEXT:
-            mTagtypes.tagGeneratorText(contents);
-            break;
-        case TAG_TEMPLATECOMMAND:
-            mTagtypes.tagGeneratorCommand(contents);
-            break;
-        case TAG_FLASHGENERATOR:
-            mTagtypes.tagGenerator(contents);
-            break;
-        case TAG_GEN_EXTERNAL_FONT:
-            mTagtypes.tagGeneratorFont(contents);
-            break;
-        case TAG_SERIALNUMBER:
-            mTagtypes.tagSerialNumber(in.readString(mStringEncoding));
-            break;
-        case TAG_DEFINESOUND:
-            parseDefineSound(in);
-            break;
-        case TAG_STARTSOUND:
-            parseStartSound(in);
-            break;
-        case TAG_DEFINEBUTTONSOUND:
-            parseDefineButtonSound(in);
-            break;
-        case TAG_SOUNDSTREAMHEAD:
-            parseSoundStreamHead(true, in);
-            break;
-        case TAG_SOUNDSTREAMHEAD2:
-            parseSoundStreamHead(false, in);
-            break;
-        case TAG_SOUNDSTREAMBLOCK:
-            parseSoundStreamBlock(in);
-            break;
-        case TAG_DEFINEBITS:
-            parseDefineBits(in);
-            break;
-        case TAG_JPEGTABLES:
-            parseDefineJPEGTables(in);
-            break;
-        case TAG_DEFINEBITSJPEG3:
-            parseDefineBitsJPEG3(in);
-            break;
-        case TAG_ENABLEDEBUGGER2:
-            parseEnableDebugger2(in, length);
-            break;
-        default: // Unknown Tag Type
-            mTagtypes.tag(tagType, longTag, contents);
-            break;
+            case TAG_END:
+                mTagtypes.tagEnd();
+                break;
+            case TAG_SHOWFRAME:
+                mTagtypes.tagShowFrame();
+                break;
+            case TAG_DEFINESHAPE:
+            case TAG_DEFINESHAPE2:
+            case TAG_DEFINESHAPE3:
+                parseDefineShape(tagType, in);
+                break;
+            case TAG_DOACTION:
+                parseDoAction(in);
+                break;
+            case TAG_DOINITACTION:
+                parseDoInitAction(in);
+                break;
+            case TAG_FREECHARACTER:
+                mTagtypes.tagFreeCharacter(in.readUI16());
+                break;
+            case TAG_PLACEOBJECT:
+                parsePlaceObject(in, length);
+                break;
+            case TAG_PLACEOBJECT2:
+                parsePlaceObject2(in);
+                break;
+            case TAG_REMOVEOBJECT:
+                mTagtypes.tagRemoveObject(in.readUI16(), in.readUI16());
+                break;
+            case TAG_REMOVEOBJECT2:
+                mTagtypes.tagRemoveObject2(in.readUI16());
+                break;
+            case TAG_SETBACKGROUNDCOLOR:
+                mTagtypes.tagSetBackgroundColor(new Color(in));
+                break;
+            case TAG_FRAMELABEL:
+                parseFrameLabel(in, contents);
+                break;
+            case TAG_DEFINESPRITE:
+                parseDefineSprite(in);
+                break;
+            case TAG_PROTECT:
+                mTagtypes.tagProtect((length > 0) ? in.read(length) : null);
+                break;
+            case TAG_ENABLEDEBUG:
+                mTagtypes.tagEnableDebug((length > 0) ? in.read(length) : null);
+                break;
+            case TAG_DEFINEFONT:
+                parseDefineFont(in);
+                break;
+            case TAG_DEFINEFONTINFO:
+                parseFontInfo(in, length, false);
+                break;
+            case TAG_DEFINEFONTINFO2:
+                parseFontInfo(in, length, true);
+                break;
+            case TAG_DEFINEFONT2:
+                parseDefineFont2(in);
+                break;
+            case TAG_DEFINETEXTFIELD:
+                parseDefineTextField(in);
+                break;
+            case TAG_DEFINETEXT:
+            case TAG_DEFINETEXT2:
+                parseDefineText(tagType, in);
+                break;
+            case TAG_DEFINEBUTTON:
+                parseDefineButton(in);
+                break;
+            case TAG_DEFINEBUTTON2:
+                parseDefineButton2(in);
+                break;
+            case TAG_DEFINEBUTTONCXFORM:
+                parseButtonCXForm(in);
+                break;
+            case TAG_EXPORT:
+                parseExport(in);
+                break;
+            case TAG_IMPORT:
+                parseImport(in);
+                break;
+            case TAG_DEFINEQUICKTIMEMOVIE:
+                mTagtypes.tagDefineQuickTimeMovie(in.readUI16(), in.readString(mStringEncoding));
+                break;
+            case TAG_DEFINEBITSJPEG2:
+                parseDefineJPEG2(in, length);
+                break;
+            case TAG_DEFINEBITSLOSSLESS:
+                parseDefineBitsLossless(in, length, false);
+                break;
+            case TAG_DEFINEBITSLOSSLESS2:
+                parseDefineBitsLossless(in, length, true);
+                break;
+            case TAG_DEFINEMORPHSHAPE:
+                parseMorphShape(in);
+                break;
+            case TAG_NAMECHARACTER:
+                mTagtypes.tagNameCharacter(contents);
+                break;
+            case TAG_GENERATOR_TEXT:
+                mTagtypes.tagGeneratorText(contents);
+                break;
+            case TAG_TEMPLATECOMMAND:
+                mTagtypes.tagGeneratorCommand(contents);
+                break;
+            case TAG_FLASHGENERATOR:
+                mTagtypes.tagGenerator(contents);
+                break;
+            case TAG_GEN_EXTERNAL_FONT:
+                mTagtypes.tagGeneratorFont(contents);
+                break;
+            case TAG_SERIALNUMBER:
+                mTagtypes.tagSerialNumber(in.readString(mStringEncoding));
+                break;
+            case TAG_DEFINESOUND:
+                parseDefineSound(in);
+                break;
+            case TAG_STARTSOUND:
+                parseStartSound(in);
+                break;
+            case TAG_DEFINEBUTTONSOUND:
+                parseDefineButtonSound(in);
+                break;
+            case TAG_SOUNDSTREAMHEAD:
+                parseSoundStreamHead(true, in);
+                break;
+            case TAG_SOUNDSTREAMHEAD2:
+                parseSoundStreamHead(false, in);
+                break;
+            case TAG_SOUNDSTREAMBLOCK:
+                parseSoundStreamBlock(in);
+                break;
+            case TAG_DEFINEBITS:
+                parseDefineBits(in);
+                break;
+            case TAG_JPEGTABLES:
+                parseDefineJPEGTables(in);
+                break;
+            case TAG_DEFINEBITSJPEG3:
+                parseDefineBitsJPEG3(in);
+                break;
+            case TAG_ENABLEDEBUGGER2:
+                parseEnableDebugger2(in, length);
+                break;
+            default: // Unknown Tag Type
+                mTagtypes.tag(tagType, longTag, contents);
+                break;
         }
-    } //*/
+    } // */
 
     protected void parseEnableDebugger2(InStream in, int length) throws IOException {
         int reserved = in.readUI16();
@@ -355,7 +355,7 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature {
         if ((contents != null) && (contents.length >= 2)) {
             int len = contents.length;
             if ((contents[len - 1] == 1) && (contents[len - 2] == 0)) {
-                //is an anchor label
+                // is an anchor label
                 mTagtypes.tagFrameLabel(in.readString(mStringEncoding), true);
                 return;
             }
@@ -415,10 +415,10 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature {
         int avgSampleCount = in.readUI16();
 
         // MP3 Streams sometimes have an extra word here...
-        //if( format == SWFConstants.SOUND_FORMAT_MP3 )
-        //{
+        // if( format == SWFConstants.SOUND_FORMAT_MP3 )
+        // {
         //    int unknown = in.readUI16();
-        //}
+        // }
         // but other SDK's don't know about this so we can't assume it
         //  will always be present in a SWF.
         if (adpcmOnly) {
@@ -438,10 +438,10 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature {
 
     protected void parseDefineJPEGTables(InStream in) throws IOException {
         if (in == null) { // TODO vavi null
-Debug.println("parseDefineJPEGTables: in: null");
+            Debug.println("parseDefineJPEGTables: in: null");
             return;
         }
-System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
+        System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
         mTagtypes.tagJPEGTables(in.read());
     }
 
@@ -558,28 +558,19 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
         mTagtypes.tagDefineBitsJPEG2(id, image);
     }
 
-    /** */
+    /**  */
     protected void parseDefineBitsLossless(InStream in, int length, boolean hasAlpha) throws IOException {
         int id = in.readUI16();
         int format = in.readUI8();
         int width = in.readUI16();
         int height = in.readUI16();
 
-        int size = 0;
-
-        switch (format) {
-        case BITMAP_FORMAT_8_BIT:
-            size = in.readUI8() + 1;
-            break;
-        case BITMAP_FORMAT_16_BIT:
-            size = in.readUI16() + 1;
-            break;
-        case BITMAP_FORMAT_32_BIT:
-            size = 0;
-            break;
-        default:
-            throw new IOException("unknown bitmap format: " + format);
-        }
+        int size = switch (format) {
+            case BITMAP_FORMAT_8_BIT -> in.readUI8() + 1;
+            case BITMAP_FORMAT_16_BIT -> in.readUI16() + 1;
+            case BITMAP_FORMAT_32_BIT -> 0;
+            default -> throw new IOException("unknown bitmap format: " + format);
+        };
 
         byte[] data = in.read(length - (int) in.getBytesRead());
 
@@ -603,7 +594,7 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
         }
     }
 
-    /** */
+    /**  */
     protected void parseExport(InStream in) throws IOException {
         int count = in.readUI16();
 
@@ -618,7 +609,7 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
         mTagtypes.tagExport(exportNames, exportIds);
     }
 
-    /** */
+    /**  */
     protected void parseImport(InStream in) throws IOException {
         String movieName = in.readString(mStringEncoding);
         int count = in.readUI16();
@@ -634,13 +625,13 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
         mTagtypes.tagImport(movieName, importNames, importIds);
     }
 
-    /** */
+    /**  */
     protected void parseDefineButton2(InStream in) throws IOException {
         int id = in.readUI16();
 
         boolean trackAsMenu = (in.readUI8() != 0);
 
-        int actionOffset = in.readUI16(); //skip first offset
+        int actionOffset = in.readUI16(); // skip first offset
 
         // Read multiple button records
         List<? extends ButtonRecord> buttonRecords = ButtonRecord2.read(in);
@@ -684,7 +675,7 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
             return;
         }
 
-        actions.start(0); //no conditions
+        actions.start(0); // no conditions
         ActionParser parser = new ActionParser(actions, mFlashVersion);
         parser.parse(in);
         actions.done();
@@ -708,8 +699,8 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
         int firstByte;
 
         while ((firstByte = in.readUI8()) != 0) {
-            if ((firstByte & 0x80) == 0) //Glyph Record
-             {
+            if ((firstByte & 0x80) == 0) // Glyph Record
+            {
                 // Get number of glyph entries
                 int glyphCount = firstByte & 0x7f;
 
@@ -723,8 +714,8 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
                 }
 
                 text.text(glyphs, advances);
-            } else //Style Record
-             {
+            } else // Style Record
+            {
                 int flags = firstByte;
 
                 int fontId = 0;
@@ -741,8 +732,8 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
                     text.setX(in.readSI16());
                 }
 
-                if ((flags & TEXT_HAS_YOFFSET) != 0) //x & y are in reverse order from flag bits
-                 {
+                if ((flags & TEXT_HAS_YOFFSET) != 0) // x & y are in reverse order from flag bits
+                {
                     text.setY(in.readSI16());
                 }
 
@@ -787,18 +778,18 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
         int reservedFlags = in.readUI8();
 
         int nameLength = in.readUI8();
-//System.err.println("nameLength: " + nameLength + ", " + in.available());
+// System.err.println("nameLength: " + nameLength + ", " + in.available());
         byte[] nameBytes = in.read(nameLength);
         String name = new String(nameBytes, 0, nameLength);
 
         int glyphCount = in.readUI16();
-//System.err.println("glyphCount: " + glyphCount + ", " + in.available());
-        List<byte[]> glyphs = new ArrayList<byte[]>();
+// System.err.println("glyphCount: " + glyphCount + ", " + in.available());
+        List<byte[]> glyphs = new ArrayList<>();
 
-//if (glyphCount == 0) { // TODO vavi count 0
+// if (glyphCount == 0) { // TODO vavi count 0
 // Debug.println("parseDefineFont2: HERE");
 // return;
-//}
+// }
 
         int[] offsets = new int[glyphCount + 1];
         boolean is32 = (flags & FONT2_32OFFSETS) != 0;
@@ -819,7 +810,7 @@ System.err.println("mTagtypes: " + mTagtypes + ", in: " + in);
             codes[i] = isWide ? in.readUI16() : in.readUI8();
         }
 
-System.err.println("glyphCount=" + glyphCount + " flags=" + Integer.toBinaryString(flags) + "(" + Integer.toHexString(flags) + ")");
+        System.err.println("glyphCount=" + glyphCount + " flags=" + Integer.toBinaryString(flags) + "(" + Integer.toHexString(flags) + ")");
 
         int ascent = 0;
         int descent = 0;
@@ -859,7 +850,7 @@ System.err.println("glyphCount=" + glyphCount + " flags=" + Integer.toBinaryStri
                 kerningAdjustments[i] = in.readSI16();
             }
         }
-System.err.println("bounds: " + bounds.length);
+        System.err.println("bounds: " + bounds.length);
         SWFVectors vectors = mTagtypes.tagDefineFont2(id, flags, name, glyphCount, ascent, descent, leading, codes, advances, bounds, kerningCodes1, kerningCodes2, kerningAdjustments);
 
         if (vectors == null) {
@@ -967,8 +958,8 @@ System.err.println("bounds: " + bounds.length);
         int clipActionFlags = 0;
 
         if (hasClipActions) {
-            in.readUI16(); //unknown
-            clipActionFlags = in.readUI16(); //compound flags
+            in.readUI16(); // unknown
+            clipActionFlags = in.readUI16(); // compound flags
         }
 
         SWFActions actions = mTagtypes.tagPlaceObject2(isMove, clipDepth, depth, charId, matrix, cxform, ratio, name, clipActionFlags);
@@ -990,9 +981,9 @@ System.err.println("bounds: " + bounds.length);
     }
 
     protected void parsePlaceObject(InStream in, int length) throws IOException {
-        mTagtypes.tagPlaceObject(in.readUI16(), //char id
-                                 in.readUI16(), //depth
-                                 new Matrix(in), (in.getBytesRead() < length) ? new AlphaTransform(in) : null);
+        mTagtypes.tagPlaceObject(in.readUI16(), // char id
+                in.readUI16(), // depth
+                new Matrix(in), (in.getBytesRead() < length) ? new AlphaTransform(in) : null);
     }
 
     protected void parseDoAction(InStream in) throws IOException {
@@ -1002,7 +993,7 @@ System.err.println("bounds: " + bounds.length);
             return;
         }
 
-        actions.start(0); //no conditions
+        actions.start(0); // no conditions
         ActionParser parser = new ActionParser(actions, mFlashVersion);
         parser.parse(in);
         actions.done();
@@ -1016,7 +1007,7 @@ System.err.println("bounds: " + bounds.length);
             return;
         }
 
-        actions.start(0); //no conditions
+        actions.start(0); // no conditions
         ActionParser parser = new ActionParser(actions, mFlashVersion);
         parser.parse(in);
         actions.done();
@@ -1029,24 +1020,24 @@ System.err.println("bounds: " + bounds.length);
         SWFShape shape = null;
 
         switch (type) {
-        case TAG_DEFINESHAPE:
-            shape = mTagtypes.tagDefineShape(id, rect);
-            break;
-        case TAG_DEFINESHAPE2:
-            shape = mTagtypes.tagDefineShape2(id, rect);
-            break;
-        case TAG_DEFINESHAPE3:
-            shape = mTagtypes.tagDefineShape3(id, rect);
-            break;
-        default:
-            break;
+            case TAG_DEFINESHAPE:
+                shape = mTagtypes.tagDefineShape(id, rect);
+                break;
+            case TAG_DEFINESHAPE2:
+                shape = mTagtypes.tagDefineShape2(id, rect);
+                break;
+            case TAG_DEFINESHAPE3:
+                shape = mTagtypes.tagDefineShape3(id, rect);
+                break;
+            default:
+                break;
         }
 
         if (shape == null) {
             return;
         }
 
-        parseShape(in, shape, true /*has style*/, type == TAG_DEFINESHAPE3 /*has alpha*/           );
+        parseShape(in, shape, true /*has style*/, type == TAG_DEFINESHAPE3 /*has alpha*/);
     }
 
     protected void parseShape(InStream in, SWFVectors vectors, boolean hasStyle, boolean hasAlpha) throws IOException {
@@ -1060,19 +1051,19 @@ System.err.println("bounds: " + bounds.length);
 
         in.synchBits();
 
-        int[] numFillBits = new int[] { (int) in.readUBits(4) };
-        int[] numLineBits = new int[] { (int) in.readUBits(4) };
+        int[] numFillBits = new int[] {(int) in.readUBits(4)};
+        int[] numLineBits = new int[] {(int) in.readUBits(4)};
 
         // Read the shape records
         while (true) {
             int type = (int) in.readUBits(1);
 
             if (type == 1) // Edge shape-record
-             {
+            {
                 boolean isCurved = in.readUBits(1) == 0L;
 
-                if (isCurved) //curve
-                 {
+                if (isCurved) // curve
+                {
                     int numBits = ((int) in.readUBits(4)) + 2;
 
                     int cx = in.readSBits(numBits);
@@ -1081,8 +1072,8 @@ System.err.println("bounds: " + bounds.length);
                     int dy = in.readSBits(numBits);
 
                     vectors.curve(cx, cy, dx, dy);
-                } else //line
-                 {
+                } else // line
+                {
                     int numBits = ((int) in.readUBits(4)) + 2;
 
                     boolean generalLine = in.readUBits(1) == 1;
@@ -1094,25 +1085,25 @@ System.err.println("bounds: " + bounds.length);
                         dx = in.readSBits(numBits);
                         dy = in.readSBits(numBits);
                     } else // a non-general line
-                     {
+                    {
                         boolean vertLine = in.readUBits(1) == 1;
 
                         if (vertLine) {
                             dy = in.readSBits(numBits);
-                        } else //horizontal line
-                         {
+                        } else // horizontal line
+                        {
                             dx = in.readSBits(numBits);
                         }
                     }
 
                     vectors.line(dx, dy);
                 }
-            } else //End of records or Change Record
-             {
+            } else // End of records or Change Record
+            {
                 int flags = (int) in.readUBits(5);
 
                 if (flags == 0) {
-                    break; //end of records
+                    break; // end of records
                 }
 
                 parseChangeRecord(in, flags, vectors, shape, hasAlpha, numFillBits, numLineBits);
@@ -1123,11 +1114,11 @@ System.err.println("bounds: " + bounds.length);
     }
 
     protected void parseChangeRecord(InStream in, int flags, SWFVectors vectors, SWFShape shape, boolean hasAlpha, int[] numFillBits, int[] numLineBits) throws IOException {
-        //System.err.println( "In Change --> " + Integer.toBinaryString( flags ));
+        // System.err.println( "In Change --> " + Integer.toBinaryString( flags ));
         boolean hasNewStyles = (flags & 0x10) != 0;
         boolean hasLineStyle = (flags & 0x08) != 0;
-        boolean hasFillStyle1 = (flags & 0x04) != 0; //note reverse order
-        boolean hasFillStyle0 = (flags & 0x02) != 0; //note reverse order
+        boolean hasFillStyle1 = (flags & 0x04) != 0; // note reverse order
+        boolean hasFillStyle0 = (flags & 0x02) != 0; // note reverse order
         boolean hasMoveTo = (flags & 0x01) != 0;
 
         if (hasMoveTo) {
@@ -1135,14 +1126,14 @@ System.err.println("bounds: " + bounds.length);
             int moveX = in.readSBits(moveBits);
             int moveY = in.readSBits(moveBits);
 
-            //System.err.println( "X=" + moveX + ", Y=" + moveY );
+            // System.err.println( "X=" + moveX + ", Y=" + moveY );
             vectors.move(moveX, moveY);
         }
 
         if (hasFillStyle0) {
             int fillStyle0 = (int) in.readUBits(numFillBits[0]);
 
-            //System.err.println( "fill0=" + fillStyle0 );
+            // System.err.println( "fill0=" + fillStyle0 );
             if (shape != null) {
                 shape.setFillStyle0(fillStyle0);
             }
@@ -1151,7 +1142,7 @@ System.err.println("bounds: " + bounds.length);
         if (hasFillStyle1) {
             int fillStyle1 = (int) in.readUBits(numFillBits[0]);
 
-            //System.err.println( "fill1=" + fillStyle1 );
+            // System.err.println( "fill1=" + fillStyle1 );
             if (shape != null) {
                 shape.setFillStyle1(fillStyle1);
             }
@@ -1160,7 +1151,7 @@ System.err.println("bounds: " + bounds.length);
         if (hasLineStyle) {
             int lineStyle = (int) in.readUBits(numLineBits[0]);
 
-            //System.err.println( "line=" + lineStyle ); 
+            // System.err.println( "line=" + lineStyle ); 
             if (shape != null) {
                 shape.setLineStyle(lineStyle);
             }
@@ -1176,8 +1167,8 @@ System.err.println("bounds: " + bounds.length);
 
     protected void parseStyles(InStream in, SWFShape shape, boolean hasAlpha) throws IOException {
         int numFillStyles = in.readUI8();
-        if (numFillStyles == 0xff) //larger number format
-         {
+        if (numFillStyles == 0xff) // larger number format
+        {
             numFillStyles = in.readUI16();
         }
 
@@ -1186,8 +1177,8 @@ System.err.println("bounds: " + bounds.length);
         }
 
         int numLineStyles = in.readUI8();
-        if (numLineStyles == 0xff) //larger number format
-         {
+        if (numLineStyles == 0xff) // larger number format
+        {
             numLineStyles = in.readUI16();
         }
 

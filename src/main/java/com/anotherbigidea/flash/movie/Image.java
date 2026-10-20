@@ -47,38 +47,40 @@ import com.anotherbigidea.flash.structs.Color;
  * used as image fills for shapes.
  */
 public abstract class Image extends Symbol {
+
     /**
      * A lossless image (similar to PNG).
-     *
+     * <p>
      * There are 3 formats - 8, 16 and 32 bit.  For 8 and 16 bit images
      * there is a color table and the image data consists of either an 8 or
      * 16 bit index into the table for each pixel.
-     *
+     * <p>
      * 32 bit images have no color table - each pixel consists of 4 bytes:
      * (alpha,red,green,blue).  If there is no alpha then the first byte will
      * be 255.
-     *
+     * <p>
      * For all formats, the length of each row of pixel data must be a multiple
      * of 32 bits.  If the actual row data is smaller then it should be padded
      * up to next multiple of 32 bits.
      */
     public static class Lossless extends Image {
-        protected byte[] imageData;
-        protected Color[] colorTable;
-        protected double width;
-        protected double height;
-        protected boolean hasAlpha;
-        protected int format;
+
+        protected final byte[] imageData;
+        protected final Color[] colorTable;
+        protected final double width;
+        protected final double height;
+        protected final boolean hasAlpha;
+        protected final int format;
 
         /**
          * @param colorTable may be null for 32 bit bitmaps
-         * @param imageData the pixel data
-         * @param width in pixels
-         * @param height in pixels
-         * @param hasAlpha whether the image contains alpha values
-         * @param format one of: SWFConstants.BITMAP_FORMAT_8_BIT,
-         *                       SWFConstants.BITMAP_FORMAT_16_BIT,
-         *                       SWFConstants.BITMAP_FORMAT_32_BIT
+         * @param imageData  the pixel data
+         * @param width      in pixels
+         * @param height     in pixels
+         * @param hasAlpha   whether the image contains alpha values
+         * @param format     one of: SWFConstants.BITMAP_FORMAT_8_BIT,
+         *                   SWFConstants.BITMAP_FORMAT_16_BIT,
+         *                   SWFConstants.BITMAP_FORMAT_32_BIT
          */
         public Lossless(Color[] colorTable, byte[] imageData, double width, double height, boolean hasAlpha, int format) {
             this.colorTable = colorTable;
@@ -132,6 +134,7 @@ public abstract class Image extends Symbol {
      * runtime problems.
      */
     public static class JPEG extends Image {
+
         protected InputStream jpegIn;
         protected byte[] jpegData;
 

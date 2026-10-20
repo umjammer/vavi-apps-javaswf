@@ -46,14 +46,15 @@ import com.anotherbigidea.flash.interfaces.SWFActions;
  * An implementation of SWFActions that decompiles the Action Code
  */
 public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl implements SWFActions {
+
     protected Writer writer;
     protected int indent = 0;
-    protected Stack<String> labelStack = new Stack<String>();
-    protected Stack<Object> stack = new Stack<Object>();
+    protected final Stack<String> labelStack = new Stack<>();
+    protected final Stack<Object> stack = new Stack<>();
     protected String[] lookupTable = null;
     // actually only 4 registers ??
-    protected Object[] registers = new Object[10];
-    protected Stack<Writer> writerStack = new Stack<Writer>();
+    protected final Object[] registers = new Object[10];
+    protected final Stack<Writer> writerStack = new Stack<>();
     protected boolean duplicated = false;
 
     public Decompiler(Writer writer) {
@@ -84,37 +85,37 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
     }
 
     protected String string(String s) {
-        StringBuffer buff = new StringBuffer("\"");
+        StringBuilder buff = new StringBuilder("\"");
 
         int len = s.length();
         for (int i = 0; i < len; i++) {
             char c = s.charAt(i);
 
             switch (c) {
-            case '\b':
-                buff.append("\\b");
-                break;
-            case '\f':
-                buff.append("\\f");
-                break;
-            case '\n':
-                buff.append("\\n");
-                break;
-            case '\r':
-                buff.append("\\r");
-                break;
-            case '\t':
-                buff.append("\\t");
-                break;
-            case '\"':
-                buff.append("\\\"");
-                break;
-            case '\\':
-                buff.append("\\\\");
-                break;
-            default:
-                buff.append(c);
-                break;
+                case '\b':
+                    buff.append("\\b");
+                    break;
+                case '\f':
+                    buff.append("\\f");
+                    break;
+                case '\n':
+                    buff.append("\\n");
+                    break;
+                case '\r':
+                    buff.append("\\r");
+                    break;
+                case '\t':
+                    buff.append("\\t");
+                    break;
+                case '\"':
+                    buff.append("\\\"");
+                    break;
+                case '\\':
+                    buff.append("\\\\");
+                    break;
+                default:
+                    buff.append(c);
+                    break;
             }
         }
 
@@ -158,7 +159,7 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
      * End of all action blocks
      */
     public void done() {
-        //nothing
+        // nothing
     }
 
     /**
@@ -172,15 +173,16 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
      * Pass through a blob of actions
      */
     public void blob(byte[] blob) {
-        //nothing
+        // nothing
     }
 
     /**
      * Unrecognized action code
+     *
      * @param data may be null
      */
     public void unknown(int code, byte[] data) {
-        //nothing
+        // nothing
     }
 
     /**
@@ -188,7 +190,7 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
      * target action.
      */
     public void jumpLabel(String label) throws IOException {
-        //TODO:
+        // TODO:
         if (!labelStack.isEmpty()) {
             while ((!labelStack.isEmpty()) && labelStack.peek().equals(label)) {
                 labelStack.pop();
@@ -297,7 +299,7 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
     }
 
     public void setTarget(String target) throws IOException {
-        if ((target == null) || (target.length() == 0)) {
+        if ((target == null) || (target.isEmpty())) {
             indent--;
             indent();
             writer.write("}\n\n");
@@ -374,30 +376,28 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
         stack.push(buff);
     }
 
-/*
-    public void stringEquals() throws IOException;
-    public void stringLength() throws IOException;
-    public void concat() throws IOException;
-    public void substring() throws IOException;
-    public void stringLessThan() throws IOException;
-    public void stringLengthMB() throws IOException;
-    public void substringMB() throws IOException;
-*/
+//    public void stringEquals() throws IOException;
+//    public void stringLength() throws IOException;
+//    public void concat() throws IOException;
+//    public void substring() throws IOException;
+//    public void stringLessThan() throws IOException;
+//    public void stringLengthMB() throws IOException;
+//    public void substringMB() throws IOException;
+
     public void toInteger() throws IOException {
         stack.push("int( " + pop2().toString() + " )");
     }
 
-/*
-    public void charToAscii() throws IOException;
-    public void asciiToChar() throws IOException;
-    public void charMBToAscii() throws IOException;
-    public void asciiToCharMB() throws IOException;
+//    public void charToAscii() throws IOException;
+//    public void asciiToChar() throws IOException;
+//    public void charMBToAscii() throws IOException;
+//    public void asciiToCharMB() throws IOException;
+//
+//    public void jump(String jumpLabel) throws IOException;
+//    public void ifJump(String jumpLabel) throws IOException;
+//
+//    public void call() throws IOException;
 
-    public void jump( String jumpLabel ) throws IOException;
-    public void ifJump( String jumpLabel ) throws IOException;
-
-    public void call() throws IOException;
- */
     public void getVariable() throws IOException {
         Object name = pop2();
 
@@ -421,31 +421,29 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
         }
     }
 
-/*
-    // --------------------------------------------------------
-    public static final int GET_URL_SEND_VARS_NONE = 0;  //don't send variables
-    public static final int GET_URL_SEND_VARS_GET  = 1;  //send vars using GET
-    public static final int GET_URL_SEND_VARS_POST = 2;  //send vars using POST
+//    // ----
+//    public static final int GET_URL_SEND_VARS_NONE = 0;  // don't send variables
+//    public static final int GET_URL_SEND_VARS_GET = 1;  // send vars using GET
+//    public static final int GET_URL_SEND_VARS_POST = 2;  // send vars using POST
+//
+//    public static final int GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL = 0;
+//    public static final int GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE = 1;
+//    public static final int GET_URL_MODE_LOAD_VARS_INTO_LEVEL = 3;
+//    public static final int GET_URL_MODE_LOAD_VARS_INTO_SPRITE = 4;
+//
+//    public void getURL(int sendVars, int loadMode) throws IOException;
+//    // ----
+//
+//    public void gotoFrame(boolean play) throws IOException;
+//    public void setTarget() throws IOException;
+//    public void getProperty() throws IOException;
+//    public void setProperty() throws IOException;
+//    public void cloneSprite() throws IOException;
+//    public void removeSprite() throws IOException;
+//    public void startDrag() throws IOException;
+//    public void endDrag() throws IOException;
+//    public void waitForFrame(String jumpLabel) throws IOException;
 
-    public static final int GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL  = 0;
-    public static final int GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE = 1;
-    public static final int GET_URL_MODE_LOAD_VARS_INTO_LEVEL   = 3;
-    public static final int GET_URL_MODE_LOAD_VARS_INTO_SPRITE  = 4;
-
-    public void getURL( int sendVars, int loadMode ) throws IOException;
-    // --------------------------------------------------------
-
-    public void gotoFrame( boolean play ) throws IOException;
-    public void setTarget() throws IOException;
-    public void getProperty() throws IOException;
-    public void setProperty() throws IOException;
-    public void cloneSprite() throws IOException;
-    public void removeSprite() throws IOException;
-    public void startDrag() throws IOException;
-    public void endDrag() throws IOException;
-    public void waitForFrame( String jumpLabel ) throws IOException;
-
-*/
     public void trace() throws IOException {
         indent();
         writer.write("trace( " + pop2().toString() + " );\n");
@@ -522,7 +520,7 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
     }
 
     public void startFunction(String name, String[] paramNames) throws IOException {
-        if ((name == null) || (name.trim().length() == 0)) {
+        if ((name == null) || (name.trim().isEmpty())) {
             writerStack.push(writer);
             writer = new StringWriter();
             writer.write("function(");
@@ -577,26 +575,24 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
         writer.write("var " + name + ";\n");
     }
 
-/*
-    public void deleteProperty() throws IOException;
-    public void deleteThreadVars() throws IOException;
+//    public void deleteProperty() throws IOException;
+//    public void deleteThreadVars() throws IOException;
+//
+//    public void enumerate() throws IOException;
 
-    public void enumerate() throws IOException;
-*/
     public void typedEquals() throws IOException {
         equals();
     }
 
-/*
-    public void getMember() throws IOException;
+//    public void getMember() throws IOException;
+//
+//    public void initArray() throws IOException;
+//    public void initObject() throws IOException;
+//    public void newMethod() throws IOException;
+//    public void newObject() throws IOException;
+//    public void setMember() throws IOException;
+//    public void getTargetPath() throws IOException;
 
-    public void initArray() throws IOException;
-    public void initObject() throws IOException;
-    public void newMethod() throws IOException;
-    public void newObject() throws IOException;
-    public void setMember() throws IOException;
-    public void getTargetPath() throws IOException;
-*/
     public void startWith() throws IOException {
         indent();
         writer.write("with( " + destring(pop2().toString()) + " )\n");
@@ -682,8 +678,8 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
         duplicated = true;
     }
 
-/*    public void returnValue() throws IOException;
-    */
+    /*    public void returnValue() throws IOException;
+     */
     public void swap() throws IOException {
         Object top = pop2();
         Object two = pop2();
@@ -700,7 +696,7 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
     }
 
     public void push(double value) throws IOException {
-        stack.push(new Double(value));
+        stack.push(value);
     }
 
     public void pushNull() throws IOException {
@@ -721,11 +717,11 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
     }
 
     public void push(boolean value) throws IOException {
-        stack.push(new Boolean(value));
+        stack.push(value);
     }
 
     public void push(int value) throws IOException {
-        stack.push(new Integer(value));
+        stack.push(value);
     }
 
     public void push(String value) throws IOException {
@@ -733,7 +729,7 @@ public class Decompiler extends com.anotherbigidea.flash.writers.SWFActionsImpl 
     }
 
     public void push(float value) throws IOException {
-        stack.push(new Float(value));
+        stack.push(value);
     }
 
     public void pop() throws IOException {

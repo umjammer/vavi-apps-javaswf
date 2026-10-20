@@ -31,6 +31,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.anotherbigidea.flash.movie;
 
 
@@ -38,10 +39,11 @@ package com.anotherbigidea.flash.movie;
  * A Movie or Sprite (Movie Clip) time line (collection of frames)
  */
 public interface TimeLine {
+
     /**
      * Get the current number of frames in the timeline.
      */
-    public int getFrameCount();
+    int getFrameCount();
 
     /**
      * Get the Frame object for the given frame number - or create one if
@@ -50,21 +52,22 @@ public interface TimeLine {
      *
      * @param frameNumber must be 1 or larger
      */
-    public Frame getFrame(int frameNumber);
+    Frame getFrame(int frameNumber);
 
     /**
      * Append a frame to the end of the timeline
      */
-    public Frame appendFrame();
+    Frame appendFrame();
 
     /**
      * Get the next available depth in the timeline
      */
-    public int getAvailableDepth();
+    int getAvailableDepth();
 
     /**
      * Set the next available depth in the timeline
+     *
      * @param depth must be >= 1
      */
-    public void setAvailableDepth(int depth);
+    void setAvailableDepth(int depth);
 }

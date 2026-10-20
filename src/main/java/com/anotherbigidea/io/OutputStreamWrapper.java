@@ -10,6 +10,7 @@ import java.io.OutputStream;
  * @author nick
  */
 public abstract class OutputStreamWrapper extends CountingOutputStream {
+
     private OutputStream mOut;
 
     protected OutputStreamWrapper(OutputStream out) {

@@ -49,13 +49,15 @@ import com.anotherbigidea.flash.structs.Rect;
 
 /**
  * A Font Symbol.
- *
+ * <p>
  * The Font references a FontDefinition object from which it takes the glyph
  * definitions it needs.
  */
 public class Font extends Symbol {
-    public class NoGlyphException extends Exception {
-        public int code;
+
+    public static class NoGlyphException extends Exception {
+
+        public final int code;
 
         public NoGlyphException(int code) {
             super("The font does not have a glyph definition for code " + code);
@@ -67,11 +69,12 @@ public class Font extends Symbol {
      * A set of contiguous characters in one font.
      */
     public class Chars {
-        protected String chars;
-        protected double size;
+
+        protected final String chars;
+        protected final double size;
         protected int[] indices;
         protected int[] advances;
-        protected double totalAdvance; //total advance
+        protected double totalAdvance; // total advance
         protected double ascent;
         protected double descent;
         protected double leftMargin;
@@ -119,11 +122,7 @@ public class Font extends Symbol {
 
         /**
          * @param chars the characters to display (displayable chars only - i.e. no newlines, tabs etc..)
-         * @param font may be null if no change of font is required
-         * @param size point-size - only relevant if font is not null
-         * @param color may be null if no color change is required.  May be AlphaColor.
-         * @param x new X position for text - only valid if hasX is true
-         * @param y new Y position for text - only valid if hasY is true
+         * @param size  point-size - only relevant if font is not null
          */
         protected Chars(String chars, double size) throws NoGlyphException {
             this.chars = chars;
@@ -171,7 +170,7 @@ public class Font extends Symbol {
                         advance = x2 - x1;
                     }
 
-                    //Kerning adjustment
+                    // Kerning adjustment
                     if (i < (codes.length - 1)) {
                         advance += (fontDef.getKerningOffset(code, codes[i + 1]) * scale);
                     }
@@ -202,15 +201,15 @@ public class Font extends Symbol {
     }
 
     /** used in movie defined symbols lookup */
-    protected Object font1Key = new Object();
+    protected final Object font1Key = new Object();
     /** used in movie defined symbols lookup */
-    protected Object font2Key = new Object();
-    protected FontDefinition fontDef;
+    protected final Object font2Key = new Object();
+    protected final FontDefinition fontDef;
     /** glyphs used by this font */
-    protected Map<Integer, FontDefinition.Glyph> glyphs = new HashMap<Integer, FontDefinition.Glyph>();
+    protected final Map<Integer, FontDefinition.Glyph> glyphs = new HashMap<>();
     /** glyph indices */
-    protected Map<Integer, Integer> indices = new HashMap<Integer, Integer>();
-    protected List<FontDefinition.Glyph> glyphList = new ArrayList<FontDefinition.Glyph>();
+    protected final Map<Integer, Integer> indices = new HashMap<>();
+    protected final List<FontDefinition.Glyph> glyphList = new ArrayList<>();
     protected int languageCode = SWFConstants.LANGUAGE_CODE_NONE;
 
     public int getLanguageCode() {
@@ -236,12 +235,13 @@ public class Font extends Symbol {
     /**
      * Load the glyphs for the characters in the given string from the
      * FontDefinition into this font.
-     * @exception NoGlyphException
+     *
+     * @throws NoGlyphException
      */
     public void loadGlyphs(String chars) throws NoGlyphException {
         char[] chs = chars.toCharArray();
-        for (int i = 0; i < chs.length; i++) {
-            getGlyph(chs[i], null);
+        for (char ch : chs) {
+            getGlyph(ch, null);
         }
     }
 
@@ -264,13 +264,13 @@ public class Font extends Symbol {
     }
 
     protected FontDefinition.Glyph getGlyph(int code, int[] index) throws NoGlyphException {
-        Integer codeI = new Integer(code);
+        Integer codeI = code;
         FontDefinition.Glyph g = glyphs.get(codeI);
 
         if (g != null) {
             if (index != null) {
                 Integer idx = indices.get(codeI);
-                index[0] = idx.intValue();
+                index[0] = idx;
             }
 
             return g;
@@ -297,8 +297,8 @@ public class Font extends Symbol {
         int idx = glyphs.size();
 
         if (glyph.getCode() > 0) {
-            Integer codeI = new Integer(glyph.getCode());
-            indices.put(codeI, new Integer(idx));
+            Integer codeI = glyph.getCode();
+            indices.put(codeI, idx);
             glyphs.put(codeI, glyph);
         }
 
@@ -318,25 +318,25 @@ public class Font extends Symbol {
         FontDefinition.Glyph g = glyphList.get(index);
         g.setCode(code);
 
-        Integer codeI = new Integer(code);
-        indices.put(codeI, new Integer(index));
+        Integer codeI = code;
+        indices.put(codeI, index);
         glyphs.put(codeI, g);
     }
 
     protected int define(boolean textFont, Movie movie, SWFTagTypes tagwriter) throws IOException {
-        Integer integerId = textFont ? (Integer) movie.definedSymbols.get(font1Key) : (Integer) movie.definedSymbols.get(font2Key);
+        Integer integerId = textFont ? movie.definedSymbols.get(font1Key) : movie.definedSymbols.get(font2Key);
 
         if (integerId == null) {
             if (textFont) {
-                integerId = new Integer(defineFont1(movie, tagwriter));
+                integerId = defineFont1(movie, tagwriter);
                 movie.definedSymbols.put(font1Key, integerId);
             } else {
-                integerId = new Integer(defineFont2(movie, tagwriter));
+                integerId = defineFont2(movie, tagwriter);
                 movie.definedSymbols.put(font2Key, integerId);
             }
         }
 
-        id = integerId.intValue();
+        id = integerId;
         return id;
     }
 
@@ -345,9 +345,7 @@ public class Font extends Symbol {
 
         SWFVectors vecs = tagwriter.tagDefineFont(id, glyphList.size());
 
-        for (Iterator<FontDefinition.Glyph> it = glyphList.iterator(); it.hasNext();) {
-            FontDefinition.Glyph g = it.next();
-
+        for (FontDefinition.Glyph g : glyphList) {
             Shape s = g.getShape();
 
             s.writeGlyph(vecs);
@@ -372,7 +370,7 @@ public class Font extends Symbol {
                 flags |= SWFConstants.FONT_BOLD;
             }
 
-            //write fontInfo2 for Flash MX+, if needed
+            // write fontInfo2 for Flash MX+, if needed
             if ((movie.getVersion() >= SWFConstants.FLASH_MX_VERSION) && (languageCode != SWFConstants.LANGUAGE_CODE_NONE)) {
                 tagwriter.tagDefineFontInfo2(id, fontDef.getName(), flags, getCodes(), languageCode);
             } else {
@@ -393,9 +391,7 @@ public class Font extends Symbol {
 
         // Gather glyph info
         int i = 0;
-        for (Iterator<FontDefinition.Glyph> it = glyphList.iterator(); it.hasNext();) {
-            FontDefinition.Glyph g = it.next();
-
+        for (FontDefinition.Glyph g : glyphList) {
             codes[i] = g.getCode();
             advances[i] = (int) (g.getAdvance() * SWFConstants.TWIPS);
 
@@ -444,9 +440,7 @@ public class Font extends Symbol {
 
         SWFVectors vecs = tagwriter.tagDefineFont2(id, flags, fontDef.getName(), glyphCount, (int) (fontDef.getAscent() * SWFConstants.TWIPS), (int) (fontDef.getDescent() * SWFConstants.TWIPS), (int) (fontDef.getLeading() * SWFConstants.TWIPS), codes, advances, bounds, kern1, kern2, kernOff);
 
-        for (Iterator<FontDefinition.Glyph> it = glyphList.iterator(); it.hasNext();) {
-            FontDefinition.Glyph g = it.next();
-
+        for (FontDefinition.Glyph g : glyphList) {
             Shape s = g.getShape();
 
             s.writeGlyph(vecs);

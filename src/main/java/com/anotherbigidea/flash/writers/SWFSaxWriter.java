@@ -42,9 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import com.anotherbigidea.flash.SWFConstants;
 import com.anotherbigidea.flash.interfaces.SWFActions;
 import com.anotherbigidea.flash.interfaces.SWFShape;
@@ -61,19 +58,21 @@ import com.anotherbigidea.flash.structs.Rect;
 import com.anotherbigidea.flash.structs.SoundInfo;
 import com.anotherbigidea.util.Base64;
 import com.anotherbigidea.util.xml.SaxHandlerBase;
-
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import vavi.util.Debug;
 
 
 /**
  * A SAX2 Handler that drives any implementation of the SWFTagTypes interface
  * and understands the XML Vocabulary produced by SWFSaxParser.
- *
+ * <p>
  * This class is not thread-safe but it can be reused by setting a different
  * SWFTagTypes value.  Reuse is recommended since the initialization overhead
  * is expensive.
  */
 public class SWFSaxWriter extends SaxHandlerBase {
+
     protected SWFTagTypes tags;
     protected SWFTagTypes movieTags;
     protected SWFShape shape;
@@ -90,10 +89,10 @@ public class SWFSaxWriter extends SaxHandlerBase {
     protected Color color;
     protected AlphaTransform cxform;
     protected boolean hasAlpha;
-    protected Map<String,Integer> ids = new HashMap<String,Integer>();
+    protected final Map<String, Integer> ids = new HashMap<>();
 
     /** for buttons */
-    protected List<ButtonRecord2> buttonRecords = new ArrayList<ButtonRecord2>();
+    protected final List<ButtonRecord2> buttonRecords = new ArrayList<>();
 
     /** for bitmaps/jpeg: */
     protected List<Color> bitmapColors;
@@ -114,7 +113,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     protected List<Integer> codes;
 
     /** for lookup tables */
-    protected List<String> lookupValues = new ArrayList<String>();
+    protected final List<String> lookupValues = new ArrayList<>();
 
     /** for sound: */
     protected List<Object[]> soundInfos;
@@ -141,7 +140,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
             Integer idI = ids.get(id);
 
             if (idI != null) {
-                return idI.intValue();
+                return idI;
             }
 
             throw new SAXException("Id not found: " + id);
@@ -166,10 +165,10 @@ public class SWFSaxWriter extends SaxHandlerBase {
             Integer idI = ids.get(id);
 
             if (idI != null) {
-                return idI.intValue();
+                return idI;
             }
 
-            ids.put(id, new Integer(newId));
+            ids.put(id, newId);
             return newId++;
         }
 
@@ -189,7 +188,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
         }
 
         if (idAllocate) {
-            ids.put(id, new Integer(newId));
+            ids.put(id, newId);
             return newId++;
         }
 
@@ -200,7 +199,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
         }
     }
 
-    /** */
+    /**  */
     protected void initElements() {
         elementTypes.put("movie", new Movie());
         elementTypes.put("sprite", new Sprite());
@@ -250,7 +249,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
         elementTypes.put("generator-command", new GeneratorCommand());
         elementTypes.put("generator-font", new GeneratorFont());
         elementTypes.put("generator-name-character",
-                         new GeneratorNameCharacter());
+                new GeneratorNameCharacter());
 
         // For Text
         elementTypes.put("set-font", new SetFont());
@@ -319,15 +318,15 @@ public class SWFSaxWriter extends SaxHandlerBase {
         elementTypes.put("substring", new ActionSubstring());
         elementTypes.put("string-less-than", new ActionStringLessThan());
         elementTypes.put("mutlibyte-string-length",
-                         new ActionMutlibyteStringLength());
+                new ActionMutlibyteStringLength());
         elementTypes.put("multibyte-substring", new ActionMultibyteSubstring());
         elementTypes.put("to-integer", new ActionToInteger());
         elementTypes.put("char-to-ascii", new ActionCharToAscii());
         elementTypes.put("ascii-to-char", new ActionAsciiToChar());
         elementTypes.put("mutlibyte-char-to-ascii",
-                         new ActionMutlibyteCharToAscii());
+                new ActionMutlibyteCharToAscii());
         elementTypes.put("ascii-to-multibyte-char",
-                         new ActionAsciiToMultibyteChar());
+                new ActionAsciiToMultibyteChar());
         elementTypes.put("jump", new ActionJump());
         elementTypes.put("if", new ActionIf());
         elementTypes.put("call", new ActionCall());
@@ -386,6 +385,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Sound extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             int id = newId(attrs.getValue("", "id"));
 
@@ -417,12 +417,13 @@ public class SWFSaxWriter extends SaxHandlerBase {
             int sampleCount = getAttrInt(attrs, "sample-count", 0);
 
             tags.tagDefineSound(id, format, freq, bits16, stereo, sampleCount,
-                                Base64.decode(buff.toString()));
+                    Base64.decode(buff.toString()));
         }
     }
 
     protected class Sound_Info extends SaxHandlerBase.GatheringElementType {
-        protected List<SoundInfo.EnvelopePoint> envPoints = new ArrayList<SoundInfo.EnvelopePoint>();
+
+        protected final List<SoundInfo.EnvelopePoint> envPoints = new ArrayList<>();
 
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
@@ -437,10 +438,10 @@ public class SWFSaxWriter extends SaxHandlerBase {
                 int level1 = getAttrInt(atts, "level-1", 0);
 
                 envPoints.add(new SoundInfo.EnvelopePoint(position, level0,
-                                                          level1));
+                        level1));
             }
 
-            return false; //do not gather
+            return false; // do not gather
         }
 
         public void endElement() throws Exception {
@@ -459,18 +460,19 @@ public class SWFSaxWriter extends SaxHandlerBase {
             envPoints.clear();
 
             soundInfos.add(new Object[] {
-                               new Integer(id), event,
-                               new SoundInfo(noMultiplePlay, stopSound,
-                                             envelope, inPoint, outPoint,
-                                             loopCount)
-                           });
+                    id, event,
+                    new SoundInfo(noMultiplePlay, stopSound,
+                            envelope, inPoint, outPoint,
+                            loopCount)
+            });
         }
     }
 
     protected class ButtonSound extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
-            soundInfos = new ArrayList<Object[]>();
+            soundInfos = new ArrayList<>();
         }
 
         public void endElement() throws Exception {
@@ -488,10 +490,8 @@ public class SWFSaxWriter extends SaxHandlerBase {
             int releaseId = 0;
             SoundInfo releaseInfo = null;
 
-            for (Iterator<Object[]> it = soundInfos.iterator(); it.hasNext();) {
-                Object[] oo = it.next();
-
-                int soundId = ((Integer) oo[0]).intValue();
+            for (Object[] oo : soundInfos) {
+                int soundId = (Integer) oo[0];
                 String event = (String) oo[1];
                 SoundInfo si = (SoundInfo) oo[2];
 
@@ -511,26 +511,27 @@ public class SWFSaxWriter extends SaxHandlerBase {
             }
 
             tags.tagDefineButtonSound(id, rolloverId, rolloverInfo, rolloutId,
-                                      rolloutInfo, pressId, pressInfo,
-                                      releaseId, releaseInfo);
+                    rolloutInfo, pressId, pressInfo,
+                    releaseId, releaseInfo);
 
             soundInfos = null;
         }
     }
 
     protected class StartSound extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
-            soundInfos = new ArrayList<Object[]>();
+            soundInfos = new ArrayList<>();
         }
 
         public void endElement() throws Exception {
-            if (soundInfos.size() < 1) {
+            if (soundInfos.isEmpty()) {
                 return;
             }
 
             Object[] oo = soundInfos.get(0);
 
-            int id = ((Integer) oo[0]).intValue();
+            int id = (Integer) oo[0];
             SoundInfo si = (SoundInfo) oo[2];
 
             tags.tagStartSound(id, si);
@@ -539,6 +540,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class SoundHeader extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             String form = getAttr(atts, "stream-format", "mp3");
             int format = SWFConstants.SOUND_FORMAT_MP3;
@@ -586,18 +588,20 @@ public class SWFSaxWriter extends SaxHandlerBase {
             int averageSampleCount = getAttrInt(atts, "average-sample-count", 0);
 
             tags.tagSoundStreamHead2(playFreq, play16bit, playStereo, format,
-                                     streamFreq, stream16bit, streamStereo,
-                                     averageSampleCount);
+                    streamFreq, stream16bit, streamStereo,
+                    averageSampleCount);
         }
     }
 
     protected class SoundBlock extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             tags.tagSoundStreamBlock(Base64.decode(buff.toString()));
         }
     }
 
     protected class Movie extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int width = getAttrInt(atts, "width", 550);
             int height = getAttrInt(atts, "height", 400);
@@ -608,7 +612,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
             flashVersion = version;
 
             tags.header(version, -1, width * SWFConstants.TWIPS,
-                        height * SWFConstants.TWIPS, rate, -1);
+                    height * SWFConstants.TWIPS, rate, -1);
         }
 
         public void endElement() throws Exception {
@@ -617,6 +621,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Sprite extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int id = newId(atts.getValue("", "id"));
 
@@ -624,15 +629,16 @@ public class SWFSaxWriter extends SaxHandlerBase {
         }
 
         public void endElement() throws Exception {
-            tags.tagEnd(); //end the sprite timeline
-            tags = movieTags; //restore main timeline           
+            tags.tagEnd(); // end the sprite timeline
+            tags = movieTags; // restore main timeline           
         }
     }
 
     protected class Frame extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             String label = atts.getValue("", "label");
-            if ((label != null) && (label.length() > 0)) {
+            if ((label != null) && (!label.isEmpty())) {
                 tags.tagFrameLabel(label);
             }
 
@@ -646,60 +652,68 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class SerialNumber extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             tags.tagSerialNumber(buff.toString());
         }
     }
 
     protected class Generator extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             tags.tagGenerator(Base64.decode(buff.toString()));
         }
     }
 
     protected class GeneratorText extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             tags.tagGeneratorText(Base64.decode(buff.toString()));
         }
     }
 
     protected class GeneratorCommand extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             tags.tagGeneratorCommand(Base64.decode(buff.toString()));
         }
     }
 
     protected class GeneratorFont extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             tags.tagGeneratorFont(Base64.decode(buff.toString()));
         }
     }
 
     protected class GeneratorNameCharacter
-        extends SaxHandlerBase.ContentElementType {
+            extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             tags.tagNameCharacter(Base64.decode(buff.toString()));
         }
     }
 
     protected class Tag extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             int type = getAttrInt(attrs, "type", 0);
 
             String base64 = buff.toString().trim();
 
-            byte[] bytes = (base64.length() > 0) ? Base64.decode(base64) : null;
+            byte[] bytes = (!base64.isEmpty()) ? Base64.decode(base64) : null;
 
             tags.tag(type, false, bytes);
         }
     }
 
     protected class Protect extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             String password = atts.getValue("", "password");
 
             byte[] bytes = null;
-            if ((password != null) && (password.length() > 0)) {
+            if ((password != null) && (!password.isEmpty())) {
                 bytes = Base64.decode(password);
             }
 
@@ -708,11 +722,12 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class EnableDebug extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             String password = atts.getValue("", "password");
 
             byte[] bytes = null;
-            if ((password != null) && (password.length() > 0)) {
+            if ((password != null) && (!password.isEmpty())) {
                 bytes = Base64.decode(password);
             }
 
@@ -721,6 +736,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class BackgroundColor extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int red = getAttrInt(atts, "red", 255);
             int green = getAttrInt(atts, "green", 255);
@@ -731,6 +747,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Shape extends SaxHandlerBase.ElementType {
+
         protected boolean insideMorph;
 
         public void startElement(Attributes atts) throws Exception {
@@ -747,12 +764,12 @@ public class SWFSaxWriter extends SaxHandlerBase {
                 double maxy = getAttrDouble(atts, "max-y", 0.0);
 
                 Rect rect = new Rect((int) (minx * SWFConstants.TWIPS),
-                                     (int) (miny * SWFConstants.TWIPS),
-                                     (int) (maxx * SWFConstants.TWIPS),
-                                     (int) (maxy * SWFConstants.TWIPS));
+                        (int) (miny * SWFConstants.TWIPS),
+                        (int) (maxx * SWFConstants.TWIPS),
+                        (int) (maxy * SWFConstants.TWIPS));
 
                 shape = hasAlpha ? tags.tagDefineShape3(id, rect)
-                                 : tags.tagDefineShape2(id, rect);
+                        : tags.tagDefineShape2(id, rect);
 
                 vectors = shape;
             } else {
@@ -771,16 +788,18 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class ShapeLine extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             double dx = getAttrDouble(atts, "dx", 0.0);
             double dy = getAttrDouble(atts, "dy", 0.0);
 
             vectors.line((int) (dx * SWFConstants.TWIPS),
-                         (int) (dy * SWFConstants.TWIPS));
+                    (int) (dy * SWFConstants.TWIPS));
         }
     }
 
     protected class ShapeCurve extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             double cx = getAttrDouble(atts, "cx", 0.0);
             double cy = getAttrDouble(atts, "cy", 0.0);
@@ -788,23 +807,25 @@ public class SWFSaxWriter extends SaxHandlerBase {
             double dy = getAttrDouble(atts, "dy", 0.0);
 
             vectors.curve((int) (cx * SWFConstants.TWIPS),
-                          (int) (cy * SWFConstants.TWIPS),
-                          (int) (dx * SWFConstants.TWIPS),
-                          (int) (dy * SWFConstants.TWIPS));
+                    (int) (cy * SWFConstants.TWIPS),
+                    (int) (dx * SWFConstants.TWIPS),
+                    (int) (dy * SWFConstants.TWIPS));
         }
     }
 
     protected class ShapeMove extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             double x = getAttrDouble(atts, "x", 0.0);
             double y = getAttrDouble(atts, "y", 0.0);
 
             vectors.move((int) (x * SWFConstants.TWIPS),
-                         (int) (y * SWFConstants.TWIPS));
+                    (int) (y * SWFConstants.TWIPS));
         }
     }
 
     protected class ShapeFill0 extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int index = getAttrInt(atts, "index", 1);
             shape.setFillStyle0(index);
@@ -812,6 +833,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class ShapeFill1 extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int index = getAttrInt(atts, "index", 1);
             shape.setFillStyle1(index);
@@ -819,6 +841,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class ShapeSetLine extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int index = getAttrInt(atts, "index", 1);
             shape.setLineStyle(index);
@@ -826,6 +849,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class ShapeColorFill extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
             color = null;
@@ -841,11 +865,12 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class ShapeGradient extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
 
-            colors = new ArrayList<Color>();
-            ratios = new ArrayList<Integer>();
+            colors = new ArrayList<>();
+            ratios = new ArrayList<>();
 
             matrix = null;
         }
@@ -862,7 +887,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
 
             for (int i = 0; i < colorsA.length; i++) {
                 colorsA[i] = colors.get(i);
-                ratiosA[i] = ratios.get(i).intValue();
+                ratiosA[i] = ratios.get(i);
             }
 
             shape.defineFillStyle(matrix, ratiosA, colorsA, radial);
@@ -871,6 +896,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class ShapeImage extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
             matrix = null;
@@ -890,6 +916,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class ShapeLineStyle extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
             color = null;
@@ -907,6 +934,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Step extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
             color = null;
@@ -919,12 +947,13 @@ public class SWFSaxWriter extends SaxHandlerBase {
 
             int ratio = getAttrInt(attrs, "ratio", 0);
 
-            ratios.add(new Integer(ratio));
+            ratios.add(ratio);
             colors.add(color);
         }
     }
 
     protected class Release extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int id = getId(atts.getValue("", "id"));
 
@@ -933,6 +962,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Remove extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int depth = getAttrInt(atts, "depth", 0);
 
@@ -941,7 +971,8 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Place extends SaxHandlerBase.GatheringElementType {
-        protected int actionFlags; //cummulative action conditions
+
+        protected int actionFlags; // cummulative action conditions
 
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
@@ -960,24 +991,16 @@ public class SWFSaxWriter extends SaxHandlerBase {
                 while (tok.hasMoreTokens()) {
                     String f = tok.nextToken();
 
-                    if (f.equals("load")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_ON_LOAD;
-                    } else if (f.equals("enter-frame")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_ENTER_FRAME;
-                    } else if (f.equals("unload")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_UNLOAD;
-                    } else if (f.equals("mouse-move")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_MOVE;
-                    } else if (f.equals("mouse-down")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_DOWN;
-                    } else if (f.equals("mouse-up")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_UP;
-                    } else if (f.equals("key-down")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_KEY_DOWN;
-                    } else if (f.equals("key-up")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_KEY_UP;
-                    } else if (f.equals("data")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_DATA;
+                    switch (f) {
+                        case "load" -> actionFlags |= SWFConstants.CLIP_ACTION_ON_LOAD;
+                        case "enter-frame" -> actionFlags |= SWFConstants.CLIP_ACTION_ENTER_FRAME;
+                        case "unload" -> actionFlags |= SWFConstants.CLIP_ACTION_UNLOAD;
+                        case "mouse-move" -> actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_MOVE;
+                        case "mouse-down" -> actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_DOWN;
+                        case "mouse-up" -> actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_UP;
+                        case "key-down" -> actionFlags |= SWFConstants.CLIP_ACTION_KEY_DOWN;
+                        case "key-up" -> actionFlags |= SWFConstants.CLIP_ACTION_KEY_UP;
+                        case "data" -> actionFlags |= SWFConstants.CLIP_ACTION_DATA;
                     }
                 }
             }
@@ -997,11 +1020,11 @@ public class SWFSaxWriter extends SaxHandlerBase {
             dispatchGatheredElement("color-transform");
 
             actions = tags.tagPlaceObject2(alter, clip, depth, id, matrix,
-                                           cxform, ratio, name, actionFlags);
+                    cxform, ratio, name, actionFlags);
 
             if ((actionFlags != 0) && (actions != null)) {
                 actionMode = 2;
-                endGatherMode(); //replay all the actions
+                endGatherMode(); // replay all the actions
                 actions.done();
                 actionMode = 0;
             }
@@ -1013,6 +1036,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Jpeg extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
             pixelData = null;
@@ -1044,18 +1068,21 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class JPEGImage extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             pixelData = Base64.decode(buff.toString());
         }
     }
 
     protected class JPEGAlpha extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             jpegAlpha = Base64.decode(buff.toString());
         }
     }
 
     protected class JPEGHeader extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             byte[] data = Base64.decode(buff.toString());
             tags.tagJPEGTables(data);
@@ -1063,6 +1090,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Bitmap extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
             bitmapColors = null;
@@ -1097,10 +1125,10 @@ public class SWFSaxWriter extends SaxHandlerBase {
 
             if (hasAlpha) {
                 tags.tagDefineBitsLossless2(id, format, width, height, colors,
-                                            pixelData);
+                        pixelData);
             } else {
                 tags.tagDefineBitsLossless(id, format, width, height, colors,
-                                           pixelData);
+                        pixelData);
             }
 
             bitmapColors = null;
@@ -1109,15 +1137,15 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Colors extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
-            bitmapColors = new ArrayList<Color>();
+            bitmapColors = new ArrayList<>();
         }
 
-        public void endElement() throws Exception {
-        }
     }
 
     protected class Pixels extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
         }
@@ -1128,9 +1156,10 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Import extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
-            symbols = new ArrayList<Object[]>();
+            symbols = new ArrayList<>();
         }
 
         public void endElement() throws Exception {
@@ -1145,7 +1174,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
             for (int i = 0; i < names.length; i++) {
                 Object[] sym = symbols.get(i);
                 names[i] = (String) sym[0];
-                ids[i] = ((Integer) sym[1]).intValue();
+                ids[i] = (Integer) sym[1];
             }
 
             tags.tagImport(movie, names, ids);
@@ -1154,8 +1183,9 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Export extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
-            symbols = new ArrayList<Object[]>();
+            symbols = new ArrayList<>();
         }
 
         public void endElement() throws Exception {
@@ -1165,7 +1195,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
             for (int i = 0; i < names.length; i++) {
                 Object[] sym = symbols.get(i);
                 names[i] = (String) sym[0];
-                ids[i] = ((Integer) sym[1]).intValue();
+                ids[i] = (Integer) sym[1];
             }
 
             tags.tagExport(names, ids);
@@ -1174,6 +1204,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Symbol extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int id = getOrAllocateId(atts.getValue("", "id"));
             String name = atts.getValue("", "name");
@@ -1186,12 +1217,13 @@ public class SWFSaxWriter extends SaxHandlerBase {
             }
 
             if (symbols != null) {
-                symbols.add(new Object[] { name, new Integer(id) });
+                symbols.add(new Object[] {name, id});
             }
         }
     }
 
     protected class TextFont extends SaxHandlerBase.GatheringElementType {
+
         protected int glyphCount;
 
         public void startElement(Attributes atts) throws Exception {
@@ -1211,12 +1243,13 @@ public class SWFSaxWriter extends SaxHandlerBase {
             int id = newId(attrs.getValue("", "id"));
 
             vectors = tags.tagDefineFont(id, glyphCount);
-            endGatherMode(); //dispatch glyphs
+            endGatherMode(); // dispatch glyphs
             vectors = null;
         }
     }
 
     protected class EditField extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
             color = null;
@@ -1234,9 +1267,9 @@ public class SWFSaxWriter extends SaxHandlerBase {
             double maxy = getAttrDouble(attrs, "max-y", 0.0);
 
             Rect rect = new Rect((int) (minx * SWFConstants.TWIPS),
-                                 (int) (miny * SWFConstants.TWIPS),
-                                 (int) (maxx * SWFConstants.TWIPS),
-                                 (int) (maxy * SWFConstants.TWIPS));
+                    (int) (miny * SWFConstants.TWIPS),
+                    (int) (maxx * SWFConstants.TWIPS),
+                    (int) (maxy * SWFConstants.TWIPS));
 
             String align = getAttr(attrs, "align", "left").trim();
             int alignment = SWFConstants.TEXTFIELD_ALIGN_LEFT;
@@ -1291,13 +1324,14 @@ public class SWFSaxWriter extends SaxHandlerBase {
             }
 
             tags.tagDefineTextField(id, name, text, rect, flags,
-                                    (AlphaColor) color, alignment, fontId,
-                                    fontSize, limit, leftMargin, rightMargin,
-                                    indentation, lineSpacing);
+                    (AlphaColor) color, alignment, fontId,
+                    fontSize, limit, leftMargin, rightMargin,
+                    indentation, lineSpacing);
         }
     }
 
     protected class Button extends SaxHandlerBase.GatheringElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
 
@@ -1316,7 +1350,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
 
             if (actions != null) {
                 actionMode = 1;
-                endGatherMode(); //dispatch any actions
+                endGatherMode(); // dispatch any actions
                 actions.done();
                 actionMode = 0;
             }
@@ -1326,6 +1360,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Layer extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
             cxform = null;
@@ -1342,24 +1377,22 @@ public class SWFSaxWriter extends SaxHandlerBase {
             while (tok.hasMoreTokens()) {
                 String token = tok.nextToken();
 
-                if (token.equals("hit")) {
-                    flags |= ButtonRecord.BUTTON_HITTEST;
-                } else if (token.equals("over")) {
-                    flags |= ButtonRecord.BUTTON_OVER;
-                } else if (token.equals("up")) {
-                    flags |= ButtonRecord.BUTTON_UP;
-                } else if (token.equals("down")) {
-                    flags |= ButtonRecord.BUTTON_DOWN;
+                switch (token) {
+                    case "hit" -> flags |= ButtonRecord.BUTTON_HITTEST;
+                    case "over" -> flags |= ButtonRecord.BUTTON_OVER;
+                    case "up" -> flags |= ButtonRecord.BUTTON_UP;
+                    case "down" -> flags |= ButtonRecord.BUTTON_DOWN;
                 }
             }
 
             ButtonRecord2 rec = new ButtonRecord2(id, depth, matrix, cxform,
-                                                  flags);
+                    flags);
             buttonRecords.add(rec);
         }
     }
 
     protected class Morph extends SaxHandlerBase.GatheringElementType {
+
         protected Rect startBounds;
         protected Rect endBounds;
 
@@ -1380,9 +1413,9 @@ public class SWFSaxWriter extends SaxHandlerBase {
                 double maxy = getAttrDouble(atts, "max-y", 0.0);
 
                 Rect rect = new Rect((int) (minx * SWFConstants.TWIPS),
-                                     (int) (miny * SWFConstants.TWIPS),
-                                     (int) (maxx * SWFConstants.TWIPS),
-                                     (int) (maxy * SWFConstants.TWIPS));
+                        (int) (miny * SWFConstants.TWIPS),
+                        (int) (maxx * SWFConstants.TWIPS),
+                        (int) (maxy * SWFConstants.TWIPS));
 
                 if (startBounds == null) {
                     startBounds = rect;
@@ -1400,7 +1433,7 @@ public class SWFSaxWriter extends SaxHandlerBase {
             shape = tags.tagDefineMorphShape(id, startBounds, endBounds);
             vectors = shape;
 
-            endGatherMode(); //dispatch shapes
+            endGatherMode(); // dispatch shapes
 
             shape = null;
             vectors = null;
@@ -1408,11 +1441,12 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class EditFont extends SaxHandlerBase.GatheringElementType {
+
         protected int glyphCount;
-        protected List<Integer> codes = new ArrayList<Integer>();
-        protected List<Integer> advances = new ArrayList<Integer>();
-        protected List<Rect> bounds = new ArrayList<Rect>();
-        protected List<int[]> kerns = new ArrayList<int[]>();
+        protected final List<Integer> codes = new ArrayList<>();
+        protected final List<Integer> advances = new ArrayList<>();
+        protected final List<Rect> bounds = new ArrayList<>();
+        protected final List<int[]> kerns = new ArrayList<>();
         protected boolean hasLayout;
 
         public void startElement(Attributes atts) throws Exception {
@@ -1438,9 +1472,9 @@ public class SWFSaxWriter extends SaxHandlerBase {
                 double maxy = getAttrDouble(atts, "max-y", 0.0);
 
                 Rect rect = new Rect((int) (minx * SWFConstants.TWIPS),
-                                     (int) (miny * SWFConstants.TWIPS),
-                                     (int) (maxx * SWFConstants.TWIPS),
-                                     (int) (maxy * SWFConstants.TWIPS));
+                        (int) (miny * SWFConstants.TWIPS),
+                        (int) (maxx * SWFConstants.TWIPS),
+                        (int) (maxy * SWFConstants.TWIPS));
 
                 bounds.add(rect);
 
@@ -1451,17 +1485,16 @@ public class SWFSaxWriter extends SaxHandlerBase {
                     hasLayout = true;
                 }
 
-                codes.add(new Integer(code));
-                advances.add(new Integer(advance));
-            }
-            else if (localName.equals("kerning")) {
+                codes.add(code);
+                advances.add(advance);
+            } else if (localName.equals("kerning")) {
                 hasLayout = true;
 
                 int[] info = new int[] {
-                                 getAttrInt(atts, "code-1", 0),
-                                 getAttrInt(atts, "code-2", 0),
-                                 (int) (getAttrDouble(atts, "offset", 0.0) * SWFConstants.TWIPS)
-                             };
+                        getAttrInt(atts, "code-1", 0),
+                        getAttrInt(atts, "code-2", 0),
+                        (int) (getAttrDouble(atts, "offset", 0.0) * SWFConstants.TWIPS)
+                };
 
                 kerns.add(info);
 
@@ -1508,8 +1541,8 @@ public class SWFSaxWriter extends SaxHandlerBase {
             Rect[] boundsA = new Rect[glyphCount];
 
             for (int i = 0; i < glyphCount; i++) {
-                advancesA[i] = advances.get(i).intValue();
-                codesA[i] = codes.get(i).intValue();
+                advancesA[i] = advances.get(i);
+                codesA[i] = codes.get(i);
                 boundsA[i] = bounds.get(i);
             }
 
@@ -1529,10 +1562,10 @@ public class SWFSaxWriter extends SaxHandlerBase {
             }
 
             vectors = tags.tagDefineFont2(id, flags, name, glyphCount, ascent,
-                                          descent, leading, codesA, advancesA,
-                                          boundsA, kern1, kern2, kernA);
+                    descent, leading, codesA, advancesA,
+                    boundsA, kern1, kern2, kernA);
 
-            endGatherMode(); //dispatch glyphs
+            endGatherMode(); // dispatch glyphs
 
             if (glyphCount == 0) {
                 vectors.done();
@@ -1542,22 +1575,21 @@ public class SWFSaxWriter extends SaxHandlerBase {
     }
 
     protected class Glyph extends SaxHandlerBase.ElementType {
-        public void startElement(Attributes atts) throws Exception {
-        }
 
         public void endElement() throws Exception {
-if (vectors == null) { // TODO vavi null
- Debug.println("Glyph:: vectors: " + vectors);
- return;
-}
+            if (vectors == null) { // TODO vavi null
+                Debug.println("Glyph:: vectors: " + vectors);
+                return;
+            }
             vectors.done();
         }
     }
 
     protected class Anticlockwise extends SaxHandlerBase.ElementType {
+
         public void endElement() throws Exception {
             SWFShape shape = (vectors instanceof SWFShape) ? (SWFShape) vectors
-                                                           : null;
+                    : null;
 
             if (shape != null) {
                 shape.setFillStyle0(1);
@@ -1566,9 +1598,10 @@ if (vectors == null) { // TODO vavi null
     }
 
     protected class FontInfo extends SaxHandlerBase.ContentElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
-            codes = new ArrayList<Integer>();
+            codes = new ArrayList<>();
         }
 
         public void endElement() throws Exception {
@@ -1606,7 +1639,7 @@ if (vectors == null) { // TODO vavi null
 
             int[] codesA = new int[codes.size()];
             for (int i = 0; i < codesA.length; i++) {
-                codesA[i] = codes.get(i).intValue();
+                codesA[i] = codes.get(i);
             }
             codes = null;
 
@@ -1615,12 +1648,14 @@ if (vectors == null) { // TODO vavi null
     }
 
     protected class Code extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
-            codes.add(new Integer(getAttrInt(atts, "code", 0)));
+            codes.add(getAttrInt(atts, "code", 0));
         }
     }
 
     protected class Text extends SaxHandlerBase.GatheringElementType {
+
         public void startElement(Attributes atts) throws Exception {
             super.startElement(atts);
             startGatherMode(this);
@@ -1636,19 +1671,19 @@ if (vectors == null) { // TODO vavi null
             double maxy = getAttrDouble(attrs, "max-y", 0.0);
 
             Rect rect = new Rect((int) (minx * SWFConstants.TWIPS),
-                                 (int) (miny * SWFConstants.TWIPS),
-                                 (int) (maxx * SWFConstants.TWIPS),
-                                 (int) (maxy * SWFConstants.TWIPS));
+                    (int) (miny * SWFConstants.TWIPS),
+                    (int) (maxx * SWFConstants.TWIPS),
+                    (int) (maxy * SWFConstants.TWIPS));
 
             // need to get the matrix from the front of the gathered elements
             dispatchGatheredElement("matrix");
 
             text = hasAlpha ? tags.tagDefineText2(id, rect, matrix)
-                            : tags.tagDefineText(id, rect, matrix);
+                    : tags.tagDefineText(id, rect, matrix);
 
-            chars = new ArrayList<int[]>();
+            chars = new ArrayList<>();
 
-            endGatherMode(); //dispatch the gathered elements
+            endGatherMode(); // dispatch the gathered elements
 
             flushChars();
             chars = null;
@@ -1660,8 +1695,8 @@ if (vectors == null) { // TODO vavi null
 
     protected void flushChars() throws Exception {
         if (chars == null || chars.isEmpty()) { // TODO vavi null
-Debug.println("flushChars: chars: " + chars);
-new Exception("*** DUMMY ***").printStackTrace(System.err);
+            Debug.println("flushChars: chars: " + chars);
+            new Exception("*** DUMMY ***").printStackTrace(System.err);
             return;
         }
 
@@ -1679,6 +1714,7 @@ new Exception("*** DUMMY ***").printStackTrace(System.err);
     }
 
     protected class SetFont extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             flushChars();
 
@@ -1689,15 +1725,16 @@ new Exception("*** DUMMY ***").printStackTrace(System.err);
                 throw new SAXException("Invalid id for font in text");
             }
 
-if (text == null) { // TODO vavi null
- Debug.println("text: " + text);
- return;
-}
+            if (text == null) { // TODO vavi null
+                Debug.println("text: " + text);
+                return;
+            }
             text.font(id, (int) (size * SWFConstants.TWIPS));
         }
     }
 
     protected class SetX extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             flushChars();
 
@@ -1708,32 +1745,35 @@ if (text == null) { // TODO vavi null
     }
 
     protected class SetY extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             flushChars();
 
             double y = getAttrDouble(atts, "y", 0.0);
-if (text == null) { // TODO vavi null
- Debug.println("text: " + text);
- return;
-}
+            if (text == null) { // TODO vavi null
+                Debug.println("text: " + text);
+                return;
+            }
             text.setY((int) (y * SWFConstants.TWIPS));
         }
     }
 
     protected class Char extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             double adv = getAttrDouble(atts, "advance", 0.0);
             int idx = getAttrInt(atts, "glyph-index", 0);
 
-if (chars == null) { // TODO vavi null
- Debug.println("Char: chars: null");
- return;
-}
-            chars.add(new int[] { idx, (int) (adv * SWFConstants.TWIPS) });
+            if (chars == null) { // TODO vavi null
+                Debug.println("Char: chars: null");
+                return;
+            }
+            chars.add(new int[] {idx, (int) (adv * SWFConstants.TWIPS)});
         }
     }
 
     protected class QTMovie extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int id = newId(atts.getValue("", "id"));
             String name = atts.getValue("", "name");
@@ -1750,6 +1790,7 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ColorElem extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int red = getAttrInt(atts, "red", 0);
             int green = getAttrInt(atts, "green", 0);
@@ -1776,6 +1817,7 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class MatrixElem extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             double skew0 = getAttrDouble(atts, "skew0", 0.0);
             double skew1 = getAttrDouble(atts, "skew1", 0.0);
@@ -1785,11 +1827,12 @@ if (chars == null) { // TODO vavi null
             double y = getAttrDouble(atts, "y", 0.0);
 
             matrix = new Matrix(scalex, scaley, skew0, skew1,
-                                x * SWFConstants.TWIPS, y * SWFConstants.TWIPS);
+                    x * SWFConstants.TWIPS, y * SWFConstants.TWIPS);
         }
     }
 
     protected class CXFormElem extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int addRed = getAttrInt(atts, "add-red", 0);
             int addGreen = getAttrInt(atts, "add-green", 0);
@@ -1802,12 +1845,13 @@ if (chars == null) { // TODO vavi null
             double multAlpha = getAttrDouble(atts, "mult-alpha", 1.0);
 
             cxform = new AlphaTransform(multRed, multGreen, multBlue,
-                                        multAlpha, addRed, addGreen, addBlue,
-                                        addAlpha);
+                    multAlpha, addRed, addGreen, addBlue,
+                    addAlpha);
         }
     }
 
     protected class Actions extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             if (actionMode == 0) {
                 actions = tags.tagDoAction();
@@ -1815,32 +1859,24 @@ if (chars == null) { // TODO vavi null
 
             int actionFlags = 0;
 
-            if (actionMode == 1) //button
-             {
+            if (actionMode == 1) // button
+            {
                 String flags = getAttr(atts, "conditions", "release");
 
                 StringTokenizer tok = new StringTokenizer(flags);
                 while (tok.hasMoreTokens()) {
                     String f = tok.nextToken();
 
-                    if (f.equals("menu-drag-out")) {
-                        actionFlags |= SWFConstants.BUTTON2_OVERDOWN2IDLE;
-                    } else if (f.equals("menu-drag-over")) {
-                        actionFlags |= SWFConstants.BUTTON2_IDLE2OVERDOWN;
-                    } else if (f.equals("release-outside")) {
-                        actionFlags |= SWFConstants.BUTTON2_OUTDOWN2IDLE;
-                    } else if (f.equals("drag-over")) {
-                        actionFlags |= SWFConstants.BUTTON2_OUTDOWN2OVERDOWN;
-                    } else if (f.equals("drag-out")) {
-                        actionFlags |= SWFConstants.BUTTON2_OVERDOWN2OUTDOWN;
-                    } else if (f.equals("release")) {
-                        actionFlags |= SWFConstants.BUTTON2_OVERDOWN2OVERUP;
-                    } else if (f.equals("press")) {
-                        actionFlags |= SWFConstants.BUTTON2_OVERUP2OVERDOWN;
-                    } else if (f.equals("roll-out")) {
-                        actionFlags |= SWFConstants.BUTTON2_OVERUP2IDLE;
-                    } else if (f.equals("roll-over")) {
-                        actionFlags |= SWFConstants.BUTTON2_IDLE2OVERUP;
+                    switch (f) {
+                        case "menu-drag-out" -> actionFlags |= SWFConstants.BUTTON2_OVERDOWN2IDLE;
+                        case "menu-drag-over" -> actionFlags |= SWFConstants.BUTTON2_IDLE2OVERDOWN;
+                        case "release-outside" -> actionFlags |= SWFConstants.BUTTON2_OUTDOWN2IDLE;
+                        case "drag-over" -> actionFlags |= SWFConstants.BUTTON2_OUTDOWN2OVERDOWN;
+                        case "drag-out" -> actionFlags |= SWFConstants.BUTTON2_OVERDOWN2OUTDOWN;
+                        case "release" -> actionFlags |= SWFConstants.BUTTON2_OVERDOWN2OVERUP;
+                        case "press" -> actionFlags |= SWFConstants.BUTTON2_OVERUP2OVERDOWN;
+                        case "roll-out" -> actionFlags |= SWFConstants.BUTTON2_OVERUP2IDLE;
+                        case "roll-over" -> actionFlags |= SWFConstants.BUTTON2_IDLE2OVERUP;
                     }
                 }
 
@@ -1849,32 +1885,24 @@ if (chars == null) { // TODO vavi null
                 if (charCode > 0) {
                     actionFlags |= ((charCode << 9) & 0xfe00);
                 }
-            } else if (actionMode == 2) //clip actions
-             {
+            } else if (actionMode == 2) // clip actions
+            {
                 String flags = getAttr(atts, "conditions", "");
 
                 StringTokenizer tok = new StringTokenizer(flags);
                 while (tok.hasMoreTokens()) {
                     String f = tok.nextToken();
 
-                    if (f.equals("load")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_ON_LOAD;
-                    } else if (f.equals("enter-frame")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_ENTER_FRAME;
-                    } else if (f.equals("unload")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_UNLOAD;
-                    } else if (f.equals("mouse-move")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_MOVE;
-                    } else if (f.equals("mouse-down")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_DOWN;
-                    } else if (f.equals("mouse-up")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_UP;
-                    } else if (f.equals("key-down")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_KEY_DOWN;
-                    } else if (f.equals("key-up")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_KEY_UP;
-                    } else if (f.equals("data")) {
-                        actionFlags |= SWFConstants.CLIP_ACTION_DATA;
+                    switch (f) {
+                        case "load" -> actionFlags |= SWFConstants.CLIP_ACTION_ON_LOAD;
+                        case "enter-frame" -> actionFlags |= SWFConstants.CLIP_ACTION_ENTER_FRAME;
+                        case "unload" -> actionFlags |= SWFConstants.CLIP_ACTION_UNLOAD;
+                        case "mouse-move" -> actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_MOVE;
+                        case "mouse-down" -> actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_DOWN;
+                        case "mouse-up" -> actionFlags |= SWFConstants.CLIP_ACTION_MOUSE_UP;
+                        case "key-down" -> actionFlags |= SWFConstants.CLIP_ACTION_KEY_DOWN;
+                        case "key-up" -> actionFlags |= SWFConstants.CLIP_ACTION_KEY_UP;
+                        case "data" -> actionFlags |= SWFConstants.CLIP_ACTION_DATA;
                     }
                 }
             }
@@ -1891,6 +1919,7 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ActionUnknown extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             int code = getAttrInt(attrs, "code", 0);
             byte[] data = Base64.decode(buff.toString());
@@ -1901,12 +1930,14 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ActionJumpLabel extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.jumpLabel(getAttr(atts, "label", ""));
         }
     }
 
     protected class ActionComment extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             actions.comment(buff.toString());
             buff = null;
@@ -1914,6 +1945,7 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ActionGotoFrame extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             String label = attrs.getValue("", "label");
             if (label != null) {
@@ -1933,6 +1965,7 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ActionGetUrl extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             String url = atts.getValue("", "url");
             String target = atts.getValue("", "target");
@@ -1970,8 +2003,8 @@ if (chars == null) { // TODO vavi null
                 }
             } else {
                 load = targetSprite
-                       ? SWFActions.GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE
-                       : SWFActions.GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL;
+                        ? SWFActions.GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE
+                        : SWFActions.GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL;
             }
 
             actions.getURL(send, load);
@@ -1979,42 +2012,49 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ActionNextFrame extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.nextFrame();
         }
     }
 
     protected class ActionPrevFrame extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.prevFrame();
         }
     }
 
     protected class ActionPlay extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.play();
         }
     }
 
     protected class ActionStop extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.stop();
         }
     }
 
     protected class ActionToggleQuality extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.toggleQuality();
         }
     }
 
     protected class ActionStopSounds extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.stopSounds();
         }
     }
 
     protected class ActionWaitForFrame extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             int number = getAttrInt(atts, "number", -1);
             String jumpLabel = getAttr(atts, "jump-label", "");
@@ -2028,6 +2068,7 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ActionSetTarget extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             String target = atts.getValue("", "target");
 
@@ -2040,6 +2081,7 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ActionPush extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             String value = atts.getValue("", "string");
             if (value != null) {
@@ -2068,7 +2110,7 @@ if (chars == null) { // TODO vavi null
             value = atts.getValue("", "boolean");
             if (value != null) {
                 actions.push((value.equalsIgnoreCase("yes") ||
-                             value.equalsIgnoreCase("true")) ? true : false);
+                        value.equalsIgnoreCase("true")) ? true : false);
                 return;
             }
 
@@ -2089,405 +2131,472 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ActionPop extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.pop();
         }
     }
 
     protected class ActionAdd extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.add();
         }
     }
 
     protected class ActionSubtract extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.substract();
         }
     }
 
     protected class ActionMultiply extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.multiply();
         }
     }
 
     protected class ActionDivide extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.divide();
         }
     }
 
     protected class ActionEquals extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.equals();
         }
     }
 
     protected class ActionLessThan extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.lessThan();
         }
     }
 
     protected class ActionAnd extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.and();
         }
     }
 
     protected class ActionOr extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.or();
         }
     }
 
     protected class ActionNot extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.not();
         }
     }
 
     protected class ActionStringEquals extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.stringEquals();
         }
     }
 
     protected class ActionStringLength extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.stringLength();
         }
     }
 
     protected class ActionConcat extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.concat();
         }
     }
 
     protected class ActionSubstring extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.substring();
         }
     }
 
     protected class ActionStringLessThan extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.stringLessThan();
         }
     }
 
     protected class ActionMutlibyteStringLength
-        extends SaxHandlerBase.ElementType {
+            extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.stringLengthMB();
         }
     }
 
     protected class ActionMultibyteSubstring extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.substringMB();
         }
     }
 
     protected class ActionToInteger extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.toInteger();
         }
     }
 
     protected class ActionCharToAscii extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.charToAscii();
         }
     }
 
     protected class ActionAsciiToChar extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.asciiToChar();
         }
     }
 
     protected class ActionMutlibyteCharToAscii
-        extends SaxHandlerBase.ElementType {
+            extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.charMBToAscii();
         }
     }
 
     protected class ActionAsciiToMultibyteChar
-        extends SaxHandlerBase.ElementType {
+            extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.asciiToCharMB();
         }
     }
 
     protected class ActionCall extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.call();
         }
     }
 
     protected class ActionGetVariable extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.getVariable();
         }
     }
 
     protected class ActionSetVariable extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.setVariable();
         }
     }
 
     protected class ActionGetProperty extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.getProperty();
         }
     }
 
     protected class ActionSetProperty extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.setProperty();
         }
     }
 
     protected class ActionCloneSprite extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.cloneSprite();
         }
     }
 
     protected class ActionRemoveSprite extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.removeSprite();
         }
     }
 
     protected class ActionStartDrag extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.startDrag();
         }
     }
 
     protected class ActionEndDrag extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.endDrag();
         }
     }
 
     protected class ActionTrace extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.trace();
         }
     }
 
     protected class ActionGetTime extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.getTime();
         }
     }
 
     protected class ActionRandomNumber extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.randomNumber();
         }
     }
 
     protected class ActionCallFunction extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.callFunction();
         }
     }
 
     protected class ActionCallMethod extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.callMethod();
         }
     }
 
     protected class ActionDefineLocalValue extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.defineLocalValue();
         }
     }
 
     protected class ActionDefineLocal extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.defineLocal();
         }
     }
 
     protected class ActionDeleteProperty extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.deleteProperty();
         }
     }
 
     protected class ActionDeleteThreadVars extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.deleteThreadVars();
         }
     }
 
     protected class ActionEnumerate extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.enumerate();
         }
     }
 
     protected class ActionTypedEquals extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.typedEquals();
         }
     }
 
     protected class ActionGetMember extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.getMember();
         }
     }
 
     protected class ActionInitArray extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.initArray();
         }
     }
 
     protected class ActionInitObject extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.initObject();
         }
     }
 
     protected class ActionNewMethod extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.newMethod();
         }
     }
 
     protected class ActionNewObject extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.newObject();
         }
     }
 
     protected class ActionSetMember extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.setMember();
         }
     }
 
     protected class ActionGetTargetPath extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.getTargetPath();
         }
     }
 
     protected class ActionToNumber extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.convertToNumber();
         }
     }
 
     protected class ActionToString extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.convertToString();
         }
     }
 
     protected class ActionTypeOf extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.typeOf();
         }
     }
 
     protected class ActionTypedAdd extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.typedAdd();
         }
     }
 
     protected class ActionTypedLessThan extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.typedLessThan();
         }
     }
 
     protected class ActionModulo extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.modulo();
         }
     }
 
     protected class ActionBitAnd extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.bitAnd();
         }
     }
 
     protected class ActionBitOr extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.bitOr();
         }
     }
 
     protected class ActionBitXor extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.bitXor();
         }
     }
 
     protected class ActionShiftLeft extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.shiftLeft();
         }
     }
 
     protected class ActionShiftRight extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.shiftRight();
         }
     }
 
     protected class ActionShiftRightUnsigned extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.shiftRightUnsigned();
         }
     }
 
     protected class ActionDecrement extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.decrement();
         }
     }
 
     protected class ActionIncrement extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.increment();
         }
     }
 
     protected class ActionDuplicate extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.duplicate();
         }
     }
 
     protected class ActionReturn extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.returnValue();
         }
     }
 
     protected class ActionSwap extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.swap();
         }
     }
 
     protected class ActionLookupTable extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             lookupValues.clear();
         }
@@ -2501,30 +2610,35 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class LookupValue extends SaxHandlerBase.ContentElementType {
+
         public void endElement() throws Exception {
             lookupValues.add(buff.toString());
         }
     }
 
     protected class ActionJump extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.jump(getAttr(atts, "jump-label", ""));
         }
     }
 
     protected class ActionIf extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.ifJump(getAttr(atts, "jump-label", ""));
         }
     }
 
     protected class ActionStore extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.storeInRegister(getAttrInt(atts, "register", 0));
         }
     }
 
     protected class ActionWith extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             actions.startWith();
         }
@@ -2535,12 +2649,13 @@ if (chars == null) { // TODO vavi null
     }
 
     protected class ActionFunction extends SaxHandlerBase.ElementType {
+
         public void startElement(Attributes atts) throws Exception {
             String name = getAttr(atts, "name", "");
             String parms = getAttr(atts, "params", "");
 
             StringTokenizer tok = new StringTokenizer(parms);
-            List<String> p = new ArrayList<String>();
+            List<String> p = new ArrayList<>();
             while (tok.hasMoreTokens()) {
                 p.add(tok.nextToken());
             }

@@ -43,5 +43,6 @@ import com.anotherbigidea.io.OutStream;
  * Common interface for Fill and Line Styles
  */
 public interface Style {
+
     void write(OutStream out, boolean hasAlpha) throws IOException;
 }

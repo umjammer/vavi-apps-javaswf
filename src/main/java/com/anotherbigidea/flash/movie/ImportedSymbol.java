@@ -44,8 +44,9 @@ import com.anotherbigidea.flash.interfaces.SWFTagTypes;
  * The import/export feature only works with Flash version 5 and up.
  */
 public class ImportedSymbol extends Symbol {
-    protected String name;
-    protected String libName;
+
+    protected final String name;
+    protected final String libName;
 
     protected ImportedSymbol(int id, String name, String libName) {
         super(id);

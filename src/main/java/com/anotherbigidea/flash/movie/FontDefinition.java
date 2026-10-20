@@ -45,14 +45,16 @@ import java.util.Map;
  * A Font Definition that can referenced by Font symbols.
  * If read in from an existing Flash movie the font definition may only contain
  * a subset of the glyphs in the font.
- *
+ * <p>
  * To use a system font set the hasMetrics flag to false.
  */
 public class FontDefinition {
+
     /**
      * A Glyph within the font.
      */
     public static class Glyph {
+
         protected int code;
         protected double advance;
         protected Shape shape;
@@ -92,6 +94,7 @@ public class FontDefinition {
      * A Kerning Pair is an adjustment to the advance between two particular glyphs.
      */
     public static class KerningPair {
+
         protected int code1;
         protected int code2;
         protected double adjustment;
@@ -137,8 +140,8 @@ public class FontDefinition {
     protected boolean isItalic;
     protected boolean isBold;
     protected boolean hasMetrics;
-    protected List<Glyph> glyphs = new ArrayList<Glyph>();
-    protected List<FontDefinition.KerningPair> kerning = new ArrayList<FontDefinition.KerningPair>();
+    protected final List<Glyph> glyphs = new ArrayList<>();
+    protected final List<FontDefinition.KerningPair> kerning = new ArrayList<>();
     protected Map<Integer, Glyph> glyphLookup;
     protected Map<Integer, Map<Integer, KerningPair>> kernLookup;
 
@@ -240,18 +243,19 @@ public class FontDefinition {
 
     /**
      * Look up a glyph by code
+     *
      * @return null if the code has no glyph
      */
     public Glyph getGlyph(int code) {
         if (glyphLookup == null) {
-            glyphLookup = new HashMap<Integer, Glyph>();
+            glyphLookup = new HashMap<>();
 
             for (Glyph g : glyphs) {
-                glyphLookup.put(new Integer(g.code), g);
+                glyphLookup.put(g.code, g);
             }
         }
 
-        Glyph g = glyphLookup.get(new Integer(code));
+        Glyph g = glyphLookup.get(code);
 
         return g;
     }
@@ -261,26 +265,20 @@ public class FontDefinition {
      */
     public double getKerningOffset(int code1, int code2) {
         if (kernLookup == null) {
-            kernLookup = new HashMap<Integer, Map<Integer, KerningPair>>();
+            kernLookup = new HashMap<>();
 
-            for (Iterator<KerningPair> it = kerning.iterator(); it.hasNext();) {
-                KerningPair pair = it.next();
-                Integer i1 = new Integer(pair.code1);
-                Integer i2 = new Integer(pair.code2);
+            for (KerningPair pair : kerning) {
+                Integer i1 = pair.code1;
+                Integer i2 = pair.code2;
 
-                Map<Integer, KerningPair> kerns = kernLookup.get(i1);
-
-                if (kerns == null) {
-                    kerns = new HashMap<Integer, KerningPair>();
-                    kernLookup.put(i1, kerns);
-                }
+                Map<Integer, KerningPair> kerns = kernLookup.computeIfAbsent(i1, k -> new HashMap<>());
 
                 kerns.put(i2, pair);
             }
         }
 
-        Integer i1 = new Integer(code1);
-        Integer i2 = new Integer(code2);
+        Integer i1 = code1;
+        Integer i2 = code2;
 
         Map<Integer, KerningPair> kerns = kernLookup.get(i1);
         if (kerns == null) {

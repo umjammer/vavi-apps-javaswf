@@ -44,10 +44,11 @@ import java.util.List;
  * ADPCM Encoder
  */
 public class ADPCMEncodeStream implements ADPCMConstants {
-    protected InputStream samplesIn;
-    protected boolean is16bit;
+
+    protected final InputStream samplesIn;
+    protected final boolean is16bit;
     protected boolean isDone = false;
-    protected boolean isSigned;
+    protected final boolean isSigned;
 
     public ADPCMEncodeStream(InputStream inputSamples, boolean is16bit, boolean isSigned) {
         this.samplesIn = inputSamples;
@@ -134,7 +135,7 @@ public class ADPCMEncodeStream implements ADPCMConstants {
     public int getSample() throws IOException {
         if (!sampleStack.isEmpty()) {
             Integer sample = sampleStack.remove(sampleStack.size() - 1);
-            return sample.intValue();
+            return sample;
         }
 
         int lo = read();
@@ -166,7 +167,7 @@ public class ADPCMEncodeStream implements ADPCMConstants {
     }
 
     public void pushSample(int sample) {
-        sampleStack.add(new Integer(sample));
+        sampleStack.add(sample);
     }
 
     public int getFirstPacketSample() throws IOException {
@@ -183,6 +184,7 @@ public class ADPCMEncodeStream implements ADPCMConstants {
 
     /**
      * Set the index, given sample 1, to the closest value that gives the delta with the next sample
+     *
      * @return the index
      */
     public int setIndex(int sample1) throws IOException {
@@ -205,7 +207,7 @@ public class ADPCMEncodeStream implements ADPCMConstants {
     }
 
     // state
-    protected List<Integer> sampleStack = new ArrayList<Integer>();
+    protected final List<Integer> sampleStack = new ArrayList<>();
     protected int valpred = 0; // Previous output value
     protected int index = 0; // Index into stepsize table            
 }

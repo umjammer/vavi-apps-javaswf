@@ -31,6 +31,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.anotherbigidea.flash.movie;
 
 
@@ -38,8 +39,9 @@ package com.anotherbigidea.flash.movie;
  * Information about a symbol exported from the movie
  */
 public class ExportedSymbol {
-    protected Symbol symbol;
-    protected String exportName;
+
+    protected final Symbol symbol;
+    protected final String exportName;
 
     public Symbol getSymbol() {
         return symbol;

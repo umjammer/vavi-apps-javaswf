@@ -9,6 +9,7 @@ import java.io.OutputStream;
  * @author nick
  */
 public abstract class CountingOutputStream extends OutputStream {
+
     protected int mCount = 0;
 
     /**

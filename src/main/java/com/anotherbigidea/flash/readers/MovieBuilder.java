@@ -36,6 +36,8 @@ package com.anotherbigidea.flash.readers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,6 +55,7 @@ import com.anotherbigidea.flash.movie.Button;
 import com.anotherbigidea.flash.movie.EditField;
 import com.anotherbigidea.flash.movie.Font;
 import com.anotherbigidea.flash.movie.FontDefinition;
+import com.anotherbigidea.flash.movie.FontDefinition.Glyph;
 import com.anotherbigidea.flash.movie.Frame;
 import com.anotherbigidea.flash.movie.Image;
 import com.anotherbigidea.flash.movie.Instance;
@@ -65,7 +68,6 @@ import com.anotherbigidea.flash.movie.Symbol;
 import com.anotherbigidea.flash.movie.Text;
 import com.anotherbigidea.flash.movie.TimeLine;
 import com.anotherbigidea.flash.movie.Transform;
-import com.anotherbigidea.flash.movie.FontDefinition.Glyph;
 import com.anotherbigidea.flash.structs.AlphaColor;
 import com.anotherbigidea.flash.structs.AlphaTransform;
 import com.anotherbigidea.flash.structs.ButtonRecord;
@@ -82,13 +84,16 @@ import com.anotherbigidea.flash.writers.SWFActionsImpl;
  * An implementation of the SWFTagTypes interface that builds a Movie object
  */
 public class MovieBuilder implements SWFTagTypes {
-    protected Movie movie;
+
+    private static final Logger logger = System.getLogger(MovieBuilder.class.getName());
+
+    protected final Movie movie;
     protected MovieClip clip;
     protected boolean newMovie = false;
     protected Frame frame;
-    protected Map<Integer, Symbol> symbols = new HashMap<Integer, Symbol>();
-    protected TimeLine timeline;
-    protected Map<Integer, Instance> instances = new HashMap<Integer, Instance>();
+    protected Map<Integer, Symbol> symbols = new HashMap<>();
+    protected final TimeLine timeline;
+    protected final Map<Integer, Instance> instances = new HashMap<>();
 
     /**
      * Build a new Movie
@@ -131,15 +136,15 @@ public class MovieBuilder implements SWFTagTypes {
     }
 
     protected Symbol getSymbol(int id) {
-        return symbols.get(new Integer(id));
+        return symbols.get(id);
     }
 
     protected void saveSymbol(int id, Symbol s) {
-        symbols.put(new Integer(id), s);
+        symbols.put(id, s);
     }
 
     protected Instance getInstance(int depth) {
-        return instances.get(new Integer(depth));
+        return instances.get(depth);
     }
 
     protected void saveInstance(int depth, Instance inst) {
@@ -147,18 +152,18 @@ public class MovieBuilder implements SWFTagTypes {
             try {
                 throw new Exception();
             } catch (Exception ex) {
-                ex.printStackTrace();
+                logger.log(Level.ERROR, ex.getMessage(), ex);
             }
         }
-        instances.put(new Integer(depth), inst);
+        instances.put(depth, inst);
     }
 
     /**
      * SWFTags interface
      */
     public void tag(int tagType, boolean longTag, byte[] contents)
-        throws IOException {
-        //ignore unknown tags
+            throws IOException {
+        // ignore unknown tags
     }
 
     /**
@@ -166,7 +171,7 @@ public class MovieBuilder implements SWFTagTypes {
      */
     public void header(int version, long length, int twipsWidth,
                        int twipsHeight, int frameRate, int frameCount)
-        throws IOException {
+            throws IOException {
         if (newMovie) {
             movie.setVersion(version);
             movie.setWidth(twipsWidth / SWFConstants.TWIPS);
@@ -179,7 +184,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagEnd() throws IOException {
-        //nothing to do
+        // nothing to do
     }
 
     /**
@@ -215,11 +220,11 @@ public class MovieBuilder implements SWFTagTypes {
                                      SoundInfo pressSoundInfo,
                                      int releaseSoundId,
                                      SoundInfo releaseSoundInfo)
-        throws IOException {
+            throws IOException {
     }
 
     public void tagStartSound(int soundId, SoundInfo info)
-        throws IOException {
+            throws IOException {
     }
 
     public void tagSoundStreamHead(int playbackFrequency,
@@ -227,7 +232,7 @@ public class MovieBuilder implements SWFTagTypes {
                                    boolean playbackStereo, int streamFormat,
                                    int streamFrequency, boolean stream16bit,
                                    boolean streamStereo, int averageSampleCount)
-        throws IOException {
+            throws IOException {
     }
 
     public void tagSoundStreamHead2(int playbackFrequency,
@@ -235,7 +240,7 @@ public class MovieBuilder implements SWFTagTypes {
                                     boolean playbackStereo, int streamFormat,
                                     int streamFrequency, boolean stream16bit,
                                     boolean streamStereo, int averageSampleCount)
-        throws IOException {
+            throws IOException {
     }
 
     public void tagSoundStreamBlock(byte[] soundData) throws IOException {
@@ -260,15 +265,15 @@ public class MovieBuilder implements SWFTagTypes {
     }
 
     public void tagDefineBits(int id, byte[] imageData)
-        throws IOException {
+            throws IOException {
     }
 
     public void tagJPEGTables(byte[] jpegEncodingData)
-        throws IOException {
+            throws IOException {
     }
 
     public void tagDefineBitsJPEG3(int id, byte[] imageData, byte[] alphaData)
-        throws IOException {
+            throws IOException {
     }
 
     public SWFActions tagDoInitAction(int spriteId) throws IOException {
@@ -288,12 +293,12 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public SWFShape tagDefineShape(int id, Rect outline)
-        throws IOException {
+            throws IOException {
         Shape s = new Shape();
         s.setBoundingRectangle(((double) outline.getMinX()) / SWFConstants.TWIPS,
-                               ((double) outline.getMinY()) / SWFConstants.TWIPS,
-                               ((double) outline.getMaxX()) / SWFConstants.TWIPS,
-                               ((double) outline.getMaxY()) / SWFConstants.TWIPS);
+                ((double) outline.getMinY()) / SWFConstants.TWIPS,
+                ((double) outline.getMaxX()) / SWFConstants.TWIPS,
+                ((double) outline.getMaxY()) / SWFConstants.TWIPS);
 
         saveSymbol(id, s);
 
@@ -304,12 +309,12 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public SWFShape tagDefineShape2(int id, Rect outline)
-        throws IOException {
+            throws IOException {
         Shape s = new Shape();
         s.setBoundingRectangle(((double) outline.getMinX()) / SWFConstants.TWIPS,
-                               ((double) outline.getMinY()) / SWFConstants.TWIPS,
-                               ((double) outline.getMaxX()) / SWFConstants.TWIPS,
-                               ((double) outline.getMaxY()) / SWFConstants.TWIPS);
+                ((double) outline.getMinY()) / SWFConstants.TWIPS,
+                ((double) outline.getMaxX()) / SWFConstants.TWIPS,
+                ((double) outline.getMaxY()) / SWFConstants.TWIPS);
 
         saveSymbol(id, s);
 
@@ -320,12 +325,12 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public SWFShape tagDefineShape3(int id, Rect outline)
-        throws IOException {
+            throws IOException {
         Shape s = new Shape();
         s.setBoundingRectangle(((double) outline.getMinX()) / SWFConstants.TWIPS,
-                               ((double) outline.getMinY()) / SWFConstants.TWIPS,
-                               ((double) outline.getMaxX()) / SWFConstants.TWIPS,
-                               ((double) outline.getMaxY()) / SWFConstants.TWIPS);
+                ((double) outline.getMinY()) / SWFConstants.TWIPS,
+                ((double) outline.getMaxX()) / SWFConstants.TWIPS,
+                ((double) outline.getMaxY()) / SWFConstants.TWIPS);
 
         saveSymbol(id, s);
 
@@ -336,7 +341,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagFreeCharacter(int charId) throws IOException {
-        //nothing
+        // nothing
     }
 
     /**
@@ -352,9 +357,9 @@ public class MovieBuilder implements SWFTagTypes {
         timeline.setAvailableDepth(depth);
 
         Instance inst = currentFrame().placeSymbol(s,
-                                                   (matrix != null)
-                                                   ? new Transform(matrix) : null,
-                                                   cxform);
+                (matrix != null)
+                        ? new Transform(matrix) : null,
+                cxform);
         saveInstance(depth, inst);
     }
 
@@ -365,11 +370,11 @@ public class MovieBuilder implements SWFTagTypes {
                                       int charId, Matrix matrix,
                                       AlphaTransform cxform, int ratio,
                                       String name, int clipActionFlags)
-        throws IOException {
+            throws IOException {
         Instance inst = null;
 
         if (depth == 59) {
-            //System.err.println( "Place2: " + charId + " isMove=" + isMove + " depth=" + depth + " frame=" + currentFrame().getFrameNumber() );
+            // System.err.println( "Place2: " + charId + " isMove=" + isMove + " depth=" + depth + " frame=" + currentFrame().getFrameNumber() );
         }
 
         if (isMove && (charId <= 0)) {
@@ -380,13 +385,13 @@ public class MovieBuilder implements SWFTagTypes {
             }
 
             currentFrame().alter(inst,
-                                 (matrix != null) ? new Transform(matrix) : null,
-                                 cxform, ratio);
+                    (matrix != null) ? new Transform(matrix) : null,
+                    cxform, ratio);
         } else {
             Symbol s = getSymbol(charId);
 
             if (depth == 59) {
-                //System.err.println( ">>> " + s );
+                // System.err.println( ">>> " + s );
             }
 
             if (s == null) {
@@ -399,37 +404,37 @@ public class MovieBuilder implements SWFTagTypes {
 
                 if (isMove) {
                     inst = frame.replaceMovieClip(s, depth,
-                                                  (matrix != null)
-                                                  ? new Transform(matrix) : null,
-                                                  cxform, name, null);
+                            (matrix != null)
+                                    ? new Transform(matrix) : null,
+                            cxform, name, null);
                 } else {
                     timeline.setAvailableDepth(depth);
 
                     inst = frame.placeMovieClip(s,
-                                                (matrix != null)
-                                                ? new Transform(matrix) : null,
-                                                cxform, name, null);
+                            (matrix != null)
+                                    ? new Transform(matrix) : null,
+                            cxform, name, null);
                 }
 
                 saveInstance(depth, inst);
             } else if (clipActionFlags != 0) {
                 return new ClipActionBuilder(s, matrix, cxform, depth, name,
-                                             movie.getVersion(), isMove);
+                        movie.getVersion(), isMove);
             } else {
                 Frame frame = currentFrame();
 
                 if (isMove) {
                     inst = frame.replaceSymbol(s, depth,
-                                               (matrix != null)
-                                               ? new Transform(matrix) : null,
-                                               cxform, ratio, clipDepth);
+                            (matrix != null)
+                                    ? new Transform(matrix) : null,
+                            cxform, ratio, clipDepth);
                 } else {
                     timeline.setAvailableDepth(depth);
 
                     inst = frame.placeSymbol(s,
-                                             (matrix != null)
-                                             ? new Transform(matrix) : null,
-                                             cxform, ratio, clipDepth);
+                            (matrix != null)
+                                    ? new Transform(matrix) : null,
+                            cxform, ratio, clipDepth);
                 }
 
                 saveInstance(depth, inst);
@@ -443,7 +448,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagRemoveObject(int charId, int depth)
-        throws IOException {
+            throws IOException {
         Instance inst = getInstance(depth);
         if (inst == null) {
             return;
@@ -484,7 +489,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagFrameLabel(String label, boolean isAnchor)
-        throws IOException {
+            throws IOException {
         currentFrame().setLabel(label);
         currentFrame().setAnchor(isAnchor);
     }
@@ -512,21 +517,21 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagEnableDebug(byte[] password) throws IOException {
-        //not implemented
+        // not implemented
     }
 
     /**
      * SWFTagTypes interface
      */
     public void tagEnableDebug2(byte[] password) throws IOException {
-        //not implemented
+        // not implemented
     }
 
     /**
      * SWFTagTypes interface
      */
     public SWFVectors tagDefineFont(int id, int numGlyphs)
-        throws IOException {
+            throws IOException {
         FontDefinition fontDef = new FontDefinition();
         Font font = new Font(fontDef);
 
@@ -541,7 +546,7 @@ public class MovieBuilder implements SWFTagTypes {
     public void tagDefineFontInfo(int fontId, String fontName, int flags,
                                   int[] codes) {
         defineFontInfo(fontId, fontName, flags, codes,
-                       SWFConstants.LANGUAGE_CODE_NONE);
+                SWFConstants.LANGUAGE_CODE_NONE);
     }
 
     /**
@@ -550,11 +555,10 @@ public class MovieBuilder implements SWFTagTypes {
     public void defineFontInfo(int fontId, String fontName, int flags,
                                int[] codes, int langCode) {
         Symbol s = getSymbol(fontId);
-        if ((s == null) || !(s instanceof Font)) {
+        if ((s == null) || !(s instanceof Font font)) {
             return;
         }
 
-        Font font = (Font) s;
         FontDefinition def = font.getDefinition();
 
         def.setName(fontName);
@@ -595,7 +599,7 @@ public class MovieBuilder implements SWFTagTypes {
                                      int leading, int[] codes, int[] advances,
                                      Rect[] bounds, int[] kernCodes1,
                                      int[] kernCodes2, int[] kernAdjustments)
-        throws IOException {
+            throws IOException {
         boolean hasMetrics = ((flags & SWFConstants.FONT2_HAS_LAYOUT) != 0);
         boolean isShiftJIS = ((flags & SWFConstants.FONT2_SHIFTJIS) != 0);
         boolean isUnicode = ((flags & SWFConstants.FONT2_UNICODE) != 0);
@@ -604,12 +608,12 @@ public class MovieBuilder implements SWFTagTypes {
         boolean isBold = ((flags & SWFConstants.FONT2_BOLD) != 0);
 
         FontDefinition fontDef = new FontDefinition(name,
-                                                    ((double) ascent) / SWFConstants.TWIPS,
-                                                    ((double) descent) / SWFConstants.TWIPS,
-                                                    ((double) leading) / SWFConstants.TWIPS,
-                                                    isUnicode, isShiftJIS,
-                                                    isAnsi, isItalic, isBold,
-                                                    hasMetrics);
+                ((double) ascent) / SWFConstants.TWIPS,
+                ((double) descent) / SWFConstants.TWIPS,
+                ((double) leading) / SWFConstants.TWIPS,
+                isUnicode, isShiftJIS,
+                isAnsi, isItalic, isBold,
+                hasMetrics);
 
         Font font = new Font(fontDef);
         saveSymbol(id, font);
@@ -620,8 +624,8 @@ public class MovieBuilder implements SWFTagTypes {
 
             for (int i = 0; i < kernCodes1.length; i++) {
                 FontDefinition.KerningPair pair = new FontDefinition.KerningPair(kernCodes1[i],
-                                                                                 kernCodes2[i],
-                                                                                 ((double) kernAdjustments[i]) / SWFConstants.TWIPS);
+                        kernCodes2[i],
+                        ((double) kernAdjustments[i]) / SWFConstants.TWIPS);
 
                 kerns.add(pair);
             }
@@ -641,18 +645,16 @@ public class MovieBuilder implements SWFTagTypes {
                                    int rightMargin, int indentation,
                                    int lineSpacing) throws IOException {
         Symbol f = getSymbol(fontId);
-        if ((f == null) || !(f instanceof Font)) {
+        if ((f == null) || !(f instanceof Font font)) {
             return;
         }
 
-        Font font = (Font) f;
-
         EditField field = new EditField(fieldName, initialText, font,
-                                        ((double) fontSize) / SWFConstants.TWIPS,
-                                        ((double) boundary.getMinX()) / SWFConstants.TWIPS,
-                                        ((double) boundary.getMinY()) / SWFConstants.TWIPS,
-                                        ((double) boundary.getMaxX()) / SWFConstants.TWIPS,
-                                        ((double) boundary.getMaxY()) / SWFConstants.TWIPS);
+                ((double) fontSize) / SWFConstants.TWIPS,
+                ((double) boundary.getMinX()) / SWFConstants.TWIPS,
+                ((double) boundary.getMinY()) / SWFConstants.TWIPS,
+                ((double) boundary.getMaxX()) / SWFConstants.TWIPS,
+                ((double) boundary.getMaxY()) / SWFConstants.TWIPS);
 
         field.setTextColor(textColor);
         field.setAlignment(alignment);
@@ -672,7 +674,7 @@ public class MovieBuilder implements SWFTagTypes {
         boolean isEditable = ((flags & SWFConstants.TEXTFIELD_DISABLE_EDIT) == 0);
 
         field.setProperties(isSelectable, hasBorder, isHtml, usesSystemFont,
-                            hasWordWrap, isMultiline, isPassword, isEditable);
+                hasWordWrap, isMultiline, isPassword, isEditable);
 
         saveSymbol(fieldId, field);
     }
@@ -681,7 +683,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public SWFText tagDefineText(int id, Rect bounds, Matrix matrix)
-        throws IOException {
+            throws IOException {
         Text text = new Text(new Transform(matrix));
         saveSymbol(id, text);
 
@@ -692,7 +694,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public SWFText tagDefineText2(int id, Rect bounds, Matrix matrix)
-        throws IOException {
+            throws IOException {
         Text text = new Text(new Transform(matrix));
         saveSymbol(id, text);
 
@@ -703,7 +705,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public SWFActions tagDefineButton(int id, List<? extends ButtonRecord> buttonRecords)
-        throws IOException {
+            throws IOException {
         Button but = new Button(false);
         saveSymbol(id, but);
 
@@ -721,7 +723,7 @@ public class MovieBuilder implements SWFTagTypes {
             boolean down = ((flags & ButtonRecord.BUTTON_DOWN) != 0);
 
             but.addLayer(s, new Transform(rec.getMatrix()), null,
-                         rec.getLayer(), hit, up, down, over);
+                    rec.getLayer(), hit, up, down, over);
         }
 
         return new ButtonActionBuilder(but, movie.getVersion());
@@ -731,20 +733,16 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagButtonCXForm(int buttonId, ColorTransform transform)
-        throws IOException {
+            throws IOException {
         Symbol s = getSymbol(buttonId);
-        if ((s == null) || !(s instanceof Button)) {
+        if ((s == null) || !(s instanceof Button but)) {
             return;
         }
 
-        Button but = (Button) s;
-
         List<Button.Layer> layers = but.getButtonLayers();
 
-        //apply the transform to all the layers of the button
-        for (Iterator<Button.Layer> it = layers.iterator(); it.hasNext();) {
-            Button.Layer layer = it.next();
-
+        // apply the transform to all the layers of the button
+        for (Button.Layer layer : layers) {
             layer.setColoring(new AlphaTransform(transform));
         }
     }
@@ -754,7 +752,7 @@ public class MovieBuilder implements SWFTagTypes {
      */
     public SWFActions tagDefineButton2(int id, boolean trackAsMenu,
                                        List<? extends ButtonRecord> buttonRecord2s)
-        throws IOException {
+            throws IOException {
         Button but = new Button(trackAsMenu);
         saveSymbol(id, but);
 
@@ -772,7 +770,7 @@ public class MovieBuilder implements SWFTagTypes {
             boolean down = ((flags & ButtonRecord.BUTTON_DOWN) != 0);
 
             but.addLayer(s, new Transform(rec.getMatrix()), ((ButtonRecord2) rec).getTransform(),
-                         rec.getLayer(), hit, up, down, over);
+                    rec.getLayer(), hit, up, down, over);
         }
 
         return new ButtonActionBuilder(but, movie.getVersion());
@@ -795,7 +793,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagImport(String movieName, String[] names, int[] ids)
-        throws IOException {
+            throws IOException {
         movie.importSymbols(movieName, names);
     }
 
@@ -803,7 +801,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagDefineQuickTimeMovie(int id, String filename)
-        throws IOException {
+            throws IOException {
         saveSymbol(id, new QTMovie(filename));
     }
 
@@ -811,7 +809,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagDefineBitsJPEG2(int id, byte[] data)
-        throws IOException {
+            throws IOException {
         saveSymbol(id, new Image.JPEG(data));
     }
 
@@ -819,7 +817,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFTagTypes interface
      */
     public void tagDefineBitsJPEG2(int id, InputStream jpegImage)
-        throws IOException {
+            throws IOException {
         saveSymbol(id, new Image.JPEG(jpegImage));
     }
 
@@ -829,12 +827,12 @@ public class MovieBuilder implements SWFTagTypes {
     public void tagDefineBitsLossless(int id, int format, int width,
                                       int height, Color[] colors,
                                       byte[] imageData)
-        throws IOException {
+            throws IOException {
         saveSymbol(id,
-                   new Image.Lossless(colors, imageData,
-                                      ((double) width) / SWFConstants.TWIPS,
-                                      ((double) height) / SWFConstants.TWIPS,
-                                      false, format));
+                new Image.Lossless(colors, imageData,
+                        ((double) width) / SWFConstants.TWIPS,
+                        ((double) height) / SWFConstants.TWIPS,
+                        false, format));
     }
 
     /**
@@ -843,19 +841,19 @@ public class MovieBuilder implements SWFTagTypes {
     public void tagDefineBitsLossless2(int id, int format, int width,
                                        int height, Color[] colors,
                                        byte[] imageData)
-        throws IOException {
+            throws IOException {
         saveSymbol(id,
-                   new Image.Lossless(colors, imageData,
-                                      ((double) width) / SWFConstants.TWIPS,
-                                      ((double) height) / SWFConstants.TWIPS,
-                                      true, format));
+                new Image.Lossless(colors, imageData,
+                        ((double) width) / SWFConstants.TWIPS,
+                        ((double) height) / SWFConstants.TWIPS,
+                        true, format));
     }
 
     /**
      * SWFTagTypes interface
      */
     public SWFShape tagDefineMorphShape(int id, Rect startBounds, Rect endBounds)
-        throws IOException {
+            throws IOException {
         return new MorphShapeBuilder(id, startBounds, endBounds);
     }
 
@@ -864,8 +862,9 @@ public class MovieBuilder implements SWFTagTypes {
      * separate Actions objects
      */
     protected static class ActionsBuilder extends SWFActionsImpl {
-        protected int version;
-        protected List<Object> actions = new ArrayList<Object>();
+
+        protected final int version;
+        protected final List<Object> actions = new ArrayList<>();
 
         protected ActionsBuilder(int flashVersion) {
             super(null);
@@ -874,7 +873,7 @@ public class MovieBuilder implements SWFTagTypes {
 
         public Actions[] getActions() {
             Actions[] a = new Actions[actions.size()];
-            actions.toArray(a);
+            actions.toArray(Actions[]::new);
             return a;
         }
 
@@ -884,8 +883,9 @@ public class MovieBuilder implements SWFTagTypes {
         }
     }
 
-    protected class ButtonActionBuilder extends MovieBuilder.ActionsBuilder {
-        protected Button but;
+    protected static class ButtonActionBuilder extends MovieBuilder.ActionsBuilder {
+
+        protected final Button but;
 
         protected ButtonActionBuilder(Button b, int flashVersion) {
             super(flashVersion);
@@ -903,12 +903,13 @@ public class MovieBuilder implements SWFTagTypes {
     }
 
     protected class ClipActionBuilder extends MovieBuilder.ActionsBuilder {
-        protected Symbol symbol;
-        protected Transform matrix;
-        protected AlphaTransform cxform;
-        protected String name;
-        protected int depth;
-        protected boolean isMove;
+
+        protected final Symbol symbol;
+        protected final Transform matrix;
+        protected final AlphaTransform cxform;
+        protected final String name;
+        protected final int depth;
+        protected final boolean isMove;
 
         protected ClipActionBuilder(Symbol symbol, Matrix matrix,
                                     AlphaTransform cxform, int depth,
@@ -932,7 +933,7 @@ public class MovieBuilder implements SWFTagTypes {
 
             if (isMove) {
                 frame.replaceMovieClip(symbol, depth, matrix, cxform, name,
-                                       getActions());
+                        getActions());
             } else {
                 timeline.setAvailableDepth(depth);
 
@@ -947,6 +948,7 @@ public class MovieBuilder implements SWFTagTypes {
      * SWFShape implementation that builds a Shape
      */
     protected class ShapeBuilder implements SWFShape {
+
         protected Shape s;
         protected int currx;
         protected int curry;
@@ -956,7 +958,7 @@ public class MovieBuilder implements SWFTagTypes {
         }
 
         public void done() {
-            //nothing
+            // nothing
         }
 
         public void line(int dx, int dy) {
@@ -964,7 +966,7 @@ public class MovieBuilder implements SWFTagTypes {
             curry += dy;
 
             s.line(((double) currx) / SWFConstants.TWIPS,
-                   ((double) curry) / SWFConstants.TWIPS);
+                    ((double) curry) / SWFConstants.TWIPS);
         }
 
         public void curve(int cx, int cy, int dx, int dy) {
@@ -985,7 +987,7 @@ public class MovieBuilder implements SWFTagTypes {
             curry = y;
 
             s.move(((double) currx) / SWFConstants.TWIPS,
-                   ((double) curry) / SWFConstants.TWIPS);
+                    ((double) curry) / SWFConstants.TWIPS);
         }
 
         public void setFillStyle0(int styleIndex) {
@@ -1020,9 +1022,10 @@ public class MovieBuilder implements SWFTagTypes {
     }
 
     protected class MorphShapeBuilder extends MovieBuilder.ShapeBuilder {
-        protected int id;
-        protected Rect startBounds;
-        protected Rect endBounds;
+
+        protected final int id;
+        protected final Rect startBounds;
+        protected final Rect endBounds;
         protected Shape shape1;
 
         protected MorphShapeBuilder(int id, Rect startBounds, Rect endBounds) {
@@ -1047,14 +1050,15 @@ public class MovieBuilder implements SWFTagTypes {
     }
 
     protected class GlyphBuilder extends MovieBuilder.ShapeBuilder {
-        protected FontDefinition fontDef;
-        protected Font font;
-        protected int count;
+
+        protected final FontDefinition fontDef;
+        protected final Font font;
+        protected final int count;
         protected int[] advances;
         protected int[] codes;
         protected Rect[] bounds;
-        protected List<FontDefinition.Glyph> defGlyphs;
-        protected List<FontDefinition.Glyph> fontGlyphs;
+        protected final List<FontDefinition.Glyph> defGlyphs;
+        protected final List<FontDefinition.Glyph> fontGlyphs;
         protected int index = 0;
 
         public GlyphBuilder(FontDefinition fontDef, Font font, int glyphCount) {
@@ -1084,14 +1088,14 @@ public class MovieBuilder implements SWFTagTypes {
             if (bounds != null) {
                 Rect r = bounds[index];
                 s.setBoundingRectangle(((double) r.getMinX()) / SWFConstants.TWIPS,
-                                       ((double) r.getMinY()) / SWFConstants.TWIPS,
-                                       ((double) r.getMaxX()) / SWFConstants.TWIPS,
-                                       ((double) r.getMaxY()) / SWFConstants.TWIPS);
+                        ((double) r.getMinY()) / SWFConstants.TWIPS,
+                        ((double) r.getMaxX()) / SWFConstants.TWIPS,
+                        ((double) r.getMaxY()) / SWFConstants.TWIPS);
             }
 
             double advance = (advances != null)
-                             ? (((double) advances[index]) / SWFConstants.TWIPS)
-                             : 0.0;
+                    ? (((double) advances[index]) / SWFConstants.TWIPS)
+                    : 0.0;
 
             int code = (codes != null) ? codes[index] : 0;
 
@@ -1112,7 +1116,8 @@ public class MovieBuilder implements SWFTagTypes {
      * A SWFText implementation that builds a Text object
      */
     protected class TextBuilder implements SWFText {
-        protected Text t;
+
+        protected final Text t;
         protected Font font;
         protected double size;
         protected Color color;
@@ -1172,7 +1177,7 @@ public class MovieBuilder implements SWFTagTypes {
                 int index = glyphIndices[i];
                 double advance = ((double) glyphAdvances[i]) / SWFConstants.TWIPS;
 
-                //normalize the advance
+                // normalize the advance
                 advance = (advance * (1024.0 / SWFConstants.TWIPS)) / size;
 
                 FontDefinition.Glyph g = glyphs.get(index);
@@ -1202,7 +1207,7 @@ public class MovieBuilder implements SWFTagTypes {
          * SWFText interface
          */
         public void done() {
-            //nothing
+            // nothing
         }
     }
 }

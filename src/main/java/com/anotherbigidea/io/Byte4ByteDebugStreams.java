@@ -40,9 +40,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 
 
 public class Byte4ByteDebugStreams extends OutputStream {
+
+    private static final Logger logger = System.getLogger(Byte4ByteDebugStreams.class.getName());
+
     protected ByteArrayInputStream in;
     protected byte[] bytesIn;
     protected byte[] bytesOut;
@@ -86,7 +91,7 @@ public class Byte4ByteDebugStreams extends OutputStream {
         if (bytesOut[bytePtr] != bytesIn[bytePtr]) {
             IOException ioe = new IOException("Byte mismatch between input and output at byte #" + bytePtr + " 0x" + Integer.toHexString(bytePtr) + "\nexpected 0x" + Integer.toHexString(bytesIn[bytePtr]) + " but got 0x" + Integer.toHexString(b));
 
-            ioe.printStackTrace();
+            logger.log(Level.ERROR, ioe.getMessage(), ioe);
 
             throw ioe;
         }

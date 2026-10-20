@@ -41,14 +41,15 @@ import com.anotherbigidea.io.OutStream;
 
 
 public class ColorTransform {
+
     protected double multRed = 1.0;
     protected double multGreen = 1.0;
     protected double multBlue = 1.0;
     protected int addRed = 0;
     protected int addGreen = 0;
     protected int addBlue = 0;
-    protected double multAlpha = 1.0; //used by AlphaTransform
-    protected int addAlpha = 0; //used by AlphaTransform 
+    protected double multAlpha = 1.0; // used by AlphaTransform
+    protected int addAlpha = 0; // used by AlphaTransform 
 
     public double getMultRed() {
         return multRed;

@@ -31,6 +31,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.anotherbigidea.flash.movie;
 
 
@@ -38,8 +39,9 @@ package com.anotherbigidea.flash.movie;
  * An instance of a Symbol that has been placed on the stage.
  */
 public class Instance {
-    protected Symbol symbol;
-    protected int depth;
+
+    protected final Symbol symbol;
+    protected final int depth;
 
     protected Instance(Symbol symbol, int depth) {
         this.symbol = symbol;
